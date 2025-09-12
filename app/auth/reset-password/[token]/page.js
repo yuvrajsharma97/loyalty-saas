@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { CheckCircle, AlertTriangle, ArrowRight } from "lucide-react";
+import { CheckCircle, AlertTriangle, ArrowRight, ArrowLeft } from "lucide-react";
 import AuthCard from "@/components/auth/AuthCard";
 import Button from "@/components/ui/Button";
 import PasswordField from "@/components/ui/PasswordField";

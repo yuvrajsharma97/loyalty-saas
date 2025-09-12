@@ -20,7 +20,7 @@ export default function QRScanHint({ className = "" }) {
                 <span className="text-white text-xs font-bold">1</span>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Find the store's QR code at checkout or displayed in-store
+                Find the store&apos;s QR code at checkout or displayed in-store
               </p>
             </div>
 
@@ -48,7 +48,7 @@ export default function QRScanHint({ className = "" }) {
 
           <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
             <p className="text-xs text-blue-700 dark:text-blue-300">
-              <strong>Tip:</strong> Your visit request will appear as "Pending"
+              <strong>Tip:</strong> Your visit request will appear as &ldquo;Pending&rdquo;
               until the store approves it.
             </p>
           </div>

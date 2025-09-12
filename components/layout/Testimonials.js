@@ -43,7 +43,7 @@ export default function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <Card key={index} className="p-6">
               <p className="text-gray-700 dark:text-gray-300 mb-6 italic">
-                "{testimonial.quote}"
+                &ldquo;{testimonial.quote}&rdquo;
               </p>
               <div className="flex items-center">
                 <Avatar name={testimonial.author} className="mr-4" />

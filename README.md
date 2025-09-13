@@ -6,7 +6,7 @@ The platform removes the need for physical loyalty cards. Customers earn points 
 each visit via QR code scanning or manual approval. Store owners can configure reward logic,
 approve visits, and manage customers. Admins can oversee all stores, users, and usage stats
 across the application.
-■ Live Demo: https://loyalty-saas-demo.vercel.app (dummy link – replace with your deployed
+■ Live Demo: https://loyalty-saas-xo8e.vercel.app (dummy link – replace with your deployed
 version on Vercel)
 
 ---

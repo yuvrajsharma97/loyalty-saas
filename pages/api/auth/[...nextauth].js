@@ -6,7 +6,7 @@ import { connectDB } from "../../../lib/db";
 import { loginWithRoleSchema } from "../../../lib/validators";
 import User from "../../../models/User";
 
-export default NextAuth({
+export const authOptions = {
   providers: [
     CredentialsProvider({
       id: "credentials",
@@ -105,5 +105,7 @@ export default NextAuth({
   pages: {
     signIn: "/auth/login",
   },
-});
+};
+
+export default NextAuth(authOptions);
 

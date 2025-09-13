@@ -1,26 +1,38 @@
-import { NextResponse } from "next/server";
+import { withAuth } from "next-auth/middleware";
 
-export function middleware(request) {
-  const { pathname } = request.nextUrl;
+export default withAuth(
+  function middleware(req) {
+    // Middleware logic here if needed
+    return;
+  },
+  {
+    callbacks: {
+      authorized: ({ token, req }) => {
+        const { pathname } = req.nextUrl;
 
-  // Check if user is accessing protected routes
-  if (
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/store") ||
-    pathname.startsWith("/user")
-  ) {
-    // In a real app, you'd check for valid JWT token
-    const token = request.cookies.get("auth-token");
+        // Allow access to auth pages
+        if (pathname.startsWith("/auth")) {
+          return true;
+        }
 
+        // Check role-based access
+        if (pathname.startsWith("/admin")) {
+          return token?.role === "SuperAdmin";
+        }
 
+        if (pathname.startsWith("/store")) {
+          return token?.role === "StoreAdmin";
+        }
 
-    if (!token) {
-      return NextResponse.redirect(new URL("/auth/login", request.url));
-    }
+        if (pathname.startsWith("/user")) {
+          return token?.role === "User";
+        }
+
+        return !!token;
+      },
+    },
   }
-
-  return NextResponse.next();
-}
+);
 
 export const config = {
   matcher: ["/admin/:path*", "/store/:path*", "/user/:path*"],

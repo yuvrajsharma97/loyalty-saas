@@ -1,4 +1,7 @@
 import "./globals.css";
+import { getServerSession } from "next-auth";
+import SessionProvider from "@/components/providers/SessionProvider";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
 export const metadata = {
   title: "LoyaltyOS - Digital Loyalty Programs That Actually Work",
@@ -8,10 +11,16 @@ export const metadata = {
     "loyalty program, QR code loyalty, customer retention, small business, UK",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en" data-theme="loyaltyos">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <SessionProvider session={session}>
+          {children}
+        </SessionProvider>
+      </body>
     </html>
   );
 }

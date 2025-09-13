@@ -30,7 +30,7 @@ export default function Card({
     baseClasses,
     bordered && "border border-white/20 dark:border-gray-700/30",
     compact && "card-compact",
-    hover && "hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 hover:scale-105",
+    hover && "hover:shadow-xl hover:shadow-secondary/10 transition-all duration-300 hover:scale-105",
     sizeClasses[size],
   ].filter(Boolean);
 

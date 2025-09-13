@@ -12,6 +12,78 @@ import Select from "@/components/admin/Select";
 import Input from "@/components/admin/Input";
 import Banner from "@/components/admin/Banner";
 
+const MOCK_STORES = [
+  {
+    id: "1",
+    name: "Café Central",
+    slug: "cafe-central",
+    location: "London, UK",
+    tier: "gold",
+    usersCount: 342,
+    owner: {
+      id: "owner1",
+      name: "Emma Thompson",
+      email: "emma@cafecentral.com",
+      role: "StoreAdmin"
+    },
+    rewardConfig: {
+      type: "hybrid",
+      pointsPerPound: 1,
+      pointsPerVisit: 10,
+      conversionRate: 100
+    },
+    paused: false,
+    createdAt: "2024-01-15",
+    lastActivity: "2024-03-15"
+  },
+  {
+    id: "2", 
+    name: "The Coffee Bean",
+    slug: "the-coffee-bean",
+    location: "Manchester, UK",
+    tier: "silver",
+    usersCount: 156,
+    owner: {
+      id: "owner2",
+      name: "James Wilson",
+      email: "james@thecoffeebean.com",
+      role: "StoreAdmin"
+    },
+    rewardConfig: {
+      type: "spend",
+      pointsPerPound: 1.5,
+      pointsPerVisit: 0,
+      conversionRate: 150
+    },
+    paused: false,
+    createdAt: "2024-02-01",
+    lastActivity: "2024-03-14"
+  },
+  {
+    id: "3",
+    name: "Green Leaf Bistro",
+    slug: "green-leaf-bistro", 
+    location: "Birmingham, UK",
+    tier: "platinum",
+    usersCount: 523,
+    owner: {
+      id: "owner3",
+      name: "Sarah Chen",
+      email: "sarah@greenleafbistro.com",
+      role: "StoreAdmin"
+    },
+    rewardConfig: {
+      type: "visit",
+      pointsPerPound: 0,
+      pointsPerVisit: 15,
+      conversionRate: 80
+    },
+    paused: false,
+    createdAt: "2023-11-10",
+    lastActivity: "2024-03-15"
+  }
+];
+
 const MOCK_STORE_USERS = [
   {
     id: "1",

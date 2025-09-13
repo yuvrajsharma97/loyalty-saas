@@ -11,6 +11,20 @@ import PreferenceToggle from "@/components/user/PreferenceToggle";
 import { formatDate } from "@/lib/formatters";
 import Link from "next/link";
 
+const MOCK_USER_PROFILE = {
+  id: "1",
+  name: "John Smith",
+  email: "john.smith@example.com",
+  role: "User",
+  preferences: {
+    visitApprovedEmail: true,
+    rewardEmail: true,
+    promotionEmail: false
+  },
+  createdAt: "2024-01-20",
+  lastLogin: "2024-03-15"
+};
+
 export default function UserProfile() {
   const { connectedStores, setCurrentStore } = useUserStore();
   const [userProfile, setUserProfile] = useState(MOCK_USER_PROFILE);

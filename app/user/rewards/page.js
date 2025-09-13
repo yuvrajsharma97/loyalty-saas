@@ -15,6 +15,81 @@ import RewardProgress from "@/components/user/RewardProgress";
 import { exportCsv } from "@/lib/exportCsv";
 import { formatDate, formatCurrency } from "@/lib/formatters";
 
+const MOCK_REDEMPTIONS = [
+  {
+    id: "redemption-1",
+    storeId: "1",
+    storeName: "Café Central",
+    date: "2024-03-10",
+    pointsUsed: 100,
+    value: 1.00,
+    autoTriggered: true
+  },
+  {
+    id: "redemption-2",
+    storeId: "2", 
+    storeName: "The Coffee Bean",
+    date: "2024-03-08",
+    pointsUsed: 150,
+    value: 1.00,
+    autoTriggered: false
+  },
+  {
+    id: "redemption-3",
+    storeId: "1",
+    storeName: "Café Central",
+    date: "2024-03-05",
+    pointsUsed: 200,
+    value: 2.00,
+    autoTriggered: true
+  },
+  {
+    id: "redemption-4",
+    storeId: "3",
+    storeName: "Green Leaf Bistro",
+    date: "2024-03-03",
+    pointsUsed: 80,
+    value: 1.00,
+    autoTriggered: true
+  },
+  {
+    id: "redemption-5",
+    storeId: "2",
+    storeName: "The Coffee Bean", 
+    date: "2024-02-28",
+    pointsUsed: 300,
+    value: 2.00,
+    autoTriggered: false
+  },
+  {
+    id: "redemption-6",
+    storeId: "1",
+    storeName: "Café Central",
+    date: "2024-02-25",
+    pointsUsed: 100,
+    value: 1.00,
+    autoTriggered: true
+  },
+  {
+    id: "redemption-7",
+    storeId: "3",
+    storeName: "Green Leaf Bistro",
+    date: "2024-02-20",
+    pointsUsed: 160,
+    value: 2.00,
+    autoTriggered: true
+  },
+  {
+    id: "redemption-8",
+    storeId: "1", 
+    storeName: "Café Central",
+    date: "2024-02-15",
+    pointsUsed: 50,
+    value: 0.50,
+    autoTriggered: true
+  }
+];
+
 export default function UserRewards() {
   const {
     currentStore,

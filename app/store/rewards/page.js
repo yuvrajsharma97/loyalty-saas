@@ -9,6 +9,30 @@ import Banner from "@/components/ui/Banner";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { formatCurrency } from "@/lib/formatters";
 
+const MOCK_STORE_META = {
+  id: "1",
+  name: "Café Central",
+  slug: "cafe-central", 
+  location: "London, UK",
+  tier: "gold",
+  rewardConfig: {
+    type: "hybrid",
+    pointsPerPound: 1,
+    pointsPerVisit: 10,
+    conversionRate: 100
+  },
+  paused: false,
+  owner: {
+    id: "owner1",
+    name: "Emma Thompson",
+    email: "emma@cafecentral.com",
+    role: "StoreAdmin"
+  },
+  usersCount: 342,
+  createdAt: "2024-01-15",
+  lastActivity: "2024-03-15"
+};
+
 export default function StoreRewards() {
   const [rewardConfig, setRewardConfig] = useState(
     MOCK_STORE_META.rewardConfig

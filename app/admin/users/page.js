@@ -10,6 +10,37 @@ import Badge from "@/components/admin/Badge";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import Banner from "@/components/admin/Banner";
 
+// Mock data for development
+const MOCK_USERS = [
+  {
+    id: "1",
+    name: "John Doe",
+    email: "john@example.com",
+    role: "User",
+    storesCount: 2,
+    createdAt: "2024-01-15",
+    status: "active",
+  },
+  {
+    id: "2",
+    name: "Jane Smith",
+    email: "jane@example.com",
+    role: "StoreAdmin",
+    storesCount: 1,
+    createdAt: "2024-01-20",
+    status: "active",
+  },
+  {
+    id: "3",
+    name: "Admin User",
+    email: "admin@example.com",
+    role: "SuperAdmin",
+    storesCount: 0,
+    createdAt: "2024-01-10",
+    status: "active",
+  },
+];
+
 export default function AdminUsers() {
   const [users, setUsers] = useState(MOCK_USERS);
   const [searchQuery, setSearchQuery] = useState("");

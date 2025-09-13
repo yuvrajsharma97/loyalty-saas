@@ -10,6 +10,132 @@ import EmptyState from "@/components/ui/EmptyState";
 import { exportCsv } from "@/lib/exportCsv";
 import { formatDate, formatCurrency } from "@/lib/formatters";
 
+const MOCK_VISITS_HISTORY = [
+  {
+    id: "history-1",
+    userName: "John Smith",
+    date: "2024-03-13",
+    method: "qr", 
+    status: "approved",
+    pointsEarned: 12,
+    spendAmount: 12.50
+  },
+  {
+    id: "history-2",
+    userName: "Emma Thompson", 
+    date: "2024-03-13",
+    method: "manual",
+    status: "approved",
+    pointsEarned: 8,
+    spendAmount: 8.00
+  },
+  {
+    id: "history-3",
+    userName: "Michael Johnson",
+    date: "2024-03-12",
+    method: "qr",
+    status: "approved", 
+    pointsEarned: 18,
+    spendAmount: 18.75
+  },
+  {
+    id: "history-4",
+    userName: "Sarah Wilson",
+    date: "2024-03-12",
+    method: "manual",
+    status: "approved",
+    pointsEarned: 10,
+    spendAmount: 10.25
+  },
+  {
+    id: "history-5", 
+    userName: "James Davis",
+    date: "2024-03-11",
+    method: "qr",
+    status: "approved",
+    pointsEarned: 15,
+    spendAmount: 15.50
+  },
+  {
+    id: "history-6",
+    userName: "Lisa Brown",
+    date: "2024-03-11", 
+    method: "manual",
+    status: "approved",
+    pointsEarned: 7,
+    spendAmount: 7.25
+  },
+  {
+    id: "history-7",
+    userName: "Robert Taylor",
+    date: "2024-03-10",
+    method: "qr",
+    status: "approved",
+    pointsEarned: 22,
+    spendAmount: 22.00
+  },
+  {
+    id: "history-8",
+    userName: "Jennifer Wilson",
+    date: "2024-03-10",
+    method: "manual", 
+    status: "approved",
+    pointsEarned: 9,
+    spendAmount: 9.75
+  }
+];
+
+const MOCK_REDEMPTIONS = [
+  {
+    id: "redemption-1",
+    userName: "John Smith",
+    date: "2024-03-10",
+    pointsUsed: 100,
+    value: 1.00,
+    autoTriggered: true
+  },
+  {
+    id: "redemption-2", 
+    userName: "Emma Thompson",
+    date: "2024-03-08",
+    pointsUsed: 150,
+    value: 1.00,
+    autoTriggered: false
+  },
+  {
+    id: "redemption-3",
+    userName: "Michael Johnson",
+    date: "2024-03-05",
+    pointsUsed: 200,
+    value: 2.00,
+    autoTriggered: true
+  },
+  {
+    id: "redemption-4",
+    userName: "Sarah Wilson",
+    date: "2024-03-03",
+    pointsUsed: 80,
+    value: 1.00,
+    autoTriggered: true
+  },
+  {
+    id: "redemption-5",
+    userName: "James Davis", 
+    date: "2024-02-28",
+    pointsUsed: 300,
+    value: 2.00,
+    autoTriggered: false
+  },
+  {
+    id: "redemption-6",
+    userName: "Lisa Brown",
+    date: "2024-02-25",
+    pointsUsed: 100,
+    value: 1.00,
+    autoTriggered: true
+  }
+];
+
 export default function StoreReports() {
   const [dateRange, setDateRange] = useState("30");
   const [dataset, setDataset] = useState("visits");

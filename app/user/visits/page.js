@@ -13,6 +13,89 @@ import StoreSwitcher from "@/components/user/StoreSwitcher";
 import { exportCsv } from "@/lib/exportCsv";
 import { formatDate, formatCurrency } from "@/lib/formatters";
 
+const MOCK_VISITS = [
+  {
+    id: "visit-1",
+    storeId: "1",
+    storeName: "Café Central",
+    date: "2024-03-13",
+    method: "qr",
+    status: "approved",
+    points: 12,
+    spend: 12.50
+  },
+  {
+    id: "visit-2",
+    storeId: "2", 
+    storeName: "The Coffee Bean",
+    date: "2024-03-12",
+    method: "manual",
+    status: "approved",
+    points: 18,
+    spend: 12.00
+  },
+  {
+    id: "visit-3",
+    storeId: "1",
+    storeName: "Café Central", 
+    date: "2024-03-10",
+    method: "qr",
+    status: "pending",
+    points: 0,
+    spend: 8.75
+  },
+  {
+    id: "visit-4",
+    storeId: "3",
+    storeName: "Green Leaf Bistro",
+    date: "2024-03-08",
+    method: "qr",
+    status: "approved",
+    points: 15,
+    spend: 0
+  },
+  {
+    id: "visit-5",
+    storeId: "2",
+    storeName: "The Coffee Bean",
+    date: "2024-03-07",
+    method: "manual",
+    status: "approved", 
+    points: 22,
+    spend: 15.50
+  },
+  {
+    id: "visit-6",
+    storeId: "1",
+    storeName: "Café Central",
+    date: "2024-03-05",
+    method: "qr",
+    status: "approved",
+    points: 10,
+    spend: 10.25
+  },
+  {
+    id: "visit-7",
+    storeId: "3", 
+    storeName: "Green Leaf Bistro",
+    date: "2024-03-03",
+    method: "manual",
+    status: "approved",
+    points: 15,
+    spend: 0
+  },
+  {
+    id: "visit-8",
+    storeId: "1",
+    storeName: "Café Central",
+    date: "2024-03-01",
+    method: "qr",
+    status: "approved",
+    points: 7,
+    spend: 7.50
+  }
+];
+
 export default function UserVisits() {
   const { currentStore, setCurrentStore, connectedStores } = useUserStore();
   const [visits] = useState(MOCK_VISITS);

@@ -14,6 +14,120 @@ import RangeDatePicker from "@/components/store/RangeDatePicker";
 import { exportCsv } from "@/lib/exportCsv";
 import { formatDate, formatCurrency } from "@/lib/formatters";
 
+const MOCK_VISITS_PENDING = [
+  {
+    id: "pending-1",
+    userName: "Alice Johnson",
+    date: "2024-03-15",
+    method: "qr",
+    spendAmount: 8.50,
+    points: 9,
+    status: "pending"
+  },
+  {
+    id: "pending-2", 
+    userName: "Bob Wilson",
+    date: "2024-03-15",
+    method: "manual",
+    spendAmount: 12.75,
+    points: 13,
+    status: "pending"
+  },
+  {
+    id: "pending-3",
+    userName: "Carol Davis",
+    date: "2024-03-14",
+    method: "qr",
+    spendAmount: 6.25,
+    points: 6,
+    status: "pending"
+  },
+  {
+    id: "pending-4",
+    userName: "David Brown",
+    date: "2024-03-14", 
+    method: "manual",
+    spendAmount: 15.00,
+    points: 15,
+    status: "pending"
+  }
+];
+
+const MOCK_VISITS_HISTORY = [
+  {
+    id: "history-1",
+    userName: "John Smith",
+    date: "2024-03-13",
+    method: "qr", 
+    status: "approved",
+    pointsEarned: 12,
+    spendAmount: 12.50
+  },
+  {
+    id: "history-2",
+    userName: "Emma Thompson", 
+    date: "2024-03-13",
+    method: "manual",
+    status: "approved",
+    pointsEarned: 8,
+    spendAmount: 8.00
+  },
+  {
+    id: "history-3",
+    userName: "Michael Johnson",
+    date: "2024-03-12",
+    method: "qr",
+    status: "approved", 
+    pointsEarned: 18,
+    spendAmount: 18.75
+  },
+  {
+    id: "history-4",
+    userName: "Sarah Wilson",
+    date: "2024-03-12",
+    method: "manual",
+    status: "approved",
+    pointsEarned: 10,
+    spendAmount: 10.25
+  },
+  {
+    id: "history-5", 
+    userName: "James Davis",
+    date: "2024-03-11",
+    method: "qr",
+    status: "approved",
+    pointsEarned: 15,
+    spendAmount: 15.50
+  },
+  {
+    id: "history-6",
+    userName: "Lisa Brown",
+    date: "2024-03-11", 
+    method: "manual",
+    status: "approved",
+    pointsEarned: 7,
+    spendAmount: 7.25
+  },
+  {
+    id: "history-7",
+    userName: "Robert Taylor",
+    date: "2024-03-10",
+    method: "qr",
+    status: "approved",
+    pointsEarned: 22,
+    spendAmount: 22.00
+  },
+  {
+    id: "history-8",
+    userName: "Jennifer Wilson",
+    date: "2024-03-10",
+    method: "manual", 
+    status: "approved",
+    pointsEarned: 9,
+    spendAmount: 9.75
+  }
+];
+
 export default function StoreVisits() {
   const [pendingVisits, setPendingVisits] = useState(MOCK_VISITS_PENDING);
   const [historyVisits, setHistoryVisits] = useState(MOCK_VISITS_HISTORY);

@@ -14,6 +14,105 @@ import Banner from "@/components/ui/Banner";
 import { exportCsv } from "@/lib/exportCsv";
 import { formatDate } from "@/lib/formatters";
 
+const MOCK_USERS = [
+  {
+    id: "1",
+    name: "John Smith",
+    email: "john.smith@example.com",
+    points: 245,
+    visits: 12,
+    lastVisit: "2024-03-13",
+    joinedAt: "2024-01-20",
+    status: "active",
+    hasRewards: true,
+    role: "User"
+  },
+  {
+    id: "2", 
+    name: "Alice Johnson",
+    email: "alice.johnson@example.com",
+    points: 156,
+    visits: 8,
+    lastVisit: "2024-03-12",
+    joinedAt: "2024-02-03",
+    status: "active", 
+    hasRewards: false,
+    role: "User"
+  },
+  {
+    id: "3",
+    name: "Bob Wilson",
+    email: "bob.wilson@example.com",
+    points: 89,
+    visits: 5,
+    lastVisit: "2024-03-08",
+    joinedAt: "2024-02-15",
+    status: "suspended",
+    hasRewards: true,
+    role: "User"
+  },
+  {
+    id: "4",
+    name: "Emma Thompson",
+    email: "emma.thompson@example.com", 
+    points: 387,
+    visits: 18,
+    lastVisit: "2024-03-14",
+    joinedAt: "2024-01-10",
+    status: "active",
+    hasRewards: true,
+    role: "User"
+  },
+  {
+    id: "5",
+    name: "Michael Johnson",
+    email: "michael.johnson@example.com",
+    points: 142,
+    visits: 7,
+    lastVisit: "2024-03-11",
+    joinedAt: "2024-02-20",
+    status: "active",
+    hasRewards: false,
+    role: "User"
+  },
+  {
+    id: "6",
+    name: "Sarah Wilson", 
+    email: "sarah.wilson@example.com",
+    points: 298,
+    visits: 15,
+    lastVisit: "2024-03-15",
+    joinedAt: "2024-01-25",
+    status: "active",
+    hasRewards: true,
+    role: "User"
+  },
+  {
+    id: "7",
+    name: "James Davis",
+    email: "james.davis@example.com",
+    points: 67,
+    visits: 4,
+    lastVisit: "2024-03-05",
+    joinedAt: "2024-02-28",
+    status: "active",
+    hasRewards: false,
+    role: "User"
+  },
+  {
+    id: "8",
+    name: "Lisa Brown",
+    email: "lisa.brown@example.com",
+    points: 445,
+    visits: 22,
+    lastVisit: "2024-03-14",
+    joinedAt: "2024-01-05",
+    status: "active",
+    hasRewards: true,
+    role: "User" 
+  }
+];
+
 export default function StoreUsers() {
   const [users, setUsers] = useState(MOCK_USERS);
   const [searchQuery, setSearchQuery] = useState("");

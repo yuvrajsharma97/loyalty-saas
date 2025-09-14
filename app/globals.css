@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    /* Brand Color System */
+    /* Brand Color System - Primary & Secondary Only */
     --color-primary: #014421;
     --color-primary-light: #1f7f47;
     --color-primary-dark: #0a3a1f;
@@ -12,28 +12,15 @@
     --color-secondary-light: #e6eedc;
     --color-secondary-dark: #b8c5a4;
 
-    /* Semantic Colors */
-    --color-success: #22c55e;
-    --color-warning: #eab308;
-    --color-error: #ef4444;
-    --color-info: #3b82f6;
+    /* Override Daisy UI CSS variables to use brand colors */
+    --p: 156 100% 12%; /* Primary - dark green */
+    --s: 86 15% 75%;   /* Secondary - light green */
 
-    /* Neutral System */
-    --color-neutral-50: #f8f9fa;
-    --color-neutral-100: #f1f3f4;
-    --color-neutral-200: #e8eaed;
-    --color-neutral-300: #dadce0;
-    --color-neutral-700: #5f6368;
-    --color-neutral-800: #3c4043;
-    --color-neutral-900: #202124;
-
-    /* Override Daisy UI CSS variables */
-    --p: 156 100% 12%; /* Primary - converted to HSL */
-    --s: 86 15% 75%;   /* Secondary - converted to HSL */
-    --su: 142 71% 45%; /* Success */
-    --wa: 45 93% 47%;  /* Warning */
-    --er: 0 84% 60%;   /* Error */
-    --in: 217 91% 60%; /* Info */
+    /* Keep semantic colors as defaults but don't use for buttons/text/shadows */
+    --su: 142 71% 45%; /* Success - keep for alerts */
+    --wa: 45 93% 47%;  /* Warning - keep for alerts */
+    --er: 0 84% 60%;   /* Error - keep for alerts */
+    --in: 217 91% 60%; /* Info - keep for alerts */
   }
 
   html {
@@ -41,17 +28,22 @@
   }
 
   body {
-    @apply bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100;
+    @apply bg-white dark:bg-gray-900 text-primary-800 dark:text-white;
     font-family: system-ui, -apple-system, sans-serif;
   }
 
-  /* Ensure consistent text colors */
+  /* Brand text colors only */
   .text-primary {
     color: var(--color-primary) !important;
   }
 
   .text-secondary {
     color: var(--color-secondary-dark) !important;
+  }
+
+  /* All headings use brand colors */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-primary-800;
   }
 }
 
@@ -69,51 +61,47 @@
     background: radial-gradient(ellipse at center, var(--color-secondary) 0%, var(--color-primary) 100%);
   }
 
-  /* Custom Button Styles */
+  /* Brand-Only Button Styles */
   .btn-brand {
-    @apply bg-primary-800 hover:bg-primary-700 text-white border-primary-800 hover:border-primary-700;
+    @apply bg-primary-800 hover:bg-primary-700 text-white border-primary-800 hover:border-primary-700 shadow-brand transition-all;
   }
 
   .btn-brand-outline {
-    @apply bg-transparent hover:bg-primary-800 text-primary-800 hover:text-white border-primary-800;
+    @apply bg-transparent hover:bg-primary-800 text-primary-800 hover:text-white border-primary-800 shadow-brand transition-all;
   }
 
   .btn-brand-ghost {
-    @apply bg-transparent hover:bg-primary-50 text-primary-800 border-transparent;
+    @apply bg-transparent hover:bg-primary-50 text-primary-800 border-transparent transition-all;
   }
 
-  /* Custom Card Styles */
+  .btn-brand-secondary {
+    @apply bg-secondary-300 hover:bg-secondary-400 text-primary-800 border-secondary-300 hover:border-secondary-400 shadow-secondary transition-all;
+  }
+
+  /* Brand-Only Card Styles */
   .card-brand {
-    @apply bg-white border border-secondary-200 shadow-brand;
+    @apply bg-white border border-secondary-200 shadow-brand text-primary-800;
   }
 
   .card-brand-dark {
-    @apply bg-neutral-800 border border-neutral-700 shadow-brand-lg;
+    @apply bg-primary-900 border border-primary-700 shadow-brand-lg text-white;
   }
 
-  /* Form Elements */
+  /* Brand-Only Form Elements */
   .input-brand {
-    @apply border-secondary-300 focus:border-primary-800 focus:ring-primary-800/20;
+    @apply border-secondary-300 focus:border-primary-800 focus:ring-primary-800/20 text-primary-800 placeholder-secondary-600;
   }
 
   .select-brand {
-    @apply border-secondary-300 focus:border-primary-800 focus:ring-primary-800/20;
+    @apply border-secondary-300 focus:border-primary-800 focus:ring-primary-800/20 text-primary-800;
   }
 
-  /* Alert Styles */
-  .alert-brand {
-    @apply bg-primary-50 border border-primary-200 text-primary-800 p-4 rounded-lg;
+  /* Text utilities using brand colors only */
+  .text-muted {
+    @apply text-secondary-700;
   }
 
-  .alert-brand-success {
-    @apply bg-success-50 border border-success-100 text-success-700 p-4 rounded-lg;
-  }
-
-  .alert-brand-warning {
-    @apply bg-warning-50 border border-warning-100 text-warning-700 p-4 rounded-lg;
-  }
-
-  .alert-brand-error {
-    @apply bg-error-50 border border-error-100 text-error-700 p-4 rounded-lg;
+  .text-subtle {
+    @apply text-secondary-600;
   }
 }

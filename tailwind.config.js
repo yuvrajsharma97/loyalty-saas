@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Brand Primary Colors
+        // Brand Primary Colors - Dark Green
         primary: {
           50: '#f0f9f4',
           100: '#dcf2e3',
@@ -21,7 +21,7 @@ module.exports = {
           800: '#014421', // Main brand color
           900: '#0a3a1f',
         },
-        // Brand Secondary Colors
+        // Brand Secondary Colors - Light Green
         secondary: {
           50: '#f8faf7',
           100: '#f2f6ef',
@@ -34,41 +34,6 @@ module.exports = {
           800: '#576340',
           900: '#475235',
         },
-        // Neutral colors for consistency
-        neutral: {
-          50: '#f8f9fa',
-          100: '#f1f3f4',
-          200: '#e8eaed',
-          300: '#dadce0',
-          400: '#bdc1c6',
-          500: '#9aa0a6',
-          600: '#80868b',
-          700: '#5f6368',
-          800: '#3c4043',
-          900: '#202124',
-        },
-        // Success, Warning, Error colors that match brand
-        success: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
-        },
-        warning: {
-          50: '#fefce8',
-          100: '#fef3c7',
-          500: '#eab308',
-          600: '#ca8a04',
-          700: '#a16207',
-        },
-        error: {
-          50: '#fef2f2',
-          100: '#fee2e2',
-          500: '#ef4444',
-          600: '#dc2626',
-          700: '#b91c1c',
-        }
       },
       // Custom gradients
       backgroundImage: {
@@ -76,11 +41,13 @@ module.exports = {
         'brand-gradient-dark': 'linear-gradient(135deg, #1f2937 0%, #014421 100%)',
         'brand-radial': 'radial-gradient(ellipse at center, #D0D8C3 0%, #014421 100%)',
       },
-      // Custom box shadows
+      // Brand-only box shadows
       boxShadow: {
         'brand': '0 4px 14px 0 rgba(1, 68, 33, 0.1)',
         'brand-lg': '0 10px 25px 0 rgba(1, 68, 33, 0.15)',
+        'brand-xl': '0 20px 40px 0 rgba(1, 68, 33, 0.08)',
         'secondary': '0 4px 14px 0 rgba(208, 216, 195, 0.2)',
+        'secondary-lg': '0 10px 25px 0 rgba(208, 216, 195, 0.25)',
       }
     },
   },

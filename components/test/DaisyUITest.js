@@ -32,40 +32,43 @@ export default function DaisyUITest() {
           </div>
         </section>
 
-        {/* Button Variations */}
+        {/* Brand-Only Button System */}
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-primary-800 mb-4">Button System</h2>
+          <h2 className="text-2xl font-semibold mb-4">Brand Button System</h2>
+          <p className="text-muted mb-6">All buttons use only brand colors (primary and secondary)</p>
           <div className="space-y-4">
             <div className="flex flex-wrap gap-3">
-              <button className="btn btn-primary">Primary Button</button>
+              <button className="btn btn-primary">Daisy Primary</button>
               <button className="btn-brand">Brand Button</button>
               <button className="btn-brand-outline">Brand Outline</button>
               <button className="btn-brand-ghost">Brand Ghost</button>
+              <button className="btn-brand-secondary">Brand Secondary</button>
             </div>
             <div className="flex flex-wrap gap-3">
-              <button className="btn btn-secondary">Secondary</button>
-              <button className="btn btn-success">Success</button>
-              <button className="btn btn-warning">Warning</button>
-              <button className="btn btn-error">Error</button>
+              <button className="btn btn-secondary">Daisy Secondary</button>
+              <button className="btn btn-sm btn-primary">Small Primary</button>
+              <button className="btn btn-lg btn-primary">Large Primary</button>
             </div>
           </div>
         </section>
 
-        {/* Card System */}
+        {/* Brand Card System */}
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-primary-800 mb-4">Card System</h2>
+          <h2 className="text-2xl font-semibold mb-4">Brand Card System</h2>
+          <p className="text-muted mb-6">Cards with brand shadows and text colors</p>
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="card-brand card-body">
-              <h3 className="card-title text-primary-800">Brand Card</h3>
-              <p className="text-neutral-600">This card uses the custom brand styling with consistent colors and shadows.</p>
-              <div className="card-actions justify-end">
-                <button className="btn-brand">Action</button>
+            <div className="card-brand p-6 rounded-lg">
+              <h3 className="text-xl font-semibold mb-3">Brand Card</h3>
+              <p className="text-muted mb-4">This card uses brand shadows and text colors only.</p>
+              <div className="flex gap-2">
+                <button className="btn-brand">Primary Action</button>
+                <button className="btn-brand-outline">Secondary</button>
               </div>
             </div>
             <div className="card bg-white shadow-brand-lg rounded-lg">
               <div className="card-body">
-                <h3 className="card-title text-primary-800">Daisy UI Card</h3>
-                <p className="text-neutral-600">Standard Daisy UI card with brand color overrides applied.</p>
+                <h3 className="card-title">Daisy UI Card</h3>
+                <p className="text-subtle">Standard Daisy UI card with brand shadows.</p>
                 <div className="card-actions justify-end">
                   <button className="btn btn-primary">Action</button>
                 </div>
@@ -93,42 +96,44 @@ export default function DaisyUITest() {
           </div>
         </section>
 
-        {/* Alert System */}
+        {/* Alert System - Semantic Colors Preserved */}
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-primary-800 mb-4">Alert System</h2>
+          <h2 className="text-2xl font-semibold mb-4">Alert System</h2>
+          <p className="text-muted mb-6">Alerts use semantic colors (not restricted to brand colors for clarity)</p>
           <div className="space-y-3">
-            <div className="alert-brand alert">
-              <span>Brand alert with consistent styling</span>
+            <div className="alert alert-info">
+              <span>Info alert - Standard semantic blue color for information</span>
             </div>
-            <div className="alert-brand-success alert">
-              <span>Success alert - Action completed successfully</span>
+            <div className="alert alert-success">
+              <span>Success alert - Green for positive actions</span>
             </div>
-            <div className="alert-brand-warning alert">
-              <span>Warning alert - Please check your input</span>
+            <div className="alert alert-warning">
+              <span>Warning alert - Orange for caution</span>
             </div>
-            <div className="alert-brand-error alert">
-              <span>Error alert - Something went wrong</span>
+            <div className="alert alert-error">
+              <span>Error alert - Red for errors and critical issues</span>
             </div>
           </div>
         </section>
 
-        {/* Form Elements */}
+        {/* Brand Form Elements */}
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-primary-800 mb-4">Form Elements</h2>
+          <h2 className="text-2xl font-semibold mb-4">Brand Form Elements</h2>
+          <p className="text-muted mb-6">Forms with brand color focus states and text</p>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <input type="text" placeholder="Standard input" className="input input-bordered w-full" />
-              <input type="text" placeholder="Brand input" className="input input-brand w-full" />
+              <input type="text" placeholder="Brand input with focus colors" className="input input-brand w-full" />
               <select className="select select-bordered w-full">
                 <option>Standard select</option>
               </select>
               <select className="select select-brand w-full">
-                <option>Brand select</option>
+                <option>Brand select with focus</option>
               </select>
             </div>
             <div className="space-y-4">
               <textarea className="textarea textarea-bordered w-full" placeholder="Standard textarea"></textarea>
-              <textarea className="textarea input-brand w-full" placeholder="Brand textarea"></textarea>
+              <textarea className="textarea input-brand w-full" placeholder="Brand textarea with focus"></textarea>
             </div>
           </div>
         </section>

@@ -16,6 +16,8 @@ module.exports = {
   plugins: [require("daisyui")],
   daisyui: {
     themes: [
+      "light",
+      "dark",
       {
         loyaltyos: {
           primary: "#014421",
@@ -31,9 +33,10 @@ module.exports = {
           error: "#F87272",
         },
       },
-      "light",
-      "dark",
     ],
     darkTheme: "dark",
+    base: true,
+    styled: true,
+    utils: true,
   },
 };

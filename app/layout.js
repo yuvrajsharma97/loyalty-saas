@@ -15,7 +15,7 @@ export default async function RootLayout({ children }) {
   const session = await getServerSession(authOptions);
 
   return (
-    <html lang="en" data-theme="loyaltyos">
+    <html lang="en" data-theme="light" className="loyaltyos-theme">
       <head>
         <link
           href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css"
@@ -23,7 +23,7 @@ export default async function RootLayout({ children }) {
           type="text/css"
         />
       </head>
-      <body className="antialiased">
+      <body className="antialiased bg-neutral-50 text-neutral-900">
         <SessionProvider session={session}>
           {children}
         </SessionProvider>

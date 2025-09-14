@@ -8,9 +8,80 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#014421",
-        secondary: "#D0D8C3",
+        // Brand Primary Colors
+        primary: {
+          50: '#f0f9f4',
+          100: '#dcf2e3',
+          200: '#bce4cb',
+          300: '#8bd1a7',
+          400: '#54b67d',
+          500: '#2d9f5c',
+          600: '#1f7f47',
+          700: '#196038',
+          800: '#014421', // Main brand color
+          900: '#0a3a1f',
+        },
+        // Brand Secondary Colors
+        secondary: {
+          50: '#f8faf7',
+          100: '#f2f6ef',
+          200: '#e6eedc',
+          300: '#D0D8C3', // Main secondary color
+          400: '#b8c5a4',
+          500: '#9eaf82',
+          600: '#849763',
+          700: '#6d7d4f',
+          800: '#576340',
+          900: '#475235',
+        },
+        // Neutral colors for consistency
+        neutral: {
+          50: '#f8f9fa',
+          100: '#f1f3f4',
+          200: '#e8eaed',
+          300: '#dadce0',
+          400: '#bdc1c6',
+          500: '#9aa0a6',
+          600: '#80868b',
+          700: '#5f6368',
+          800: '#3c4043',
+          900: '#202124',
+        },
+        // Success, Warning, Error colors that match brand
+        success: {
+          50: '#f0fdf4',
+          100: '#dcfce7',
+          500: '#22c55e',
+          600: '#16a34a',
+          700: '#15803d',
+        },
+        warning: {
+          50: '#fefce8',
+          100: '#fef3c7',
+          500: '#eab308',
+          600: '#ca8a04',
+          700: '#a16207',
+        },
+        error: {
+          50: '#fef2f2',
+          100: '#fee2e2',
+          500: '#ef4444',
+          600: '#dc2626',
+          700: '#b91c1c',
+        }
       },
+      // Custom gradients
+      backgroundImage: {
+        'brand-gradient': 'linear-gradient(135deg, #D0D8C3 0%, #ffffff 100%)',
+        'brand-gradient-dark': 'linear-gradient(135deg, #1f2937 0%, #014421 100%)',
+        'brand-radial': 'radial-gradient(ellipse at center, #D0D8C3 0%, #014421 100%)',
+      },
+      // Custom box shadows
+      boxShadow: {
+        'brand': '0 4px 14px 0 rgba(1, 68, 33, 0.1)',
+        'brand-lg': '0 10px 25px 0 rgba(1, 68, 33, 0.15)',
+        'secondary': '0 4px 14px 0 rgba(208, 216, 195, 0.2)',
+      }
     },
   },
   plugins: [],

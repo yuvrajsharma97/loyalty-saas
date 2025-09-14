@@ -4,6 +4,25 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
     "./app/**/*.{js,ts,jsx,tsx}",
     "./src/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/daisyui/dist/**/*.js",
+  ],
+  safelist: [
+    'btn',
+    'btn-primary',
+    'btn-secondary',
+    'btn-accent',
+    'btn-ghost',
+    'btn-outline',
+    'card',
+    'card-body',
+    'card-title',
+    'card-actions',
+    'modal',
+    'modal-box',
+    'modal-action',
+    'navbar',
+    'dropdown',
+    'menu'
   ],
   theme: {
     extend: {

@@ -16,6 +16,13 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en" data-theme="loyaltyos">
+      <head>
+        <link
+          href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css"
+          rel="stylesheet"
+          type="text/css"
+        />
+      </head>
       <body className="antialiased">
         <SessionProvider session={session}>
           {children}

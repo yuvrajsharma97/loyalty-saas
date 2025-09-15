@@ -1,55 +1,104 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
-        // Brand Primary Colors - Dark Green
-        primary: {
-          50: '#f0f9f4',
-          100: '#dcf2e3',
-          200: '#bce4cb',
-          300: '#8bd1a7',
-          400: '#54b67d',
-          500: '#2d9f5c',
-          600: '#1f7f47',
-          700: '#196038',
-          800: '#014421', // Main brand color
-          900: '#0a3a1f',
+        // Brand colors mapped to DaisyUI semantic colors
+        primary: "#014421", // Dark green
+        secondary: "#D0D8C3", // Light sage
+
+        // Enhanced text color palette
+        text: {
+          primary: "#014421",    // Main brand text
+          secondary: "#2D5A3D",  // Lighter brand text
+          muted: "#6B7280",      // Muted text
+          light: "#9CA3AF",      // Light text
+          inverse: "#FFFFFF",    // White text for dark backgrounds
         },
-        // Brand Secondary Colors - Light Green
-        secondary: {
-          50: '#f8faf7',
-          100: '#f2f6ef',
-          200: '#e6eedc',
-          300: '#D0D8C3', // Main secondary color
-          400: '#b8c5a4',
-          500: '#9eaf82',
-          600: '#849763',
-          700: '#6d7d4f',
-          800: '#576340',
-          900: '#475235',
+
+        // Glass effect colors
+        glass: {
+          primary: "rgba(1, 68, 33, 0.15)",
+          secondary: "rgba(208, 216, 195, 0.25)",
+          white: "rgba(255, 255, 255, 0.25)",
+          dark: "rgba(0, 0, 0, 0.15)",
         },
       },
-      // Custom gradients
-      backgroundImage: {
-        'brand-gradient': 'linear-gradient(135deg, #D0D8C3 0%, #ffffff 100%)',
-        'brand-gradient-dark': 'linear-gradient(135deg, #1f2937 0%, #014421 100%)',
-        'brand-radial': 'radial-gradient(ellipse at center, #D0D8C3 0%, #014421 100%)',
+      backdropBlur: {
+        xs: "2px",
       },
-      // Brand-only box shadows
-      boxShadow: {
-        'brand': '0 4px 14px 0 rgba(1, 68, 33, 0.1)',
-        'brand-lg': '0 10px 25px 0 rgba(1, 68, 33, 0.15)',
-        'brand-xl': '0 20px 40px 0 rgba(1, 68, 33, 0.08)',
-        'secondary': '0 4px 14px 0 rgba(208, 216, 195, 0.2)',
-        'secondary-lg': '0 10px 25px 0 rgba(208, 216, 195, 0.25)',
-      }
+      animation: {
+        "fade-in": "fadeIn 0.3s ease-in-out",
+        "slide-up": "slideUp 0.3s ease-out",
+      },
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        slideUp: {
+          "0%": { transform: "translateY(10px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+      },
     },
   },
-  plugins: [],
+  plugins: [require("daisyui")],
+  daisyui: {
+    themes: [
+      {
+        loyalty: {
+          // Primary colors (dark green)
+          primary: "#014421",
+          "primary-focus": "#012f18",
+          "primary-content": "#ffffff",
+
+          // Secondary colors (light sage)
+          secondary: "#D0D8C3",
+          "secondary-focus": "#c4ceb5",
+          "secondary-content": "#014421",
+
+          // Neutral colors for text and backgrounds
+          neutral: "#2a2e37",
+          "neutral-focus": "#16181d",
+          "neutral-content": "#ffffff",
+
+          // Base colors for backgrounds
+          "base-100": "#ffffff",
+          "base-200": "#f9fafb",
+          "base-300": "#f3f4f6",
+          "base-content": "#1f2937",
+
+          // State colors
+          info: "#3abff8",
+          success: "#36d399",
+          warning: "#fbbd23",
+          error: "#f87272",
+
+          // Glass effect variables
+          "--rounded-box": "1rem",
+          "--rounded-btn": "0.5rem",
+          "--rounded-badge": "1.9rem",
+          "--animation-btn": "0.25s",
+          "--animation-input": "0.2s",
+          "--btn-text-case": "uppercase",
+          "--btn-focus-scale": "0.95",
+          "--border-btn": "1px",
+          "--tab-border": "1px",
+          "--tab-radius": "0.5rem",
+        },
+      },
+    ],
+    base: true,
+    styled: true,
+    utils: true,
+    prefix: "",
+    logs: true,
+    themeRoot: ":root",
+  },
 };

@@ -12,14 +12,24 @@ export default function Modal({
   className = "",
   ...props
 }) {
-  // Size mapping for DaisyUI modal
-  const sizeMap = {
-    xs: "modal-box-xs",
-    sm: "modal-box-sm",
-    md: "", // default
-    lg: "modal-box-lg",
-    xl: "modal-box-xl",
-    full: "modal-box-full",
+  // Custom size styling
+  const getSizeClasses = (size) => {
+    switch(size) {
+      case "xs":
+        return "max-w-xs";
+      case "sm":
+        return "max-w-sm";
+      case "md":
+        return "max-w-md";
+      case "lg":
+        return "max-w-lg";
+      case "xl":
+        return "max-w-xl";
+      case "full":
+        return "max-w-full h-full";
+      default:
+        return "max-w-md";
+    }
   };
 
   useEffect(() => {
@@ -36,39 +46,38 @@ export default function Modal({
   if (!isOpen) return null;
 
   return (
-    <div className="modal modal-open">
-      <div className={`modal-box border border-[#D0D8C3]/30 shadow-2xl ${sizeMap[size]} ${className}`} {...props}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-[#014421]/20 backdrop-blur-sm transition-opacity duration-300"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className={`relative bg-white/95 backdrop-blur-lg rounded-xl shadow-2xl border border-white/30 w-full mx-4 ${getSizeClasses(size)} ${className}`} {...props}>
         {/* Header */}
         {(title || onClose) && (
-          <div className="flex items-center justify-between mb-4 pb-4 border-b border-[#D0D8C3]/20">
+          <div className="flex items-center justify-between p-6 pb-4 border-b border-[#D0D8C3]/20">
             {title && <h3 className="font-bold text-lg text-[#014421]">{title}</h3>}
             {onClose && (
-              <Button
-                variant="ghost"
-                size="sm"
-                square
+              <button
                 onClick={onClose}
-                className="btn-sm btn-circle absolute right-2 top-2 hover:bg-[#D0D8C3]/20 text-[#014421]">
+                className="inline-flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-200 text-[#014421] hover:bg-[#D0D8C3]/20 focus:outline-none focus:ring-2 focus:ring-[#014421]/20">
                 <X className="w-4 h-4" />
-              </Button>
+              </button>
             )}
           </div>
         )}
 
         {/* Content */}
-        <div className="py-4 text-gray-700">{children}</div>
+        <div className="p-6 text-gray-700">{children}</div>
 
         {/* Actions */}
         {actions && (
-          <div className="modal-action pt-4 border-t border-[#D0D8C3]/20">
+          <div className="flex justify-end gap-3 p-6 pt-4 border-t border-[#D0D8C3]/20">
             {actions}
           </div>
         )}
-      </div>
-
-      {/* Backdrop */}
-      <div className="modal-backdrop bg-[#014421]/20" onClick={onClose}>
-        <button>close</button>
       </div>
     </div>
   );

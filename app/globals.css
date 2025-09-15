@@ -4,23 +4,35 @@
 
 @layer base {
   :root {
-    /* Brand Color System - Primary & Secondary Only */
-    --color-primary: #014421;
-    --color-primary-light: #1f7f47;
-    --color-primary-dark: #0a3a1f;
-    --color-secondary: #D0D8C3;
-    --color-secondary-light: #e6eedc;
-    --color-secondary-dark: #b8c5a4;
+    /* Button Component Color Scheme - Only 2 Colors */
+    --brand-primary: #014421;     /* Dark green from button component */
+    --brand-secondary: #D0D8C3;   /* Light green from button component */
 
-    /* Override Daisy UI CSS variables to use brand colors */
-    --p: 156 100% 12%; /* Primary - dark green */
-    --s: 86 15% 75%;   /* Secondary - light green */
+    /* Override ALL Daisy UI CSS variables to match button component */
+    --p: 156 100% 12%;    /* Primary = #014421 */
+    --s: 86 15% 75%;      /* Secondary = #D0D8C3 */
+    --a: 156 100% 12%;    /* Accent = #014421 (forced to primary) */
+    --n: 156 100% 12%;    /* Neutral = #014421 (forced to primary) */
+    --b1: 86 15% 95%;     /* Base-100 = very light #D0D8C3 */
+    --b2: 86 15% 90%;     /* Base-200 = light #D0D8C3 */
+    --b3: 86 15% 85%;     /* Base-300 = medium #D0D8C3 */
+    --bc: 156 100% 12%;   /* Base content = #014421 */
 
-    /* Keep semantic colors as defaults but don't use for buttons/text/shadows */
-    --su: 142 71% 45%; /* Success - keep for alerts */
-    --wa: 45 93% 47%;  /* Warning - keep for alerts */
-    --er: 0 84% 60%;   /* Error - keep for alerts */
-    --in: 217 91% 60%; /* Info - keep for alerts */
+    /* Force ALL semantic colors to use button component colors */
+    --su: 156 100% 12%;   /* Success = #014421 (matches button) */
+    --wa: 156 100% 12%;   /* Warning = #014421 (matches button) */
+    --er: 156 100% 12%;   /* Error = #014421 (matches button) */
+    --in: 156 100% 12%;   /* Info = #014421 (matches button) */
+
+    /* Content colors match button component */
+    --pc: 0 0% 100%;      /* Primary content = white (matches button text) */
+    --sc: 156 100% 12%;   /* Secondary content = #014421 (matches button text) */
+    --ac: 0 0% 100%;      /* Accent content = white */
+    --nc: 0 0% 100%;      /* Neutral content = white */
+    --suc: 0 0% 100%;     /* Success content = white */
+    --wac: 0 0% 100%;     /* Warning content = white */
+    --erc: 0 0% 100%;     /* Error content = white */
+    --inc: 0 0% 100%;     /* Info content = white */
   }
 
   html {
@@ -28,80 +40,155 @@
   }
 
   body {
-    @apply bg-white dark:bg-gray-900 text-primary-800 dark:text-white;
+    background-color: var(--brand-secondary);
+    color: var(--brand-primary);
     font-family: system-ui, -apple-system, sans-serif;
   }
 
-  /* Brand text colors only */
-  .text-primary {
-    color: var(--color-primary) !important;
+  /* Force all text to use only brand colors */
+  * {
+    color: inherit;
+  }
+
+  /* All headings use brand primary */
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--brand-primary) !important;
+  }
+
+  /* Override any default colors */
+  .text-primary, .text-base-content {
+    color: var(--brand-primary) !important;
   }
 
   .text-secondary {
-    color: var(--color-secondary-dark) !important;
-  }
-
-  /* All headings use brand colors */
-  h1, h2, h3, h4, h5, h6 {
-    @apply text-primary-800;
+    color: var(--brand-primary) !important;
+    opacity: 0.7;
   }
 }
 
 @layer components {
-  /* Brand Gradients */
+  /* Button Component Style Gradients */
   .brand-gradient {
-    background: linear-gradient(135deg, var(--color-secondary) 0%, #ffffff 100%);
+    background: linear-gradient(135deg, #D0D8C3 0%, #014421 100%);
   }
 
-  .brand-gradient-dark {
-    background: linear-gradient(135deg, #1f2937 0%, var(--color-primary) 100%);
+  .brand-gradient-reverse {
+    background: linear-gradient(135deg, #014421 0%, #D0D8C3 100%);
   }
 
-  .brand-gradient-radial {
-    background: radial-gradient(ellipse at center, var(--color-secondary) 0%, var(--color-primary) 100%);
+  /* Button Component Matching Styles */
+  .btn-brand-primary {
+    background-color: #014421 !important;
+    color: white !important;
+    border: 1px solid #014421 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s;
   }
 
-  /* Brand-Only Button Styles */
-  .btn-brand {
-    @apply bg-primary-800 hover:bg-primary-700 text-white border-primary-800 hover:border-primary-700 shadow-brand transition-all;
+  .btn-brand-primary:hover {
+    background-color: rgba(1, 68, 33, 0.9) !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
   }
 
-  .btn-brand-outline {
-    @apply bg-transparent hover:bg-primary-800 text-primary-800 hover:text-white border-primary-800 shadow-brand transition-all;
-  }
-
-  .btn-brand-ghost {
-    @apply bg-transparent hover:bg-primary-50 text-primary-800 border-transparent transition-all;
+  .btn-brand-primary:active {
+    transform: scale(0.95);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .btn-brand-secondary {
-    @apply bg-secondary-300 hover:bg-secondary-400 text-primary-800 border-secondary-300 hover:border-secondary-400 shadow-secondary transition-all;
+    background-color: #D0D8C3 !important;
+    color: #014421 !important;
+    border: 1px solid #D0D8C3 !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    transition: all 0.2s;
   }
 
-  /* Brand-Only Card Styles */
+  .btn-brand-secondary:hover {
+    background-color: rgba(208, 216, 195, 0.8) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+  }
+
+  .btn-brand-secondary:active {
+    transform: scale(0.95);
+  }
+
+  /* Button Component Outline Styles */
+  .btn-brand-outline {
+    background-color: transparent !important;
+    color: #014421 !important;
+    border: 1px solid #014421 !important;
+    transition: all 0.2s;
+  }
+
+  .btn-brand-outline:hover {
+    background-color: #014421 !important;
+    color: white !important;
+  }
+
+  /* Button Component Ghost Styles */
+  .btn-brand-ghost {
+    background-color: transparent !important;
+    color: #014421 !important;
+    border: 1px solid transparent !important;
+    transition: all 0.2s;
+  }
+
+  .btn-brand-ghost:hover {
+    background-color: rgba(1, 68, 33, 0.1) !important;
+  }
+
+  /* Card styles matching button component */
   .card-brand {
-    @apply bg-white border border-secondary-200 shadow-brand text-primary-800;
+    background-color: white !important;
+    border: 1px solid #D0D8C3 !important;
+    color: #014421 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
-  .card-brand-dark {
-    @apply bg-primary-900 border border-primary-700 shadow-brand-lg text-white;
-  }
-
-  /* Brand-Only Form Elements */
+  /* Form elements matching button component */
   .input-brand {
-    @apply border-secondary-300 focus:border-primary-800 focus:ring-primary-800/20 text-primary-800 placeholder-secondary-600;
+    background-color: white !important;
+    border: 1px solid #D0D8C3 !important;
+    color: #014421 !important;
+    transition: all 0.2s;
   }
 
-  .select-brand {
-    @apply border-secondary-300 focus:border-primary-800 focus:ring-primary-800/20 text-primary-800;
+  .input-brand:focus {
+    outline: none !important;
+    border-color: #014421 !important;
+    box-shadow: 0 0 0 2px rgba(1, 68, 33, 0.5) !important;
   }
 
-  /* Text utilities using brand colors only */
+  /* Text utilities matching button component */
   .text-muted {
-    @apply text-secondary-700;
+    color: #014421 !important;
+    opacity: 0.7;
   }
 
   .text-subtle {
-    @apply text-secondary-600;
+    color: #014421 !important;
+    opacity: 0.5;
+  }
+
+  /* Force all alerts to match button component colors */
+  .alert, .alert-info, .alert-success, .alert-warning, .alert-error {
+    background-color: #D0D8C3 !important;
+    color: #014421 !important;
+    border: 1px solid #014421 !important;
+  }
+
+  /* Override any remaining non-brand colors */
+  .bg-blue-500, .bg-green-500, .bg-yellow-500, .bg-red-500, .bg-cyan-500 {
+    background-color: #014421 !important;
+  }
+
+  .text-blue-600, .text-green-600, .text-yellow-600, .text-red-600, .text-cyan-600 {
+    color: #014421 !important;
+  }
+
+  .border-blue-500, .border-green-500, .border-yellow-500, .border-red-500, .border-cyan-500 {
+    border-color: #014421 !important;
   }
 }

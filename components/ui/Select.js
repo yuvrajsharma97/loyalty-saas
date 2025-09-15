@@ -15,66 +15,62 @@ const Select = forwardRef(
     },
     ref
   ) => {
-    // Base DaisyUI select class
-    const baseClasses = "select";
+    // Custom variant styling with our brand colors
+    const getVariantClasses = (variant) => {
+      const baseSelectStyles = "w-full px-3 py-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 border bg-white";
 
-    // Variant mapping
-    const variantMap = {
-      default: "select-bordered",
-      primary: "select-primary",
-      secondary: "select-secondary",
-      accent: "select-accent",
-      success: "select-success",
-      warning: "select-warning",
-      error: "select-error",
-      info: "select-info",
+      switch (variant) {
+        case "primary":
+          return `${baseSelectStyles} border-[#014421] text-[#014421] focus:border-[#014421] focus:ring-[#014421]/20`;
+        case "secondary":
+          return `${baseSelectStyles} border-[#D0D8C3] text-[#014421] focus:border-[#014421] focus:ring-[#014421]/20`;
+        case "success":
+          return `${baseSelectStyles} border-green-300 text-gray-900 focus:border-green-500 focus:ring-green-500/20`;
+        case "warning":
+          return `${baseSelectStyles} border-yellow-300 text-gray-900 focus:border-yellow-500 focus:ring-yellow-500/20`;
+        case "error":
+          return `${baseSelectStyles} border-red-300 text-gray-900 focus:border-red-500 focus:ring-red-500/20`;
+        case "info":
+          return `${baseSelectStyles} border-blue-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500/20`;
+        default:
+          return `${baseSelectStyles} border-gray-300 text-[#014421] focus:border-[#014421] focus:ring-[#014421]/20`;
+      }
     };
 
-    // Size mapping
-    const sizeMap = {
-      xs: "select-xs",
-      sm: "select-sm",
-      md: "", // default
-      lg: "select-lg",
-      xl: "select-lg",
+    // Custom size styling
+    const getSizeClasses = (size) => {
+      switch (size) {
+        case "xs":
+          return "px-2 py-1 text-xs";
+        case "sm":
+          return "px-2.5 py-1.5 text-sm";
+        case "md":
+          return "px-3 py-2 text-sm";
+        case "lg":
+          return "px-4 py-3 text-base";
+        case "xl":
+          return "px-5 py-4 text-lg";
+        default:
+          return "px-3 py-2 text-sm";
+      }
     };
 
-    const daisyClasses = [
-      baseClasses,
-      !ghost && (bordered ? "select-bordered" : ""),
-      ghost && "select-ghost",
-      variantMap[variant],
-      sizeMap[size],
-      error && "select-error",
-      success && "select-success",
-    ].filter(Boolean);
-
-    // Custom theme styling with glassmorphism
+    // Build custom classes
     const customClasses = [
-      "glass bg-gradient-to-br from-primary/5 via-secondary/5 to-base-100/40 backdrop-blur-sm",
-      "focus:outline-none focus:ring-2 focus:ring-secondary/50 focus:border-primary",
-      "transition-all duration-300 shadow-md text-white",
-      variant === "primary" && "border-primary/30",
-      variant === "secondary" && "border-secondary/30",
-      variant === "error" &&
-        "border-error focus:ring-error/50 focus:border-error",
-      !error && !success && "border-secondary/30",
+      getVariantClasses(variant),
+      getSizeClasses(size),
+      !bordered && "border-0",
+      ghost && "bg-transparent border-transparent focus:bg-white",
+      error && "border-red-500 focus:border-red-500 focus:ring-red-500/20",
+      success && "border-green-500 focus:border-green-500 focus:ring-green-500/20",
     ].filter(Boolean);
 
-    const allClasses = [...daisyClasses, ...customClasses, className].join(" ");
+    const allClasses = [...customClasses, className].join(" ");
 
     return (
-      <div className="relative">
-        <select ref={ref} className={allClasses} {...props}>
-          {children}
-        </select>
-        <style jsx>{`
-          select {
-            color-scheme: dark;
-            background-color: #111827 !important;
-          }
-        `}</style>
-      </div>
+      <select ref={ref} className={allClasses} {...props}>
+        {children}
+      </select>
     );
   }
 );

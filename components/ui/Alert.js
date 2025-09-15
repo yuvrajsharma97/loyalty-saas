@@ -17,19 +17,21 @@ export default function Alert({
 
   if (!isVisible) return null;
 
-  // Map to custom theme alert classes
+  // Custom alert styling with glassmorphism and improved text colors
   const getAlertClasses = (variant) => {
+    const baseAlertStyles = "flex items-center gap-3 p-4 rounded-xl border backdrop-blur-sm transition-all duration-200";
+
     switch(variant) {
       case "info":
-        return "bg-[#D0D8C3]/20 border border-[#D0D8C3] text-[#014421]";
+        return `${baseAlertStyles} bg-glass-secondary border-[#D0D8C3]/50 text-text-primary shadow-lg`;
       case "success":
-        return "bg-green-50 border border-green-200 text-green-800";
+        return `${baseAlertStyles} bg-green-500/10 backdrop-blur-lg border-green-300/50 text-green-800 shadow-lg`;
       case "warning":
-        return "bg-yellow-50 border border-yellow-200 text-yellow-800";
+        return `${baseAlertStyles} bg-yellow-500/10 backdrop-blur-lg border-yellow-300/50 text-yellow-800 shadow-lg`;
       case "error":
-        return "bg-red-50 border border-red-200 text-red-800";
+        return `${baseAlertStyles} bg-red-500/10 backdrop-blur-lg border-red-300/50 text-red-800 shadow-lg`;
       default:
-        return "bg-[#D0D8C3]/20 border border-[#D0D8C3] text-[#014421]";
+        return `${baseAlertStyles} bg-glass-secondary border-[#D0D8C3]/50 text-text-primary shadow-lg`;
     }
   };
 
@@ -42,18 +44,46 @@ export default function Alert({
 
   const Icon = icons[variant];
 
-  const iconColorClass = variant === "info" ? "text-[#014421]" : 
-                        variant === "success" ? "text-green-600" :
-                        variant === "warning" ? "text-yellow-600" : "text-red-600";
+  const getIconColorClass = (variant) => {
+    switch(variant) {
+      case "info":
+        return "text-text-primary";
+      case "success":
+        return "text-green-600";
+      case "warning":
+        return "text-yellow-600";
+      case "error":
+        return "text-red-600";
+      default:
+        return "text-text-primary";
+    }
+  };
+
+  const getDismissButtonClasses = (variant) => {
+    const baseClasses = "inline-flex items-center justify-center p-1 rounded-full transition-colors duration-200 hover:bg-opacity-20";
+
+    switch(variant) {
+      case "info":
+        return `${baseClasses} text-[#014421] hover:bg-[#014421]`;
+      case "success":
+        return `${baseClasses} text-green-600 hover:bg-green-600`;
+      case "warning":
+        return `${baseClasses} text-yellow-600 hover:bg-yellow-600`;
+      case "error":
+        return `${baseClasses} text-red-600 hover:bg-red-600`;
+      default:
+        return `${baseClasses} text-[#014421] hover:bg-[#014421]`;
+    }
+  };
 
   return (
-    <div className={`alert flex items-center gap-3 p-4 rounded-lg ${getAlertClasses(variant)} ${className}`} role="alert">
-      <Icon className={`w-6 h-6 ${iconColorClass}`} />
+    <div className={`${getAlertClasses(variant)} ${className}`} role="alert">
+      <Icon className={`w-6 h-6 ${getIconColorClass(variant)}`} />
       <div className="flex-1">{children}</div>
       {dismissible && (
         <button
           onClick={handleDismiss}
-          className="btn btn-sm btn-ghost btn-circle hover:bg-[#014421]/10">
+          className={getDismissButtonClasses(variant)}>
           <X className="w-4 h-4" />
         </button>
       )}

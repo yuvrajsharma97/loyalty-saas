@@ -23,7 +23,7 @@ export default async function RootLayout({ children }) {
           type="text/css"
         />
       </head>
-      <body className="antialiased bg-neutral-50 text-neutral-900">
+      <body className="antialiased" style={{backgroundColor: '#D0D8C3', color: '#014421'}}>
         <SessionProvider session={session}>
           {children}
         </SessionProvider>

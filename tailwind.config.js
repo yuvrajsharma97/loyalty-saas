@@ -14,11 +14,11 @@ module.exports = {
 
         // Enhanced text color palette
         text: {
-          primary: "#014421",    // Main brand text
-          secondary: "#2D5A3D",  // Lighter brand text
-          muted: "#6B7280",      // Muted text
-          light: "#9CA3AF",      // Light text
-          inverse: "#FFFFFF",    // White text for dark backgrounds
+          primary: "#014421", // Main brand text
+          secondary: "#D0D8C3", // Lighter brand text
+          muted: "#6B7280", // Muted text
+          light: "#9CA3AF", // Light text
+          inverse: "#FFFFFF", // White text for dark backgrounds
         },
 
         // Glass effect colors

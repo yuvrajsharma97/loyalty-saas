@@ -223,24 +223,28 @@ export default function RegisterPage() {
           </div>
 
           {/* Terms Notice */}
-          <div className="text-xs text-primary/70 dark:text-gray-300">
+          <div className="text-xs">
             By creating an account, you agree to our{" "}
             <Link
               href="/legal/terms"
-              className="text-primary dark:text-secondary hover:underline font-medium transition-colors">
+              className="hover:underline hover:text-text-secondary font-medium">
               Terms of Service
             </Link>{" "}
             and{" "}
             <Link
               href="/legal/privacy"
-              className="text-primary dark:text-secondary hover:underline font-medium transition-colors">
+              className="hover:underline hover:text-text-secondary font-medium">
               Privacy Policy
             </Link>
             .
           </div>
 
           {/* Submit Button */}
-          <Button type="submit" loading={loading} fullWidth className="mb-4 w-full">
+          <Button
+            type="submit"
+            loading={loading}
+            fullWidth
+            className="mb-4 w-full">
             Create account
           </Button>
 
@@ -287,11 +291,11 @@ export default function RegisterPage() {
 
         {/* Login link */}
         <div className="text-center my-4">
-          <p className="text-sm text-primary/80 dark:text-gray-300">
+          <p className="text-sm dark:text-gray-300">
             Already have an account?{" "}
             <Link
               href="/auth/login"
-              className="text-primary dark:text-secondary font-semibold hover:underline transition-colors hover:text-primary/80 dark:hover:text-secondary/80">
+              className=" font-semibold hover:underline hover:text-text-secondary">
               Log in
             </Link>
           </p>

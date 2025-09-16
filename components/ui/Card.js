@@ -29,7 +29,7 @@ export default function Card({
   const daisyClasses = [
     baseClasses,
     compact && "card-compact",
-    hover && "hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 hover:scale-[1.02]",
+    hover && "hover:shadow-2xl hover:shadow-secondary/20 transition-all duration-300 hover:scale-[1.02]",
     sizeClasses[size],
   ].filter(Boolean);
 

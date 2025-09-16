@@ -4,33 +4,46 @@
 
 @layer base {
   :root {
-    /* Button Component Color Scheme - Only 2 Colors */
-    --brand-primary: #014421;     /* Dark green from button component */
-    --brand-secondary: #D0D8C3;   /* Light green from button component */
+    /* Brand colors from tailwind config */
+    --brand-primary: #014421;     /* Dark green */
+    --brand-secondary: #D0D8C3;   /* Light sage */
 
-    /* Override ALL Daisy UI CSS variables to match button component */
+    /* Text color palette from tailwind config */
+    --text-primary: #014421;      /* Main brand text */
+    --text-secondary: #D0D8C3;    /* Lighter brand text */
+    --text-muted: #6B7280;        /* Muted text */
+    --text-light: #9CA3AF;        /* Light text */
+    --text-inverse: #FFFFFF;      /* White text for dark backgrounds */
+
+    /* Glass effect colors from tailwind config */
+    --glass-primary: rgba(1, 68, 33, 0.15);
+    --glass-secondary: rgba(208, 216, 195, 0.25);
+    --glass-white: rgba(255, 255, 255, 0.25);
+    --glass-dark: rgba(0, 0, 0, 0.15);
+
+    /* DaisyUI color variables mapped to brand colors */
     --p: 156 100% 12%;    /* Primary = #014421 */
     --s: 86 15% 75%;      /* Secondary = #D0D8C3 */
-    --a: 156 100% 12%;    /* Accent = #014421 (forced to primary) */
-    --n: 156 100% 12%;    /* Neutral = #014421 (forced to primary) */
-    --b1: 86 15% 95%;     /* Base-100 = very light #D0D8C3 */
-    --b2: 86 15% 90%;     /* Base-200 = light #D0D8C3 */
-    --b3: 86 15% 85%;     /* Base-300 = medium #D0D8C3 */
+    --a: 156 100% 12%;    /* Accent = #014421 */
+    --n: 220 13% 69%;     /* Neutral = gray */
+    --b1: 0 0% 100%;      /* Base-100 = white */
+    --b2: 210 20% 98%;    /* Base-200 = light gray */
+    --b3: 220 14% 96%;    /* Base-300 = medium gray */
     --bc: 156 100% 12%;   /* Base content = #014421 */
 
-    /* Force ALL semantic colors to use button component colors */
-    --su: 156 100% 12%;   /* Success = #014421 (matches button) */
-    --wa: 156 100% 12%;   /* Warning = #014421 (matches button) */
-    --er: 156 100% 12%;   /* Error = #014421 (matches button) */
-    --in: 156 100% 12%;   /* Info = #014421 (matches button) */
+    /* Semantic colors */
+    --su: 142 76% 36%;    /* Success = green */
+    --wa: 43 96% 56%;     /* Warning = yellow */
+    --er: 0 84% 60%;      /* Error = red */
+    --in: 212 100% 48%;   /* Info = blue */
 
-    /* Content colors match button component */
-    --pc: 0 0% 100%;      /* Primary content = white (matches button text) */
-    --sc: 156 100% 12%;   /* Secondary content = #014421 (matches button text) */
+    /* Content colors */
+    --pc: 0 0% 100%;      /* Primary content = white */
+    --sc: 156 100% 12%;   /* Secondary content = #014421 */
     --ac: 0 0% 100%;      /* Accent content = white */
     --nc: 0 0% 100%;      /* Neutral content = white */
     --suc: 0 0% 100%;     /* Success content = white */
-    --wac: 0 0% 100%;     /* Warning content = white */
+    --wac: 0 0% 0%;       /* Warning content = black */
     --erc: 0 0% 100%;     /* Error content = white */
     --inc: 0 0% 100%;     /* Info content = white */
   }
@@ -41,154 +54,247 @@
 
   body {
     background-color: var(--brand-secondary);
-    color: var(--brand-primary);
+    color: var(--text-primary);
     font-family: system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
   }
 
-  /* Force all text to use only brand colors */
-  * {
-    color: inherit;
-  }
-
-  /* All headings use brand primary */
+  /* Typography using text color system */
   h1, h2, h3, h4, h5, h6 {
-    color: var(--brand-primary) !important;
+    color: var(--text-primary);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  p, li, a, span, div {
+    color: var(--text-light) ;
+    font-weight: 400;
+    line-height: 1.6;
   }
 
-  /* Override any default colors */
-  .text-primary, .text-base-content {
-    color: var(--brand-primary) !important;
+  /* Text utility classes matching tailwind config */
+  .text-text-primary {
+    color: var(--text-primary);
   }
 
-  .text-secondary {
-    color: var(--brand-primary) !important;
-    opacity: 0.7;
+  .text-text-secondary {
+    color: var(--text-secondary);
+  }
+
+  .text-text-muted {
+    color: var(--text-muted);
+  }
+
+  .text-text-light {
+    color: var(--text-light);
+  }
+
+  .text-text-inverse {
+    color: var(--text-inverse);
+  }
+
+  /* Glass effect utilities */
+  .bg-glass-primary {
+    background-color: var(--glass-primary);
+  }
+
+  .bg-glass-secondary {
+    background-color: var(--glass-secondary);
+  }
+
+  .bg-glass-white {
+    background-color: var(--glass-white);
+  }
+
+  .bg-glass-dark {
+    background-color: var(--glass-dark);
   }
 }
 
 @layer components {
-  /* Button Component Style Gradients */
+  /* Brand gradients using CSS variables */
   .brand-gradient {
-    background: linear-gradient(135deg, #D0D8C3 0%, #014421 100%);
+    background: linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-primary) 100%);
   }
 
   .brand-gradient-reverse {
-    background: linear-gradient(135deg, #014421 0%, #D0D8C3 100%);
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
   }
 
-  /* Button Component Matching Styles */
+  /* Glassmorphism gradients */
+  .glass-gradient-primary {
+    background: linear-gradient(135deg, var(--glass-primary) 0%, var(--glass-white) 100%);
+  }
+
+  .glass-gradient-secondary {
+    background: linear-gradient(135deg, var(--glass-secondary) 0%, var(--glass-white) 100%);
+  }
+
+  /* Enhanced button styles with new color system */
   .btn-brand-primary {
-    background-color: #014421 !important;
-    color: white !important;
-    border: 1px solid #014421 !important;
+    background-color: var(--brand-primary);
+    color: var(--text-inverse);
+    border: 1px solid var(--brand-primary);
+    font-weight: 500;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    transition: all 0.2s;
+    transition: all 0.2s ease-in-out;
   }
 
   .btn-brand-primary:hover {
-    background-color: rgba(1, 68, 33, 0.9) !important;
+    background-color: color-mix(in srgb, var(--brand-primary) 90%, black);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     transform: translateY(-1px);
   }
 
-  .btn-brand-primary:active {
-    transform: scale(0.95);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  }
-
   .btn-brand-secondary {
-    background-color: #D0D8C3 !important;
-    color: #014421 !important;
-    border: 1px solid #D0D8C3 !important;
+    background-color: var(--brand-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--brand-secondary);
+    font-weight: 500;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    transition: all 0.2s;
+    transition: all 0.2s ease-in-out;
   }
 
   .btn-brand-secondary:hover {
-    background-color: rgba(208, 216, 195, 0.8) !important;
+    background-color: color-mix(in srgb, var(--brand-secondary) 80%, white);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     transform: translateY(-1px);
   }
 
-  .btn-brand-secondary:active {
-    transform: scale(0.95);
-  }
-
-  /* Button Component Outline Styles */
   .btn-brand-outline {
-    background-color: transparent !important;
-    color: #014421 !important;
-    border: 1px solid #014421 !important;
-    transition: all 0.2s;
+    background-color: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--brand-primary);
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
   }
 
   .btn-brand-outline:hover {
-    background-color: #014421 !important;
-    color: white !important;
+    background-color: var(--brand-primary);
+    color: var(--text-inverse);
   }
 
-  /* Button Component Ghost Styles */
   .btn-brand-ghost {
-    background-color: transparent !important;
-    color: #014421 !important;
-    border: 1px solid transparent !important;
-    transition: all 0.2s;
+    background-color: transparent;
+    color: var(--text-primary);
+    border: 1px solid transparent;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
   }
 
   .btn-brand-ghost:hover {
-    background-color: rgba(1, 68, 33, 0.1) !important;
+    background-color: var(--glass-primary);
   }
 
-  /* Card styles matching button component */
+  /* Enhanced card styles with glassmorphism */
   .card-brand {
-    background-color: white !important;
-    border: 1px solid #D0D8C3 !important;
-    color: #014421 !important;
+    background-color: white;
+    border: 1px solid var(--brand-secondary);
+    color: var(--text-primary);
+    border-radius: 0.75rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease-in-out;
   }
 
-  /* Form elements matching button component */
+  .card-brand:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: translateY(-2px);
+  }
+
+  .card-glass {
+    background: var(--glass-white);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px 0 rgba(1, 68, 33, 0.1);
+  }
+
+  /* Enhanced form elements */
   .input-brand {
-    background-color: white !important;
-    border: 1px solid #D0D8C3 !important;
-    color: #014421 !important;
-    transition: all 0.2s;
+    background-color: white;
+    border: 1px solid var(--brand-secondary);
+    color: var(--text-primary);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease-in-out;
+    font-weight: 400;
   }
 
   .input-brand:focus {
-    outline: none !important;
-    border-color: #014421 !important;
-    box-shadow: 0 0 0 2px rgba(1, 68, 33, 0.5) !important;
+    outline: none;
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 3px var(--glass-primary);
   }
 
-  /* Text utilities matching button component */
-  .text-muted {
-    color: #014421 !important;
-    opacity: 0.7;
+  .input-brand::placeholder {
+    color: var(--text-muted);
   }
 
-  .text-subtle {
-    color: #014421 !important;
-    opacity: 0.5;
+  /* Enhanced alert styles */
+  .alert-brand-info {
+    background-color: var(--glass-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--brand-secondary);
+    border-radius: 0.75rem;
+    backdrop-filter: blur(8px);
   }
 
-  /* Force all alerts to match button component colors */
-  .alert, .alert-info, .alert-success, .alert-warning, .alert-error {
-    background-color: #D0D8C3 !important;
-    color: #014421 !important;
-    border: 1px solid #014421 !important;
+  .alert-brand-success {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: rgb(22, 163, 74);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 0.75rem;
+    backdrop-filter: blur(8px);
   }
 
-  /* Override any remaining non-brand colors */
-  .bg-blue-500, .bg-green-500, .bg-yellow-500, .bg-red-500, .bg-cyan-500 {
-    background-color: #014421 !important;
+  .alert-brand-warning {
+    background-color: rgba(234, 179, 8, 0.1);
+    color: rgb(202, 138, 4);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    border-radius: 0.75rem;
+    backdrop-filter: blur(8px);
   }
 
-  .text-blue-600, .text-green-600, .text-yellow-600, .text-red-600, .text-cyan-600 {
-    color: #014421 !important;
+  .alert-brand-error {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: rgb(220, 38, 38);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 0.75rem;
+    backdrop-filter: blur(8px);
   }
 
-  .border-blue-500, .border-green-500, .border-yellow-500, .border-red-500, .border-cyan-500 {
-    border-color: #014421 !important;
+  /* Utility classes for consistent spacing and typography */
+  .text-brand-muted {
+    color: var(--text-muted);
+  }
+
+  .text-brand-light {
+    color: var(--text-light);
+  }
+
+  .bg-brand-primary {
+    background-color: var(--brand-primary);
+  }
+
+  .bg-brand-secondary {
+    background-color: var(--brand-secondary);
+  }
+
+  .border-brand-primary {
+    border-color: var(--brand-primary);
+  }
+
+  .border-brand-secondary {
+    border-color: var(--brand-secondary);
+  }
+
+  /* Focus states for better accessibility */
+  .focus-brand:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--glass-primary);
+  }
+
+  /* Smooth transitions for interactive elements */
+  .transition-brand {
+    transition: all 0.2s ease-in-out;
   }
 }

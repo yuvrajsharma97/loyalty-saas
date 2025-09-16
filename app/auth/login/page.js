@@ -184,7 +184,7 @@ function LoginForm() {
           <div className="text-right">
             <Link
               href="/auth/forgot-password"
-              className="text-sm text-primary dark:text-secondary hover:underline font-medium transition-colors">
+              className="text-sm hover:underline hover:text-text-secondary font-medium underline">
               Forgot your password?
             </Link>
           </div>
@@ -241,11 +241,11 @@ function LoginForm() {
 
         {/* Sign up link */}
         <div className="text-center my-4">
-          <p className="text-sm text-primary/80 dark:text-gray-300">
+          <p className="text-sm ">
             Don't have an account?{" "}
             <Link
               href="/auth/register"
-              className="text-primary dark:text-secondary font-semibold hover:underline transition-colors hover:text-primary/80 dark:hover:text-secondary/80">
+              className="font-semibold underline hover:text-text-secondary">
               Create an account
             </Link>
           </p>

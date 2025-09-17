@@ -3,7 +3,7 @@ import { QrCode, Smartphone, CheckCircle } from "lucide-react";
 export default function QRScanHint({ className = "" }) {
   return (
     <div
-      className={`bg-[#D0D8C3]/10 dark:bg-[#014421]/10 rounded-xl p-6 border border-[#D0D8C3]/40 ${className}`}>
+      className={`bg-[#D0D8C3]/10 dark:bg-[#014421]/10 rounded-xl p-6 border border-[#D0D8C3] dark:border-[#014421]/40 ${className}`}>
       <div className="flex items-start gap-4">
         <div className="p-3 bg-[#014421] rounded-xl">
           <QrCode className="w-6 h-6 text-white" />

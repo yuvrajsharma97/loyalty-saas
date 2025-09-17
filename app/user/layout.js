@@ -92,7 +92,7 @@ export default function UserLayout({ children }) {
 
   return (
     <UserStoreContext.Provider value={contextValue}>
-      <div className="min-h-screen bg-gray-50 dark:bg-zinc-900">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="flex h-screen">
           {/* Sidebar */}
           <SidebarUser isOpen={sidebarOpen} onToggle={toggleSidebar} />

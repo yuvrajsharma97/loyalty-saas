@@ -3,7 +3,7 @@ import { Menu, Bell, User } from "lucide-react";
 
 export default function TopbarUser({ title, onMenuToggle, children }) {
   return (
-    <header className="bg-white dark:bg-zinc-900 shadow-sm border-b border-gray-200 dark:border-zinc-700 h-16">
+    <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-[#D0D8C3] dark:border-gray-700 h-16">
       <div className="flex items-center justify-between h-full px-6">
         {/* Left side */}
         <div className="flex items-center">

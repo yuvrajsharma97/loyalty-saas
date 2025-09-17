@@ -11,7 +11,7 @@ export default function PointsSummary({
 
   return (
     <div
-      className={`bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md border border-[#D0D8C3]/40 ${className}`}>
+      className={`bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border border-[#D0D8C3] dark:border-gray-700 ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           Points Balance
@@ -38,7 +38,7 @@ export default function PointsSummary({
           </span>
         </div>
 
-        <div className="pt-2 border-t border-gray-200 dark:border-zinc-700">
+        <div className="pt-2 border-t border-[#D0D8C3] dark:border-gray-700">
           <p className="text-xs text-gray-500 dark:text-gray-400">
             {conversionRate} points = £1
           </p>

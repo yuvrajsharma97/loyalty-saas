@@ -14,13 +14,13 @@ export default function StatCard({
 
   return (
     <div
-      className={`glass bg-gradient-to-br from-primary/10 via-secondary/5 to-base-100/40 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20 dark:border-gray-700/30 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 ${className}`}>
+      className={`glass backdrop-blur-md rounded-xl p-6 shadow-xl border border-white/10 bg-gradient-to-br from-primary/15 via-secondary/10 to-primary/5 hover:shadow-2xl hover:shadow-secondary/20 transition-all duration-300 hover:scale-[1.02] ${className}`}>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-primary/80 dark:text-gray-300">
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
             {title}
           </p>
-          <p className="text-2xl font-bold text-primary dark:text-white mt-1 drop-shadow-sm">
+          <p className="text-2xl font-bold text-[#014421] dark:text-white mt-1 drop-shadow-sm">
             {value}
           </p>
           {change && (
@@ -28,8 +28,8 @@ export default function StatCard({
           )}
         </div>
         {Icon && (
-          <div className="p-3 bg-gradient-to-br from-secondary/30 via-secondary/20 to-primary/10 dark:from-primary/30 dark:to-primary/10 rounded-lg shadow-md">
-            <Icon className="w-6 h-6 text-primary dark:text-secondary drop-shadow-sm" />
+          <div className="w-12 h-12 bg-[#D0D8C3] dark:bg-[#014421] rounded-lg flex items-center justify-center shadow-md border border-[#014421]/20 dark:border-[#D0D8C3]/30">
+            <Icon className="w-6 h-6 text-[#014421] dark:text-[#D0D8C3] drop-shadow-sm" />
           </div>
         )}
       </div>

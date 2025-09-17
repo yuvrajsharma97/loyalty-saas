@@ -8,7 +8,7 @@ export default function RewardProgress({
 
   return (
     <div
-      className={`bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md border border-[#D0D8C3]/40 ${className}`}>
+      className={`bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border border-[#D0D8C3] dark:border-gray-700 ${className}`}>
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
           Progress to Next Reward
@@ -19,7 +19,7 @@ export default function RewardProgress({
       </div>
 
       <div className="space-y-3">
-        <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-3">
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
           <div
             className="bg-gradient-to-r from-[#014421] to-[#D0D8C3] h-3 rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}></div>

@@ -33,7 +33,7 @@ export default function Pagination({
               1
             </Button>
             {showPages[0] > 2 && (
-              <span className="px-2 text-gray-500">...</span>
+              <span className="px-2 text-[#6B7280]">...</span>
             )}
           </>
         )}
@@ -51,7 +51,7 @@ export default function Pagination({
         {showPages[showPages.length - 1] < totalPages && (
           <>
             {showPages[showPages.length - 1] < totalPages - 1 && (
-              <span className="px-2 text-gray-500">...</span>
+              <span className="px-2 text-[#6B7280]">...</span>
             )}
             <Button
               variant="ghost"
@@ -72,7 +72,7 @@ export default function Pagination({
         </Button>
       </div>
 
-      <p className="text-sm text-gray-600 dark:text-gray-400">
+      <p className="text-sm text-[#6B7280] dark:text-gray-400">
         Page {currentPage} of {totalPages}
       </p>
     </div>

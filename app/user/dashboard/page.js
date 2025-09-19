@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   MapPin,
   QrCode,
@@ -17,12 +17,16 @@ import StoreSwitcher from "@/components/user/StoreSwitcher";
 import PointsSummary from "@/components/user/PointsSummary";
 import RewardProgress from "@/components/user/RewardProgress";
 import QRScanHint from "@/components/user/QRScanHint";
+import VisitAnalyticsChart from "@/components/user/VisitAnalyticsChart";
 import { formatCurrency } from "@/lib/formatters";
 import Link from "next/link";
 
 export default function UserDashboard() {
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    const MOCK_USER_PROFILE = {
+  const MOCK_USER_PROFILE = {
       id: "user-123",
       name: "John Smith",
       email: "john@example.com",
@@ -180,10 +184,52 @@ export default function UserDashboard() {
   const [showQRHint, setShowQRHint] = useState(false);
   const [successBanner, setSuccessBanner] = useState("");
 
+  // Fetch dashboard metrics
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const params = new URLSearchParams();
+      if (currentStore) {
+        params.append("storeId", currentStore);
+      }
+
+      const response = await fetch(`/api/user/dashboard/metrics?${params}`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch dashboard data");
+      }
+
+      const data = await response.json();
+      setDashboardData(data);
+    } catch (err) {
+      setError(err.message);
+      console.error("Dashboard fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [currentStore]);
+
   const currentStoreData = getCurrentStoreData();
 
   // Calculate metrics based on current store
   const getMetrics = () => {
+    // Use real data if available, otherwise fall back to mock data
+    if (dashboardData && !loading) {
+      return {
+        currentPoints: dashboardData.currentPoints,
+        redeemableValue: dashboardData.redeemableValue,
+        visitsMTD: dashboardData.visitsMTD,
+        visitsLifetime: dashboardData.visitsLifetime,
+      };
+    }
+
+    // Fallback to mock data for development
     if (currentStore && currentStoreData) {
       return {
         currentPoints: currentStoreData.points,
@@ -376,17 +422,8 @@ export default function UserDashboard() {
         </div>
       </div>
 
-      {/* Chart Placeholder */}
-      <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Visits Last 12 Months
-        </h3>
-        <div className="h-64 bg-[#D0D8C3]/10 dark:bg-[#014421]/10 rounded-lg flex items-center justify-center">
-          <p className="text-gray-500 dark:text-gray-400">
-            Chart placeholder - Visit trends across all your connected stores
-          </p>
-        </div>
-      </div>
+      {/* Visit Analytics Chart */}
+      <VisitAnalyticsChart storeId={currentStore} />
 
       {/* QR Scan Hint Modal/Panel */}
       {showQRHint && (

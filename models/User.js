@@ -1,5 +1,4 @@
-// /models/User.js
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const pointsByStoreSchema = new mongoose.Schema(
   {
@@ -11,6 +10,7 @@ const pointsByStoreSchema = new mongoose.Schema(
     points: {
       type: Number,
       default: 0,
+      min: 0,
     },
   },
   { _id: false }
@@ -50,10 +50,31 @@ const userSchema = new mongoose.Schema(
       },
     ],
     pointsByStore: [pointsByStoreSchema],
+    preferences: {
+      visitApprovedEmail: {
+        type: Boolean,
+        default: true,
+      },
+      rewardEmail: {
+        type: Boolean,
+        default: true,
+      },
+      promotionEmail: {
+        type: Boolean,
+        default: false,
+      },
+    },
+    lastLogin: {
+      type: Date,
+      default: Date.now,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = mongoose.models.User || mongoose.model("User", userSchema);
+// Add additional indexes for performance
+userSchema.index({ "pointsByStore.storeId": 1 });
+
+export default mongoose.models.User || mongoose.model("User", userSchema);

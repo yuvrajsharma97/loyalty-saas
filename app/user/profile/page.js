@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Save, Trash2, ExternalLink } from "lucide-react";
 import { useUserStore } from "../layout";
 import Button from "@/components/ui/Button";
@@ -27,8 +27,10 @@ const MOCK_USER_PROFILE = {
 
 export default function UserProfile() {
   const { connectedStores, setCurrentStore } = useUserStore();
-  const [userProfile, setUserProfile] = useState(MOCK_USER_PROFILE);
+  const [userProfile, setUserProfile] = useState(null);
   const [stores, setStores] = useState(connectedStores);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     type: "",
@@ -36,8 +38,73 @@ export default function UserProfile() {
   });
   const [successBanner, setSuccessBanner] = useState("");
 
-  const handleSavePreferences = () => {
-    setSuccessBanner("Notification preferences saved successfully.");
+  // Fetch user profile from API
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch('/api/user/profile');
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch profile');
+        }
+
+        const profileData = await response.json();
+        // Ensure preferences object exists with default values
+        const normalizedProfile = {
+          ...profileData,
+          preferences: {
+            visitApprovedEmail: true,
+            rewardEmail: true,
+            promotionEmail: false,
+            ...profileData.preferences
+          }
+        };
+        setUserProfile(normalizedProfile);
+      } catch (err) {
+        setError(err.message);
+        console.error('Profile fetch error:', err);
+        // Fallback to mock data on error
+        setUserProfile(MOCK_USER_PROFILE);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleSavePreferences = async () => {
+    if (!userProfile) return;
+
+    try {
+      const response = await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: userProfile.name,
+          preferences: userProfile.preferences || {
+            visitApprovedEmail: true,
+            rewardEmail: true,
+            promotionEmail: false,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save preferences');
+      }
+
+      const result = await response.json();
+      setSuccessBanner(result.message || "Notification preferences saved successfully.");
+    } catch (err) {
+      setSuccessBanner("Error saving preferences. Please try again.");
+      console.error('Save preferences error:', err);
+    }
   };
 
   const handleLeaveStore = () => {
@@ -62,17 +129,56 @@ export default function UserProfile() {
     setUserProfile((prev) => ({
       ...prev,
       preferences: {
-        ...prev.preferences,
+        visitApprovedEmail: true,
+        rewardEmail: true,
+        promotionEmail: false,
+        ...prev?.preferences,
         [key]: value,
       },
     }));
   };
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            Profile
+          </h1>
+        </div>
+        <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md">
+          <div className="animate-pulse space-y-4">
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userProfile) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            Profile
+          </h1>
+        </div>
+        <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md">
+          <p className="text-red-600 dark:text-red-400">
+            {error || "Failed to load profile"}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {successBanner && (
         <Banner
-          type="success"
+          type={successBanner.includes("Error") ? "error" : "success"}
           message={successBanner}
           onDismiss={() => setSuccessBanner("")}
         />
@@ -191,14 +297,14 @@ export default function UserProfile() {
           <PreferenceToggle
             label="Visit Approved Notifications"
             description="Get notified when your visit requests are approved"
-            checked={userProfile.preferences.visitApprovedEmail}
+            checked={userProfile?.preferences?.visitApprovedEmail || false}
             onChange={handlePreferenceChange("visitApprovedEmail")}
           />
 
           <PreferenceToggle
             label="Reward Earned Notifications"
             description="Get notified when you earn rewards or points"
-            checked={userProfile.preferences.rewardEmail}
+            checked={userProfile?.preferences?.rewardEmail || false}
             onChange={handlePreferenceChange("rewardEmail")}
           />
         </div>

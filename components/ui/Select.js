@@ -17,7 +17,8 @@ const Select = forwardRef(
   ) => {
     // Custom variant styling with our brand colors
     const getVariantClasses = (variant) => {
-      const baseSelectStyles = "w-full px-3 py-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 border bg-white";
+      const baseSelectStyles =
+        "select w-full";
 
       switch (variant) {
         case "primary":
@@ -41,17 +42,17 @@ const Select = forwardRef(
     const getSizeClasses = (size) => {
       switch (size) {
         case "xs":
-          return "px-2 py-1 text-xs";
+          return "select-xs";
         case "sm":
-          return "px-2.5 py-1.5 text-sm";
+          return "select-sm";
         case "md":
-          return "px-3 py-2 text-sm";
+          return "select-md";
         case "lg":
-          return "px-4 py-3 text-base";
+          return "select-lg";
         case "xl":
-          return "px-5 py-4 text-lg";
+          return "select-xl";
         default:
-          return "px-3 py-2 text-sm";
+          return "select-md";
       }
     };
 

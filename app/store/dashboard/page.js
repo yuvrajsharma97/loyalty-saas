@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Users,
   Clock,
@@ -19,11 +19,15 @@ import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import QRPreview from "@/components/store/QRPreview";
 import Badge from "@/components/ui/Badge";
+import StoreAnalyticsChart from "@/components/store/StoreAnalyticsChart";
 import { formatPoints } from "@/lib/formatters";
 
 export default function StoreDashboard() {
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    const MOCK_STORE_META = {
+  const MOCK_STORE_META = {
       id: "bloom-coffee",
       name: "Bloom Coffee Co.",
       slug: "bloom-coffee",
@@ -201,132 +205,269 @@ export default function StoreDashboard() {
 
 
 
-  const [storeMeta, setStoreMeta] = useState(MOCK_STORE_META);
-  const [users, setUsers] = useState(MOCK_USERS);
-  const [pendingVisits] = useState(MOCK_VISITS_PENDING);
+  const [storeMeta, setStoreMeta] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [pendingVisits, setPendingVisits] = useState([]);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [inviteForm, setInviteForm] = useState({ name: "", email: "" });
   const [successBanner, setSuccessBanner] = useState("");
 
-  const tierProgress = {
-    silver: { max: 100, current: storeMeta.userCount },
-    gold: { max: 500, current: storeMeta.userCount },
-    platinum: { max: 1000, current: storeMeta.userCount },
-  };
+  // Fetch dashboard data from API
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-  const currentTierProgress = tierProgress[storeMeta.tier];
-  const nextTier =
-    storeMeta.tier === "silver"
-      ? "gold"
-      : storeMeta.tier === "gold"
-      ? "platinum"
-      : null;
+      const [metricsResponse, visitsResponse] = await Promise.all([
+        fetch('/api/store/dashboard/metrics'),
+        fetch('/api/store/visits?status=pending&limit=10')
+      ]);
 
-  const handleInviteUser = () => {
-    if (inviteForm.name && inviteForm.email) {
-      const newUser = {
-        id: Date.now().toString(),
-        name: inviteForm.name,
-        email: inviteForm.email,
-        points: 0,
-        visits: 0,
-        lastVisit: null,
-        joinedAt: new Date().toISOString().split("T")[0],
-        status: "active",
-        hasRewards: false,
-      };
+      if (!metricsResponse.ok || !visitsResponse.ok) {
+        throw new Error('Failed to fetch dashboard data');
+      }
 
-      setUsers((prev) => [newUser, ...prev]);
-      setStoreMeta((prev) => ({ ...prev, userCount: prev.userCount + 1 }));
-      setInviteForm({ name: "", email: "" });
-      setShowInviteModal(false);
-      setSuccessBanner(
-        `User ${inviteForm.name} has been invited successfully.`
-      );
+      const metrics = await metricsResponse.json();
+      const visitsData = await visitsResponse.json();
+
+      setDashboardData(metrics);
+      setStoreMeta({
+        id: metrics.store.id,
+        name: metrics.store.name,
+        tier: metrics.store.tier,
+        userCount: metrics.users.total,
+        paused: !metrics.store.isActive,
+        rewardConfig: {
+          type: "hybrid", // Will be populated from store profile API
+          pointsPerPound: 2,
+          pointsPerVisit: 10,
+          conversionRate: 100,
+        },
+      });
+      setPendingVisits(visitsData.visits || []);
+    } catch (err) {
+      setError(err.message);
+      console.error('Dashboard fetch error:', err);
+      // Fallback to mock data
+      setStoreMeta(MOCK_STORE_META);
+      setPendingVisits(MOCK_VISITS_PENDING);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handlePauseProgram = () => {
-    setStoreMeta((prev) => ({ ...prev, paused: !prev.paused }));
-    setSuccessBanner(
-      `Loyalty program ${storeMeta.paused ? "resumed" : "paused"} successfully.`
-    );
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const getTierProgress = () => {
+    if (!storeMeta || !dashboardData) return null;
+
+    const tierLimits = { silver: 100, gold: 500, platinum: 1000 };
+    const nextTierLimit =
+      storeMeta.tier === "silver" ? 101 :
+      storeMeta.tier === "gold" ? 501 : null;
+
+    return {
+      current: storeMeta.userCount,
+      max: tierLimits[storeMeta.tier],
+      nextLimit: nextTierLimit,
+      nextTier: storeMeta.tier === "silver" ? "gold" :
+                storeMeta.tier === "gold" ? "platinum" : null
+    };
   };
+
+  const tierProgress = getTierProgress();
+  const currentTierProgress = tierProgress;
+  const nextTier = tierProgress?.nextTier;
+
+  const handleInviteUser = async () => {
+    if (!inviteForm.name || !inviteForm.email) return;
+
+    try {
+      const response = await fetch('/api/store/users/invite', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: inviteForm.name,
+          email: inviteForm.email,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to invite user');
+      }
+
+      const result = await response.json();
+
+      setInviteForm({ name: "", email: "" });
+      setShowInviteModal(false);
+      setSuccessBanner(result.message || `User ${inviteForm.name} has been invited successfully.`);
+
+      // Refresh dashboard data to update user count
+      fetchDashboardData();
+    } catch (err) {
+      console.error('Invite user error:', err);
+      setSuccessBanner(`Error: ${err.message}`);
+    }
+  };
+
+  const handlePauseProgram = async () => {
+    if (!storeMeta) return;
+
+    try {
+      const response = await fetch('/api/store/status', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          isActive: storeMeta.paused, // If currently paused, make it active
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update store status');
+      }
+
+      const result = await response.json();
+
+      setStoreMeta((prev) => ({ ...prev, paused: !result.store.isActive }));
+      setSuccessBanner(result.message ||
+        `Loyalty program ${storeMeta.paused ? "resumed" : "paused"} successfully.`
+      );
+    } catch (err) {
+      console.error('Update store status error:', err);
+      setSuccessBanner(`Error: ${err.message}`);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md">
+              <div className="animate-pulse space-y-3">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error && !storeMeta) {
+    return (
+      <div className="space-y-6">
+        <Banner
+          type="error"
+          title="Failed to load dashboard"
+          message={error}
+          dismissible={false}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       {successBanner && (
         <Banner
-          type="success"
+          type={successBanner.includes("Error") ? "error" : "success"}
           message={successBanner}
           onDismiss={() => setSuccessBanner("")}
         />
       )}
 
       {/* Tier Progress Banner */}
-      {nextTier && currentTierProgress.current < currentTierProgress.max && (
-        <Banner
-          type="info"
-          title={`You are on ${
-            storeMeta.tier.charAt(0).toUpperCase() + storeMeta.tier.slice(1)
-          }`}
-          message={`${currentTierProgress.current}/${
-            currentTierProgress.max
-          } users. Reach ${
-            nextTier.charAt(0).toUpperCase() + nextTier.slice(1)
-          } at ${nextTier === "gold" ? "101" : "501"}+ users.`}
-          dismissible={false}
-        />
-      )}
+      {nextTier &&
+        currentTierProgress &&
+        currentTierProgress.current < currentTierProgress.nextLimit && (
+          <Banner
+            type="info"
+            title={`You are on ${
+              storeMeta.tier.charAt(0).toUpperCase() + storeMeta.tier.slice(1)
+            }`}
+            message={`${currentTierProgress.current}/${
+              currentTierProgress.nextLimit
+            } users. Reach ${
+              nextTier.charAt(0).toUpperCase() + nextTier.slice(1)
+            } at ${currentTierProgress.nextLimit}+ users.`}
+            dismissible={false}
+          />
+        )}
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+      {/* Stats Grid - First Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         <StatCard
           title="Users"
-          value={storeMeta.userCount.toLocaleString()}
+          value={
+            dashboardData?.users?.total?.toLocaleString() ||
+            storeMeta?.userCount?.toLocaleString() ||
+            "0"
+          }
           icon={Users}
+          change={
+            dashboardData?.users?.recentJoins
+              ? `+${dashboardData.users.recentJoins} this week`
+              : ""
+          }
         />
         <StatCard
           title="Pending Approvals"
-          value={pendingVisits.length}
+          value={dashboardData?.visits?.pending || pendingVisits?.length || 0}
           icon={Clock}
-          trend={pendingVisits.length > 0 ? "up" : "neutral"}
+          trend={
+            (dashboardData?.visits?.pending || pendingVisits?.length || 0) > 0
+              ? "up"
+              : "neutral"
+          }
         />
         <StatCard
           title="Approved Visits"
-          value="47"
+          value={dashboardData?.visits?.monthlyApproved || 0}
           change="This month"
           icon={CheckCircle}
         />
+      </div>
+
+      {/* Stats Grid - Second Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         <StatCard
           title="Points Distributed"
-          value={formatPoints(12450)}
+          value={formatPoints(dashboardData?.points?.totalDistributed || 0)}
           change="All time"
           icon={Gift}
         />
         <StatCard
           title="Points Redeemed"
-          value={formatPoints(3210)}
+          value={formatPoints(dashboardData?.points?.totalRedeemed || 0)}
           change="All time"
           icon={TrendingUp}
         />
-        <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Tier Status
-              </p>
-              <div className="mt-2">
-                <Badge variant={storeMeta.tier}>
-                  {storeMeta.tier.charAt(0).toUpperCase() +
-                    storeMeta.tier.slice(1)}
-                </Badge>
-              </div>
-            </div>
-            <Award className="w-6 h-6 text-[#014421] dark:text-[#D0D8C3]" />
-          </div>
-        </div>
+        <StatCard
+          title="Tier Status"
+          value={
+            <Badge variant={storeMeta?.tier || "silver"}>
+              {(storeMeta?.tier || "silver").charAt(0).toUpperCase() +
+                (storeMeta?.tier || "silver").slice(1)}
+            </Badge>
+          }
+          icon={Award}
+          change={
+            currentTierProgress && nextTier
+              ? `${currentTierProgress.current}/${currentTierProgress.nextLimit} users`
+              : "Current tier"
+          }
+        />
       </div>
 
       {/* Quick Actions */}
@@ -362,17 +503,8 @@ export default function StoreDashboard() {
         </div>
       </div>
 
-      {/* Chart Placeholder */}
-      <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Visits Last 12 Months
-        </h3>
-        <div className="h-64 bg-[#D0D8C3]/10 dark:bg-[#014421]/10 rounded-lg flex items-center justify-center">
-          <p className="text-gray-500 dark:text-gray-400">
-            Chart placeholder - Visit trends over time
-          </p>
-        </div>
-      </div>
+      {/* Store Analytics Chart */}
+      <StoreAnalyticsChart />
 
       {/* Invite User Modal */}
       <Modal

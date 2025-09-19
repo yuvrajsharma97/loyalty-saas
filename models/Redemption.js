@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const redemptionSchema = new mongoose.Schema(
   {
@@ -39,5 +39,4 @@ const redemptionSchema = new mongoose.Schema(
 redemptionSchema.index({ userId: 1, createdAt: -1 });
 redemptionSchema.index({ storeId: 1, createdAt: -1 });
 
-module.exports =
-  mongoose.models.Redemption || mongoose.model("Redemption", redemptionSchema);
+export default mongoose.models.Redemption || mongoose.model("Redemption", redemptionSchema);

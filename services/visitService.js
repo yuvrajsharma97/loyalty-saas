@@ -1,12 +1,12 @@
-const User = require("../models/User");
-const Store = require("../models/Store");
-const Visit = require("../models/Visit");
-const Redemption = require("../models/Redemption");
-const {
+import User from "../models/User.js";
+import Store from "../models/Store.js";
+import Visit from "../models/Visit.js";
+import Redemption from "../models/Redemption.js";
+import {
   calculateVisitPoints,
   checkAutoRedemption,
-} = require("../lib/pointsCalculator");
-const mongoose = require("mongoose");
+} from "../lib/pointsCalculator.js";
+import mongoose from "mongoose";
 
 class VisitService {
   static async approveVisit(visitId, approverId) {
@@ -122,4 +122,4 @@ class VisitService {
   }
 }
 
-module.exports = VisitService;
+export default VisitService;

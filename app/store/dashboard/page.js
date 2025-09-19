@@ -475,7 +475,7 @@ export default function StoreDashboard() {
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Quick Actions
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
           <QuickAction
             icon={UserPlus}
             title="Invite User"
@@ -488,17 +488,6 @@ export default function StoreDashboard() {
             title="Generate Store QR"
             description="Display QR code for customer visits"
             onClick={() => setShowQRModal(true)}
-          />
-          <QuickAction
-            icon={Pause}
-            title={storeMeta.paused ? "Resume Program" : "Pause Program"}
-            description={
-              storeMeta.paused
-                ? "Activate loyalty program"
-                : "Temporarily disable loyalty program"
-            }
-            onClick={handlePauseProgram}
-            variant={storeMeta.paused ? "primary" : "warning"}
           />
         </div>
       </div>

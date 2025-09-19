@@ -1,6 +1,7 @@
 import "./globals.css";
 import { getServerSession } from "next-auth";
 import SessionProvider from "@/components/providers/SessionProvider";
+import { LoadingProvider } from "@/contexts/LoadingContext";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
 export const metadata = {
@@ -25,7 +26,9 @@ export default async function RootLayout({ children }) {
       </head>
       <body className="antialiased" style={{backgroundColor: '#D0D8C3', color: '#014421'}}>
         <SessionProvider session={session}>
-          {children}
+          <LoadingProvider>
+            {children}
+          </LoadingProvider>
         </SessionProvider>
       </body>
     </html>

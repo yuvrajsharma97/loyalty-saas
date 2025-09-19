@@ -23,13 +23,16 @@ export function LoadingProvider({ children }) {
 
   // Show loading on route changes and session changes
   useEffect(() => {
+    // Skip loader for login and register pages
+    if (pathname.includes('/login') || pathname.includes('/register') || pathname.includes('/auth')) {
+      return;
+    }
+
     setIsLoading(true);
 
     // Set specific loading messages based on route
     if (pathname.includes('/dashboard')) {
       setLoadingMessage("Loading dashboard...");
-    } else if (pathname.includes('/login') || pathname.includes('/register')) {
-      setLoadingMessage("Authenticating...");
     } else {
       setLoadingMessage("Loading...");
     }

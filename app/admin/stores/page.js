@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { Download, Plus, Eye, Settings, AlertTriangle } from "lucide-react";
 import DataTable from "@/components/admin/DataTable";
@@ -11,56 +11,10 @@ import Badge from "@/components/admin/Badge";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import Banner from "@/components/admin/Banner";
 
-const MOCK_STORES = [
-  {
-    id: "1",
-    name: "Bloom Coffee Co.",
-    ownerEmail: "sarah@bloomcoffee.com",
-    tier: "gold",
-    usersCount: 245,
-    createdAt: "2024-01-15",
-    status: "active",
-  },
-  {
-    id: "2",
-    name: "The Grooming Lounge",
-    ownerEmail: "marcus@groominglounge.com",
-    tier: "platinum",
-    usersCount: 156,
-    createdAt: "2024-02-03",
-    status: "active",
-  },
-  {
-    id: "3",
-    name: "Fresh Bakes Bakery",
-    ownerEmail: "emma@freshbakes.co.uk",
-    tier: "silver",
-    usersCount: 89,
-    createdAt: "2024-02-20",
-    status: "active",
-  },
-  {
-    id: "4",
-    name: "City Barbers",
-    ownerEmail: "james@citybarbers.com",
-    tier: "gold",
-    usersCount: 203,
-    createdAt: "2024-01-28",
-    status: "suspended",
-  },
-  {
-    id: "5",
-    name: "Green Leaf Café",
-    ownerEmail: "lisa@greenleaf.com",
-    tier: "silver",
-    usersCount: 67,
-    createdAt: "2024-03-01",
-    status: "active",
-  },
-];
-
 export default function AdminStores() {
-  const [stores, setStores] = useState(MOCK_STORES);
+  const [stores, setStores] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [tierFilter, setTierFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -76,79 +30,84 @@ export default function AdminStores() {
 
   const itemsPerPage = 10;
 
-  // Filter and sort data
-  const filteredStores = useMemo(() => {
-    let filtered = stores.filter((store) => {
-      const matchesSearch =
-        !searchQuery ||
-        store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        store.ownerEmail.toLowerCase().includes(searchQuery.toLowerCase());
+  useEffect(() => {
+    fetchStores();
+  }, [currentPage, tierFilter, statusFilter, searchQuery]);
 
-      const matchesTier = !tierFilter || store.tier === tierFilter;
-      const matchesStatus = !statusFilter || store.status === statusFilter;
-
-      return matchesSearch && matchesTier && matchesStatus;
-    });
-
-    if (sortBy) {
-      filtered.sort((a, b) => {
-        let aVal = a[sortBy];
-        let bVal = b[sortBy];
-
-        if (typeof aVal === "string") {
-          aVal = aVal.toLowerCase();
-          bVal = bVal.toLowerCase();
-        }
-
-        if (sortDirection === "asc") {
-          return aVal > bVal ? 1 : -1;
-        } else {
-          return aVal < bVal ? 1 : -1;
-        }
+  const fetchStores = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: itemsPerPage.toString(),
       });
+
+      if (tierFilter) params.append('tier', tierFilter);
+      if (statusFilter) params.append('status', statusFilter);
+      if (searchQuery) params.append('search', searchQuery);
+
+      const response = await fetch(`/api/admin/stores?${params}`);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch stores');
+      }
+
+      const data = await response.json();
+      setStores(data.data || []);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching stores:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return filtered;
-  }, [stores, searchQuery, tierFilter, statusFilter, sortBy, sortDirection]);
-
-  const totalPages = Math.ceil(filteredStores.length / itemsPerPage);
-  const paginatedStores = filteredStores.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // Use server-side pagination, so we don't need client-side filtering
+  const totalPages = Math.ceil(stores.length / itemsPerPage); // This should come from API response
+  const paginatedStores = stores; // Already paginated from server
 
   const handleSort = (column, direction) => {
     setSortBy(column);
     setSortDirection(direction);
   };
 
-  const handleConfirmAction = () => {
+  const handleConfirmAction = async () => {
     const { type, storeId } = confirmDialog;
+    const store = stores.find((s) => s._id === storeId);
 
-    if (type === "suspend") {
-      setStores((prev) =>
-        prev.map((store) =>
-          store.id === storeId
-            ? {
-                ...store,
-                status: store.status === "active" ? "suspended" : "active",
-              }
-            : store
-        )
-      );
-      setSuccessBanner(
-        `Store ${stores.find((s) => s.id === storeId)?.name} has been ${
-          stores.find((s) => s.id === storeId)?.status === "active"
-            ? "suspended"
-            : "activated"
-        }.`
-      );
-    } else if (type === "override") {
-      setSuccessBanner(
-        `Reward configuration overridden for ${
-          stores.find((s) => s.id === storeId)?.name
-        }.`
-      );
+    try {
+      if (type === "suspend") {
+        const newStatus = store?.isActive ? "suspended" : "active";
+
+        const response = await fetch(`/api/admin/stores/${storeId}/status`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            status: newStatus,
+            reason: `Admin action: ${newStatus} store`,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to update store status');
+        }
+
+        // Refresh stores data
+        await fetchStores();
+        setSuccessBanner(
+          `Store ${store?.name} has been ${newStatus}.`
+        );
+      } else if (type === "override") {
+        setSuccessBanner(
+          `Reward configuration overridden for ${store?.name}.`
+        );
+      }
+    } catch (err) {
+      console.error('Error performing store action:', err);
+      setError(err.message);
     }
 
     setConfirmDialog({ isOpen: false, type: "", storeId: "" });
@@ -156,9 +115,9 @@ export default function AdminStores() {
 
   const exportCSV = () => {
     const headers = ["Store,Owner,Tier,Users,Created,Status"];
-    const rows = filteredStores.map(
+    const rows = paginatedStores.map(
       (store) =>
-        `${store.name},${store.ownerEmail},${store.tier},${store.usersCount},${store.createdAt},${store.status}`
+        `${store.name},${store.ownerId?.email || "No owner"},${store.tier},${store.userCount || 0},${new Date(store.createdAt).toLocaleDateString()},${store.isActive ? "Active" : "Suspended"}`
     );
     const csvContent = [headers, ...rows].join("\n");
 
@@ -182,7 +141,7 @@ export default function AdminStores() {
             {name}
           </div>
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            {store.ownerEmail}
+            {store.ownerId?.email || "No owner"}
           </div>
         </div>
       ),
@@ -197,15 +156,25 @@ export default function AdminStores() {
         </Badge>
       ),
     },
-    { key: "usersCount", label: "Users", sortable: true },
-    { key: "createdAt", label: "Created", sortable: true },
     {
-      key: "status",
+      key: "userCount",
+      label: "Users",
+      sortable: true,
+      render: (userCount) => userCount || 0
+    },
+    {
+      key: "createdAt",
+      label: "Created",
+      sortable: true,
+      render: (createdAt) => new Date(createdAt).toLocaleDateString()
+    },
+    {
+      key: "isActive",
       label: "Status",
       sortable: true,
-      render: (status) => (
-        <Badge variant={status === "active" ? "success" : "danger"}>
-          {status.charAt(0).toUpperCase() + status.slice(1)}
+      render: (isActive) => (
+        <Badge variant={isActive ? "success" : "danger"}>
+          {isActive ? "Active" : "Suspended"}
         </Badge>
       ),
     },
@@ -214,7 +183,7 @@ export default function AdminStores() {
       label: "Actions",
       render: (_, store) => (
         <div className="flex items-center gap-2">
-          <Link href={`/admin/store/${store.id}`}>
+          <Link href={`/admin/store/${store._id}`}>
             <Button variant="ghost" size="sm">
               <Eye className="w-4 h-4" />
             </Button>
@@ -226,7 +195,7 @@ export default function AdminStores() {
               setConfirmDialog({
                 isOpen: true,
                 type: "override",
-                storeId: store.id,
+                storeId: store._id,
               })
             }>
             <Settings className="w-4 h-4" />
@@ -238,7 +207,7 @@ export default function AdminStores() {
               setConfirmDialog({
                 isOpen: true,
                 type: "suspend",
-                storeId: store.id,
+                storeId: store._id,
               })
             }>
             <AlertTriangle className="w-4 h-4" />
@@ -291,6 +260,14 @@ export default function AdminStores() {
         />
       )}
 
+      {error && (
+        <Banner
+          type="error"
+          message={error}
+          onDismiss={() => setError(null)}
+        />
+      )}
+
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
           Stores
@@ -303,21 +280,37 @@ export default function AdminStores() {
           actions={actions}
         />
 
-        <DataTable
-          columns={storeColumns}
-          data={paginatedStores}
-          sortBy={sortBy}
-          sortDirection={sortDirection}
-          onSort={handleSort}
-        />
+        {loading ? (
+          <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md animate-pulse">
+            <div className="space-y-3">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex space-x-4">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded flex-1"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/6"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <>
+            <DataTable
+              columns={storeColumns}
+              data={paginatedStores}
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
 
-        <div className="mt-6">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
+            <div className="mt-6">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </div>
+          </>
+        )}
       </div>
 
       {/* Confirm Dialog */}

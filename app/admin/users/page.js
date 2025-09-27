@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Download, UserCheck, AlertTriangle } from "lucide-react";
 import DataTable from "@/components/admin/DataTable";
 import TableToolbar from "@/components/admin/TableToolbar";
@@ -10,39 +10,10 @@ import Badge from "@/components/admin/Badge";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import Banner from "@/components/admin/Banner";
 
-// Mock data for development
-const MOCK_USERS = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john@example.com",
-    role: "User",
-    storesCount: 2,
-    createdAt: "2024-01-15",
-    status: "active",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    role: "StoreAdmin",
-    storesCount: 1,
-    createdAt: "2024-01-20",
-    status: "active",
-  },
-  {
-    id: "3",
-    name: "Admin User",
-    email: "admin@example.com",
-    role: "SuperAdmin",
-    storesCount: 0,
-    createdAt: "2024-01-10",
-    status: "active",
-  },
-];
-
 export default function AdminUsers() {
-  const [users, setUsers] = useState(MOCK_USERS);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [storeFilter, setStoreFilter] = useState("");
@@ -58,72 +29,81 @@ export default function AdminUsers() {
 
   const itemsPerPage = 10;
 
-  const filteredUsers = useMemo(() => {
-    let filtered = users.filter((user) => {
-      const matchesSearch =
-        !searchQuery ||
-        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchQuery.toLowerCase());
+  useEffect(() => {
+    fetchUsers();
+  }, [currentPage, roleFilter, searchQuery]);
 
-      const matchesRole = !roleFilter || user.role === roleFilter;
-
-      return matchesSearch && matchesRole;
-    });
-
-    if (sortBy) {
-      filtered.sort((a, b) => {
-        let aVal = a[sortBy];
-        let bVal = b[sortBy];
-
-        if (typeof aVal === "string") {
-          aVal = aVal.toLowerCase();
-          bVal = bVal.toLowerCase();
-        }
-
-        if (sortDirection === "asc") {
-          return aVal > bVal ? 1 : -1;
-        } else {
-          return aVal < bVal ? 1 : -1;
-        }
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: itemsPerPage.toString(),
       });
+
+      if (roleFilter) params.append('role', roleFilter);
+      if (searchQuery) params.append('search', searchQuery);
+
+      const response = await fetch(`/api/admin/users?${params}`);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch users');
+      }
+
+      const data = await response.json();
+      setUsers(data.data || []);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching users:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return filtered;
-  }, [users, searchQuery, roleFilter, sortBy, sortDirection]);
-
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-  const paginatedUsers = filteredUsers.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // Use server-side pagination, so we don't need client-side filtering
+  const totalPages = Math.ceil(users.length / itemsPerPage); // This should come from API response
+  const paginatedUsers = users; // Already paginated from server
 
   const handleSort = (column, direction) => {
     setSortBy(column);
     setSortDirection(direction);
   };
 
-  const handleConfirmAction = () => {
+  const handleConfirmAction = async () => {
     const { type, userId } = confirmDialog;
-    const user = users.find((u) => u.id === userId);
+    const user = users.find((u) => u._id === userId);
 
-    if (type === "suspend") {
-      setUsers((prev) =>
-        prev.map((user) =>
-          user.id === userId
-            ? {
-                ...user,
-                status: user.status === "active" ? "suspended" : "active",
-              }
-            : user
-        )
-      );
-      setSuccessBanner(
-        `User ${user?.name} has been ${
-          user?.status === "active" ? "suspended" : "activated"
-        }.`
-      );
-    } else if (type === "impersonate") {
-      setSuccessBanner(`Now impersonating ${user?.name} (UI-only simulation).`);
+    try {
+      if (type === "suspend") {
+        const newStatus = user?.isActive ? "suspended" : "active";
+
+        const response = await fetch(`/api/admin/users/${userId}/status`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            status: newStatus,
+            reason: `Admin action: ${newStatus} user`,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to update user status');
+        }
+
+        // Refresh users data
+        await fetchUsers();
+        setSuccessBanner(
+          `User ${user?.name} has been ${newStatus}.`
+        );
+      } else if (type === "impersonate") {
+        setSuccessBanner(`Now impersonating ${user?.name} (UI-only simulation).`);
+      }
+    } catch (err) {
+      console.error('Error performing user action:', err);
+      setError(err.message);
     }
 
     setConfirmDialog({ isOpen: false, type: "", userId: "" });
@@ -169,28 +149,35 @@ export default function AdminUsers() {
       render: (role) => (
         <Badge
           variant={
-            role === "admin"
+            role === "SuperAdmin"
               ? "primary"
-              : role === "store-owner"
+              : role === "StoreAdmin"
               ? "warning"
               : "default"
           }>
-          {role
-            .split("-")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ")}
+          {role === "SuperAdmin" ? "Super Admin" : role === "StoreAdmin" ? "Store Admin" : "User"}
         </Badge>
       ),
     },
-    { key: "storesCount", label: "Connected Stores", sortable: true },
-    { key: "createdAt", label: "Created", sortable: true },
     {
-      key: "status",
+      key: "storeCount",
+      label: "Connected Stores",
+      sortable: true,
+      render: (storeCount) => storeCount || 0
+    },
+    {
+      key: "createdAt",
+      label: "Created",
+      sortable: true,
+      render: (createdAt) => new Date(createdAt).toLocaleDateString()
+    },
+    {
+      key: "isActive",
       label: "Status",
       sortable: true,
-      render: (status) => (
-        <Badge variant={status === "active" ? "success" : "danger"}>
-          {status.charAt(0).toUpperCase() + status.slice(1)}
+      render: (isActive) => (
+        <Badge variant={isActive !== false ? "success" : "danger"}>
+          {isActive !== false ? "Active" : "Suspended"}
         </Badge>
       ),
     },
@@ -206,7 +193,7 @@ export default function AdminUsers() {
               setConfirmDialog({
                 isOpen: true,
                 type: "impersonate",
-                userId: user.id,
+                userId: user._id,
               })
             }>
             <UserCheck className="w-4 h-4" />
@@ -218,7 +205,7 @@ export default function AdminUsers() {
               setConfirmDialog({
                 isOpen: true,
                 type: "suspend",
-                userId: user.id,
+                userId: user._id,
               })
             }>
             <AlertTriangle className="w-4 h-4" />
@@ -258,6 +245,14 @@ export default function AdminUsers() {
         />
       )}
 
+      {error && (
+        <Banner
+          type="error"
+          message={error}
+          onDismiss={() => setError(null)}
+        />
+      )}
+
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
           Users
@@ -270,21 +265,37 @@ export default function AdminUsers() {
           actions={actions}
         />
 
-        <DataTable
-          columns={userColumns}
-          data={paginatedUsers}
-          sortBy={sortBy}
-          sortDirection={sortDirection}
-          onSort={handleSort}
-        />
+        {loading ? (
+          <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md animate-pulse">
+            <div className="space-y-3">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex space-x-4">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded flex-1"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/6"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <>
+            <DataTable
+              columns={userColumns}
+              data={paginatedUsers}
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
 
-        <div className="mt-6">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
+            <div className="mt-6">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </div>
+          </>
+        )}
       </div>
 
       {/* Confirm Dialog */}

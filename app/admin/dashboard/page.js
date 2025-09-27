@@ -1,114 +1,53 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Store, Users, CheckCircle, Gift, TrendingUp } from "lucide-react";
 import StatCard from "@/components/admin/StatCard";
 import DataTable from "@/components/admin/DataTable";
 import Banner from "@/components/admin/Banner";
 
 export default function AdminDashboard() {
-  const MOCK_STORES = [
-    {
-      id: "1",
-      name: "Bloom Coffee Co.",
-      ownerEmail: "sarah@bloomcoffee.com",
-      tier: "gold",
-      usersCount: 245,
-      createdAt: "2024-01-15",
-      status: "active",
-    },
-    {
-      id: "2",
-      name: "The Grooming Lounge",
-      ownerEmail: "marcus@groominglounge.com",
-      tier: "platinum",
-      usersCount: 156,
-      createdAt: "2024-02-03",
-      status: "active",
-    },
-    {
-      id: "3",
-      name: "Fresh Bakes Bakery",
-      ownerEmail: "emma@freshbakes.co.uk",
-      tier: "silver",
-      usersCount: 89,
-      createdAt: "2024-02-20",
-      status: "active",
-    },
-    {
-      id: "4",
-      name: "City Barbers",
-      ownerEmail: "james@citybarbers.com",
-      tier: "gold",
-      usersCount: 203,
-      createdAt: "2024-01-28",
-      status: "suspended",
-    },
-    {
-      id: "5",
-      name: "Green Leaf Café",
-      ownerEmail: "lisa@greenleaf.com",
-      tier: "silver",
-      usersCount: 67,
-      createdAt: "2024-03-01",
-      status: "active",
-    },
-  ];
-
-  const MOCK_USERS = [
-    {
-      id: "1",
-      name: "John Smith",
-      email: "john@example.com",
-      role: "user",
-      storesCount: 3,
-      createdAt: "2024-01-20",
-      status: "active",
-    },
-    {
-      id: "2",
-      name: "Sarah Chen",
-      email: "sarah@bloomcoffee.com",
-      role: "store-owner",
-      storesCount: 1,
-      createdAt: "2024-01-15",
-      status: "active",
-    },
-    {
-      id: "3",
-      name: "Marcus Rodriguez",
-      email: "marcus@groominglounge.com",
-      role: "store-owner",
-      storesCount: 1,
-      createdAt: "2024-02-03",
-      status: "active",
-    },
-    {
-      id: "4",
-      name: "Emma Thompson",
-      email: "emma@freshbakes.co.uk",
-      role: "store-owner",
-      storesCount: 1,
-      createdAt: "2024-02-20",
-      status: "active",
-    },
-    {
-      id: "5",
-      name: "David Wilson",
-      email: "david@example.com",
-      role: "user",
-      storesCount: 2,
-      createdAt: "2024-02-10",
-      status: "suspended",
-    },
-  ];
-
   const [showBanner, setShowBanner] = useState(true);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [recentStores, setRecentStores] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const recentStores = MOCK_STORES.slice(0, 5);
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const [statsResponse, storesResponse] = await Promise.all([
+        fetch('/api/admin/dashboard/stats'),
+        fetch('/api/admin/dashboard/recent-stores')
+      ]);
+
+      if (!statsResponse.ok || !storesResponse.ok) {
+        throw new Error('Failed to fetch dashboard data');
+      }
+
+      const statsData = await statsResponse.json();
+      const storesData = await storesResponse.json();
+
+      setDashboardData(statsData.data);
+      setRecentStores(storesData.data || []);
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const storeColumns = [
     { key: "name", label: "Store Name", sortable: true },
-    { key: "ownerEmail", label: "Owner", sortable: true },
+    {
+      key: "ownerId",
+      label: "Owner",
+      render: (ownerId, store) => store.ownerId?.email || store.ownerId?.name || "N/A"
+    },
     {
       key: "tier",
       label: "Tier",
@@ -125,8 +64,18 @@ export default function AdminDashboard() {
         </span>
       ),
     },
-    { key: "usersCount", label: "Users", sortable: true },
-    { key: "createdAt", label: "Created", sortable: true },
+    {
+      key: "userCount",
+      label: "Users",
+      sortable: true,
+      render: (userCount) => userCount || 0
+    },
+    {
+      key: "createdAt",
+      label: "Created",
+      sortable: true,
+      render: (createdAt) => new Date(createdAt).toLocaleDateString()
+    },
   ];
 
   return (
@@ -142,36 +91,52 @@ export default function AdminDashboard() {
       )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title="Total Stores"
-          value="2,847"
-          change="+12% from last month"
-          trend="up"
-          icon={Store}
-        />
-        <StatCard
-          title="Total Users"
-          value="45,231"
-          change="+8% from last month"
-          trend="up"
-          icon={Users}
-        />
-        <StatCard
-          title="Approved Visits"
-          value="128,492"
-          change="+15% from last month"
-          trend="up"
-          icon={CheckCircle}
-        />
-        <StatCard
-          title="Points Distributed"
-          value="2.4M"
-          change="+22% from last month"
-          trend="up"
-          icon={Gift}
-        />
-      </div>
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md animate-pulse">
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
+              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+            </div>
+          ))}
+        </div>
+      ) : error ? (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <p className="text-red-600 dark:text-red-400">Error loading dashboard data: {error}</p>
+        </div>
+      ) : dashboardData ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatCard
+            title="Total Stores"
+            value={dashboardData.overview?.totalStores?.toLocaleString() || "0"}
+            change={`+${dashboardData.overview?.changes?.stores || 0} from last month`}
+            trend={dashboardData.overview?.changes?.stores > 0 ? "up" : "neutral"}
+            icon={Store}
+          />
+          <StatCard
+            title="Total Users"
+            value={dashboardData.overview?.totalUsers?.toLocaleString() || "0"}
+            change={`+${dashboardData.overview?.changes?.users || 0} from last month`}
+            trend={dashboardData.overview?.changes?.users > 0 ? "up" : "neutral"}
+            icon={Users}
+          />
+          <StatCard
+            title="Total Visits"
+            value={dashboardData.overview?.totalVisits?.toLocaleString() || "0"}
+            change={`+${dashboardData.overview?.changes?.visits || 0} from last month`}
+            trend={dashboardData.overview?.changes?.visits > 0 ? "up" : "neutral"}
+            icon={CheckCircle}
+          />
+          <StatCard
+            title="Points Distributed"
+            value={dashboardData.overview?.totalPointsDistributed?.toLocaleString() || "0"}
+            change="Total points distributed"
+            trend="neutral"
+            icon={Gift}
+          />
+        </div>
+      ) : null}
 
       {/* Charts Placeholder */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -203,7 +168,25 @@ export default function AdminDashboard() {
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           Recently Created Stores
         </h3>
-        <DataTable columns={storeColumns} data={recentStores} />
+        {loading ? (
+          <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md animate-pulse">
+            <div className="space-y-3">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex space-x-4">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded flex-1"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/6"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : error ? (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+            <p className="text-red-600 dark:text-red-400">Error loading recent stores</p>
+          </div>
+        ) : (
+          <DataTable columns={storeColumns} data={recentStores} />
+        )}
       </div>
     </div>
   );

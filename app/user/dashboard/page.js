@@ -26,161 +26,14 @@ export default function UserDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const MOCK_USER_PROFILE = {
-      id: "user-123",
-      name: "John Smith",
-      email: "john@example.com",
-      preferences: {
-        visitApprovedEmail: true,
-        rewardEmail: true,
-      },
-    };
-
-    const MOCK_CONNECTED_STORES = [
-      {
-        id: "bloom-coffee",
-        name: "Bloom Coffee Co.",
-        slug: "bloom-coffee",
-        tier: "gold",
-        points: 245,
-        visitsMTD: 8,
-        visitsLifetime: 47,
-        joinedAt: "2024-01-20",
-        conversionRate: 100,
-        rewardConfig: {
-          type: "hybrid",
-          pointsPerPound: 2,
-          pointsPerVisit: 10,
-          conversionRate: 100,
-        },
-      },
-      {
-        id: "grooming-lounge",
-        name: "The Grooming Lounge",
-        slug: "grooming-lounge",
-        tier: "platinum",
-        points: 156,
-        visitsMTD: 3,
-        visitsLifetime: 18,
-        joinedAt: "2024-02-15",
-        conversionRate: 100,
-        rewardConfig: {
-          type: "spend",
-          pointsPerPound: 3,
-          pointsPerVisit: 0,
-          conversionRate: 150,
-        },
-      },
-      {
-        id: "fresh-bakes",
-        name: "Fresh Bakes Bakery",
-        slug: "fresh-bakes",
-        tier: "silver",
-        points: 89,
-        visitsMTD: 5,
-        visitsLifetime: 12,
-        joinedAt: "2024-03-01",
-        conversionRate: 100,
-        rewardConfig: {
-          type: "visit",
-          pointsPerPound: 0,
-          pointsPerVisit: 15,
-          conversionRate: 100,
-        },
-      },
-    ];
-
-    const MOCK_VISITS = [
-      {
-        id: "1",
-        storeId: "bloom-coffee",
-        storeName: "Bloom Coffee Co.",
-        date: "2024-03-15",
-        method: "qr",
-        status: "approved",
-        points: 35,
-        spend: 12.5,
-      },
-      {
-        id: "2",
-        storeId: "grooming-lounge",
-        storeName: "The Grooming Lounge",
-        date: "2024-03-14",
-        method: "qr",
-        status: "approved",
-        points: 45,
-        spend: 15.0,
-      },
-      {
-        id: "3",
-        storeId: "bloom-coffee",
-        storeName: "Bloom Coffee Co.",
-        date: "2024-03-13",
-        method: "manual",
-        status: "pending",
-        points: 0,
-        spend: 8.0,
-      },
-      {
-        id: "4",
-        storeId: "fresh-bakes",
-        storeName: "Fresh Bakes Bakery",
-        date: "2024-03-12",
-        method: "qr",
-        status: "approved",
-        points: 15,
-        spend: 0,
-      },
-      {
-        id: "5",
-        storeId: "bloom-coffee",
-        storeName: "Bloom Coffee Co.",
-        date: "2024-03-10",
-        method: "qr",
-        status: "approved",
-        points: 30,
-        spend: 10.25,
-      },
-    ];
-
-    const MOCK_REDEMPTIONS = [
-      {
-        id: "1",
-        storeId: "bloom-coffee",
-        storeName: "Bloom Coffee Co.",
-        date: "2024-03-08",
-        pointsUsed: 100,
-        value: 1.0,
-        autoTriggered: true,
-      },
-      {
-        id: "2",
-        storeId: "grooming-lounge",
-        storeName: "The Grooming Lounge",
-        date: "2024-03-05",
-        pointsUsed: 150,
-        value: 1.0,
-        autoTriggered: false,
-      },
-      {
-        id: "3",
-        storeId: "fresh-bakes",
-        storeName: "Fresh Bakes Bakery",
-        date: "2024-03-01",
-        pointsUsed: 100,
-        value: 1.0,
-        autoTriggered: true,
-      },
-    ];
-
 
   const {
     currentStore,
     setCurrentStore,
     connectedStores,
     getCurrentStoreData,
+    loading: storesLoading,
   } = useUserStore();
-  const [visits] = useState(MOCK_VISITS);
   const [showQRHint, setShowQRHint] = useState(false);
   const [successBanner, setSuccessBanner] = useState("");
 
@@ -219,7 +72,7 @@ export default function UserDashboard() {
 
   // Calculate metrics based on current store
   const getMetrics = () => {
-    // Use real data if available, otherwise fall back to mock data
+    // Use real data if available
     if (dashboardData && !loading) {
       return {
         currentPoints: dashboardData.currentPoints,
@@ -229,7 +82,7 @@ export default function UserDashboard() {
       };
     }
 
-    // Fallback to mock data for development
+    // Use store data from API
     if (currentStore && currentStoreData) {
       return {
         currentPoints: currentStoreData.points,
@@ -238,7 +91,7 @@ export default function UserDashboard() {
         visitsMTD: currentStoreData.visitsMTD,
         visitsLifetime: currentStoreData.visitsLifetime,
       };
-    } else {
+    } else if (connectedStores.length > 0) {
       // All stores combined
       const totalPoints = connectedStores.reduce(
         (sum, store) => sum + store.points,
@@ -254,13 +107,21 @@ export default function UserDashboard() {
       );
       const avgConversionRate =
         connectedStores.reduce((sum, store) => sum + store.conversionRate, 0) /
-        connectedStores.length;
+        connectedStores.length || 100;
 
       return {
         currentPoints: totalPoints,
         redeemableValue: totalPoints / avgConversionRate,
         visitsMTD: totalVisitsMTD,
         visitsLifetime: totalVisitsLifetime,
+      };
+    } else {
+      // No connected stores
+      return {
+        currentPoints: 0,
+        redeemableValue: 0,
+        visitsMTD: 0,
+        visitsLifetime: 0,
       };
     }
   };
@@ -270,6 +131,23 @@ export default function UserDashboard() {
   const handleScanQR = () => {
     setShowQRHint(true);
   };
+
+  // Show loading state
+  if (storesLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-24 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+          <div className="h-32 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -282,11 +160,21 @@ export default function UserDashboard() {
       )}
 
       {/* Welcome Banner */}
-      {!currentStore && (
+      {!currentStore && connectedStores.length > 0 && (
         <Banner
           type="info"
           title="Welcome to your loyalty dashboard!"
-          message="You're connected to 3 stores. Select a specific store above to see detailed information."
+          message={`You're connected to ${connectedStores.length} store${connectedStores.length !== 1 ? 's' : ''}. Select a specific store above to see detailed information.`}
+          dismissible={false}
+        />
+      )}
+
+      {/* No Stores Connected Banner */}
+      {!storesLoading && connectedStores.length === 0 && (
+        <Banner
+          type="warning"
+          title="No stores connected"
+          message="You haven't connected to any stores yet. Join a store to start earning loyalty rewards!"
           dismissible={false}
         />
       )}

@@ -4,7 +4,7 @@ import { signOut } from "next-auth/react";
 
 export default function TopbarUser({ title, onMenuToggle, children }) {
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-[#D0D8C3] dark:border-gray-700 h-16">
+    <header className="bg-white/20 dark:bg-gray-900/20 backdrop-filter backdrop-blur-lg shadow-sm border-b border-[#D0D8C3]/50 dark:border-gray-700/50 h-16">
       <div className="flex items-center justify-between h-full px-6">
         {/* Left side */}
         <div className="flex items-center">

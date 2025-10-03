@@ -24,7 +24,11 @@ export function LoadingProvider({ children }) {
   // Show loading on route changes and session changes
   useEffect(() => {
     // Skip loader for login, register, auth, and home pages
-    if (pathname.includes('/login') || pathname.includes('/register') || pathname.includes('/auth') || pathname === '/') {
+    if (
+      pathname.includes("/auth/login") ||
+      pathname.includes("/auth/register") ||
+      pathname === "/"
+    ) {
       return;
     }
 

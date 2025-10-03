@@ -18,7 +18,7 @@ export default function StoreSwitcher({
         onChange={(e) => onStoreChange(e.target.value)}
         className="min-w-48">
         <option value="">All Stores</option>
-        {stores.map((store) => (
+        {stores?.map((store) => (
           <option key={store.id} value={store.id}>
             {store.name}
           </option>

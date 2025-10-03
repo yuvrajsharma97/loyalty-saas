@@ -14,6 +14,7 @@ export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [paginationMeta, setPaginationMeta] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [storeFilter, setStoreFilter] = useState("");
@@ -51,7 +52,9 @@ export default function AdminUsers() {
       }
 
       const data = await response.json();
+
       setUsers(data.data || []);
+      setPaginationMeta(data.meta || {});
       setError(null);
     } catch (err) {
       console.error('Error fetching users:', err);
@@ -61,8 +64,8 @@ export default function AdminUsers() {
     }
   };
 
-  // Use server-side pagination, so we don't need client-side filtering
-  const totalPages = Math.ceil(users.length / itemsPerPage); // This should come from API response
+  // Use server-side pagination with real metadata from backend
+  const totalPages = paginationMeta.totalPages || 1;
   const paginatedUsers = users; // Already paginated from server
 
   const handleSort = (column, direction) => {
@@ -288,11 +291,16 @@ export default function AdminUsers() {
             />
 
             <div className="mt-6">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, paginationMeta.total || 0)} of {paginationMeta.total || 0} users
+                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
             </div>
           </>
         )}

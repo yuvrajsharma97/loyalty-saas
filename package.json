@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "node scripts/seedDatabase.js",
+    "verify": "node scripts/verifyData.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -19,6 +21,7 @@
     "next": "15.5.1",
     "next-auth": "^4.24.11",
     "postcss": "^8.5.6",
+    "qrcode": "^1.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "resend": "^6.0.3",

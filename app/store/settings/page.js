@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { Download, Save } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Download, Save, Loader2 } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Toggle from "@/components/ui/Toggle";
@@ -8,36 +8,12 @@ import Banner from "@/components/ui/Banner";
 import FileUpload from "@/components/store/FileUpload";
 import QRPreview from "@/components/store/QRPreview";
 
-const MOCK_STORE_META = {
-  id: "1",
-  name: "Café Central",
-  slug: "cafe-central", 
-  location: "London, UK",
-  tier: "gold",
-  rewardConfig: {
-    type: "hybrid",
-    pointsPerPound: 1,
-    pointsPerVisit: 10,
-    conversionRate: 100
-  },
-  paused: false,
-  owner: {
-    id: "owner1",
-    name: "Emma Thompson",
-    email: "emma@cafecentral.com",
-    role: "StoreAdmin"
-  },
-  usersCount: 342,
-  createdAt: "2024-01-15",
-  lastActivity: "2024-03-15"
-};
-
 export default function StoreSettings() {
-  const [storeMeta, setStoreMeta] = useState(MOCK_STORE_META);
+  const [storeMeta, setStoreMeta] = useState(null);
   const [storeProfile, setStoreProfile] = useState({
-    name: MOCK_STORE_META.name,
-    slug: MOCK_STORE_META.slug,
-    location: MOCK_STORE_META.location,
+    name: "",
+    slug: "",
+    location: "",
   });
   const [logo, setLogo] = useState(null);
   const [notifications, setNotifications] = useState({
@@ -45,7 +21,40 @@ export default function StoreSettings() {
     rewardEarned: true,
     tierWarnings: false,
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [successBanner, setSuccessBanner] = useState("");
+
+  useEffect(() => {
+    fetchStoreProfile();
+  }, []);
+
+  const fetchStoreProfile = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch('/api/store/profile');
+      if (!response.ok) {
+        throw new Error('Failed to fetch store profile');
+      }
+
+      const data = await response.json();
+      const store = data.store;
+
+      setStoreMeta(store);
+      setStoreProfile({
+        name: store.name || "",
+        slug: store.slug || "",
+        location: store.location || "",
+      });
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching store profile:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSaveSettings = () => {
     // Update store meta with new profile data
@@ -67,6 +76,24 @@ export default function StoreSettings() {
       [key]: value,
     }));
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center p-12">
+          <Loader2 className="w-8 h-8 text-[#014421] animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <Banner type="error" message={error} dismissible={false} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

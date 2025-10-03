@@ -10,6 +10,7 @@ import {
   Settings,
   X,
   ChevronLeft,
+  Award,
 } from "lucide-react";
 
 export default function SidebarStore({ isOpen, onToggle }) {
@@ -20,6 +21,7 @@ export default function SidebarStore({ isOpen, onToggle }) {
     { name: "Users", href: "/store/users", icon: Users },
     { name: "Visits", href: "/store/visits", icon: CheckSquare },
     { name: "Rewards", href: "/store/rewards", icon: Gift },
+    { name: "Reward Claims", href: "/store/reward-claims", icon: Award },
     { name: "Reports", href: "/store/reports", icon: FileText },
     { name: "Settings", href: "/store/settings", icon: Settings },
   ];
@@ -44,14 +46,14 @@ export default function SidebarStore({ isOpen, onToggle }) {
         }`}>
         {/* Header */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-zinc-700">
-          <div className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
             <div className="w-8 h-8 bg-[#014421] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">S</span>
+              <span className="text-white font-bold text-sm">L</span>
             </div>
             <span className="font-bold text-lg text-gray-900 dark:text-white">
-              Store
+              LoyaltyOS
             </span>
-          </div>
+          </Link>
           <button
             onClick={onToggle}
             className="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">

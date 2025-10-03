@@ -1,6 +1,6 @@
 "use client";
-import { useState, useMemo } from "react";
-import { Download } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { Download, Gift } from "lucide-react";
 import { useUserStore } from "../layout";
 import Tabs from "@/components/ui/Tabs";
 import Table from "@/components/ui/Table";
@@ -12,83 +12,9 @@ import Input from "@/components/ui/Input";
 import StoreSwitcher from "@/components/user/StoreSwitcher";
 import PointsSummary from "@/components/user/PointsSummary";
 import RewardProgress from "@/components/user/RewardProgress";
+import RedeemPointsModal from "@/components/user/RedeemPointsModal";
 import { exportCsv } from "@/lib/exportCsv";
 import { formatDate, formatCurrency } from "@/lib/formatters";
-
-const MOCK_REDEMPTIONS = [
-  {
-    id: "redemption-1",
-    storeId: "1",
-    storeName: "Café Central",
-    date: "2024-03-10",
-    pointsUsed: 100,
-    value: 1.00,
-    autoTriggered: true
-  },
-  {
-    id: "redemption-2",
-    storeId: "2", 
-    storeName: "The Coffee Bean",
-    date: "2024-03-08",
-    pointsUsed: 150,
-    value: 1.00,
-    autoTriggered: false
-  },
-  {
-    id: "redemption-3",
-    storeId: "1",
-    storeName: "Café Central",
-    date: "2024-03-05",
-    pointsUsed: 200,
-    value: 2.00,
-    autoTriggered: true
-  },
-  {
-    id: "redemption-4",
-    storeId: "3",
-    storeName: "Green Leaf Bistro",
-    date: "2024-03-03",
-    pointsUsed: 80,
-    value: 1.00,
-    autoTriggered: true
-  },
-  {
-    id: "redemption-5",
-    storeId: "2",
-    storeName: "The Coffee Bean", 
-    date: "2024-02-28",
-    pointsUsed: 300,
-    value: 2.00,
-    autoTriggered: false
-  },
-  {
-    id: "redemption-6",
-    storeId: "1",
-    storeName: "Café Central",
-    date: "2024-02-25",
-    pointsUsed: 100,
-    value: 1.00,
-    autoTriggered: true
-  },
-  {
-    id: "redemption-7",
-    storeId: "3",
-    storeName: "Green Leaf Bistro",
-    date: "2024-02-20",
-    pointsUsed: 160,
-    value: 2.00,
-    autoTriggered: true
-  },
-  {
-    id: "redemption-8",
-    storeId: "1", 
-    storeName: "Café Central",
-    date: "2024-02-15",
-    pointsUsed: 50,
-    value: 0.50,
-    autoTriggered: true
-  }
-];
 
 export default function UserRewards() {
   const {
@@ -97,16 +23,55 @@ export default function UserRewards() {
     connectedStores,
     getCurrentStoreData,
   } = useUserStore();
-  const [redemptions] = useState(MOCK_REDEMPTIONS);
+
+  // State for redemptions
+  const [redemptions, setRedemptions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [paginationMeta, setPaginationMeta] = useState({});
+
+  // State for redemption modal
+  const [showRedeemModal, setShowRedeemModal] = useState(false);
 
   const itemsPerPage = 10;
   const currentStoreData = getCurrentStoreData();
 
-  // Filter redemptions based on current store
+  // Fetch redemptions
+  useEffect(() => {
+    fetchRedemptions();
+  }, [currentPage]);
+
+  const fetchRedemptions = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: itemsPerPage.toString(),
+      });
+
+      const response = await fetch(`/api/user/redemptions?${params}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setRedemptions(data.data);
+        setPaginationMeta(data.meta);
+        setError(null);
+      } else {
+        setError(data.error || 'Failed to fetch redemptions');
+      }
+    } catch (err) {
+      console.error('Error fetching redemptions:', err);
+      setError('Failed to fetch redemption history');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filter redemptions based on current store and search
   const filteredRedemptions = useMemo(() => {
     return redemptions.filter((redemption) => {
       if (currentStore && redemption.storeId !== currentStore) return false;
@@ -115,51 +80,86 @@ export default function UserRewards() {
         !redemption.storeName.toLowerCase().includes(searchQuery.toLowerCase())
       )
         return false;
-      if (dateFrom && redemption.date < dateFrom) return false;
-      if (dateTo && redemption.date > dateTo) return false;
+      if (dateFrom && redemption.redemptionDate < dateFrom) return false;
+      if (dateTo && redemption.redemptionDate > dateTo) return false;
       return true;
     });
   }, [redemptions, currentStore, searchQuery, dateFrom, dateTo]);
 
-  const totalPages = Math.ceil(filteredRedemptions.length / itemsPerPage);
-  const paginatedRedemptions = filteredRedemptions.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const totalPages = paginationMeta.totalPages || 1;
 
   const exportRedemptions = () => {
     const csvData = filteredRedemptions.map((redemption) => ({
       store: redemption.storeName,
-      date: formatDate(redemption.date),
+      date: formatDate(redemption.redemptionDate),
       pointsUsed: redemption.pointsUsed,
-      value: formatCurrency(redemption.value),
+      value: formatCurrency(redemption.rewardValueGBP),
+      code: redemption.code,
+      status: redemption.used ? "Used" : "Available",
       autoTriggered: redemption.autoTriggered ? "Yes" : "No",
     }));
 
     exportCsv(csvData, "my-redemptions.csv");
   };
 
+  const handleRedemptionSuccess = (redemptionData) => {
+    // Refresh redemptions list
+    fetchRedemptions();
+    // Close modal
+    setShowRedeemModal(false);
+    // Could also update points in the store context here
+  };
+
   const redemptionColumns = [
     { key: "storeName", label: "Store", sortable: true },
     {
-      key: "date",
+      key: "redemptionDate",
       label: "Date",
       sortable: true,
       render: (date) => formatDate(date),
     },
     { key: "pointsUsed", label: "Points Used", sortable: true },
     {
-      key: "value",
+      key: "rewardValueGBP",
       label: "Value",
       sortable: true,
       render: (value) => formatCurrency(value),
     },
     {
+      key: "code",
+      label: "Code",
+      render: (code, row) => (
+        <div className="flex items-center gap-2">
+          <span className={`font-mono text-sm px-2 py-1 rounded ${
+            !row.used
+              ? "bg-[#014421]/10 dark:bg-[#014421]/20 text-[#014421] dark:text-[#2e7d4a] border border-[#014421]/30 dark:border-[#014421]/40"
+              : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+          }`}>
+            {code}
+          </span>
+          {!row.used && (
+            <span className="text-xs text-[#014421] dark:text-[#2e7d4a] font-medium">
+              UNUSED
+            </span>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "used",
+      label: "Status",
+      render: (used, row) => (
+        <Badge variant={used ? "secondary" : "success"}>
+          {used ? "Used" : "Available"}
+        </Badge>
+      ),
+    },
+    {
       key: "autoTriggered",
-      label: "Auto Triggered",
+      label: "Type",
       render: (auto) => (
-        <Badge variant={auto ? "success" : "default"}>
-          {auto ? "Yes" : "No"}
+        <Badge variant={auto ? "success" : "primary"}>
+          {auto ? "Auto" : "Manual"}
         </Badge>
       ),
     },
@@ -191,35 +191,86 @@ export default function UserRewards() {
     </Button>,
   ];
 
+  const userPoints = currentStoreData?.points || 0;
+  const conversionRate = currentStoreData?.rewardConfig?.conversionRate || 100;
+  const availableReward = Math.floor(userPoints / conversionRate);
+
   const tabs = [
     {
-      label: "Points",
+      label: "Points & Rewards",
       content: (
         <div className="space-y-6">
           {/* Points Summary */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <PointsSummary
-              points={
-                currentStoreData?.points ||
-                connectedStores.reduce((sum, store) => sum + store.points, 0)
-              }
-              conversionRate={currentStoreData?.conversionRate || 100}
+              points={userPoints}
+              conversionRate={conversionRate}
               storeName={currentStoreData?.name}
             />
             <RewardProgress
-              currentPoints={
-                currentStoreData?.points ||
-                connectedStores.reduce((sum, store) => sum + store.points, 0)
-              }
-              conversionRate={currentStoreData?.conversionRate || 100}
+              currentPoints={userPoints}
+              conversionRate={conversionRate}
             />
           </div>
+
+          {/* Redemption Section */}
+          {currentStoreData && (
+            <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md border border-[#D0D8C3]/40">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Redeem Rewards
+                </h3>
+                {availableReward > 0 && (
+                  <Badge variant="success">
+                    £{availableReward} Available
+                  </Badge>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600 dark:text-gray-400">Your Points:</span>
+                    <span className="font-semibold">{userPoints} points</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600 dark:text-gray-400">Conversion Rate:</span>
+                    <span className="font-semibold">{conversionRate} points = £1</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600 dark:text-gray-400">Available to Redeem:</span>
+                    <span className="font-semibold text-[#014421]">£{availableReward}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-center">
+                  <Button
+                    onClick={() => setShowRedeemModal(true)}
+                    disabled={availableReward <= 0}
+                    className="w-full md:w-auto"
+                  >
+                    <Gift className="w-4 h-4 mr-2" />
+                    {availableReward > 0 ? `Redeem £${availableReward}` : 'Insufficient Points'}
+                  </Button>
+                </div>
+              </div>
+
+              {availableReward <= 0 && (
+                <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                  <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                    You need at least {conversionRate} points to redeem £1.
+                    You need {conversionRate - userPoints} more points.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Store Rules */}
           {currentStoreData && (
             <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md border border-[#D0D8C3]/40">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Current Store Rules - {currentStoreData.name}
+                Store Rules - {currentStoreData.name}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -262,13 +313,16 @@ export default function UserRewards() {
       ),
     },
     {
-      label: "Redemptions",
+      label: "Redemption History",
       content: (
         <div className="space-y-6">
           <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
             <p className="text-sm text-blue-800 dark:text-blue-200">
-              <strong>Note:</strong> Redemptions are automatic when your points
-              reach the threshold. You'll be notified when rewards are applied.
+              <strong>Your Redemption History:</strong> All your reward redemptions are listed below.
+              Show the 8-digit code to store staff to claim your reward.
+            </p>
+            <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
+              💡 <strong>Unused codes</strong> are highlighted in green and remain valid until used at the store.
             </p>
           </div>
 
@@ -279,16 +333,41 @@ export default function UserRewards() {
             actions={actions}
           />
 
-          <Table columns={redemptionColumns} data={paginatedRedemptions} />
-
-          {totalPages > 1 && (
-            <div className="mt-6">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
+          {loading ? (
+            <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md animate-pulse">
+              <div className="space-y-3">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="flex space-x-4">
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded flex-1"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/6"></div>
+                  </div>
+                ))}
+              </div>
             </div>
+          ) : error ? (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+              <p className="text-red-600 dark:text-red-400">Error: {error}</p>
+            </div>
+          ) : (
+            <>
+              <Table columns={redemptionColumns} data={filteredRedemptions} />
+
+              {totalPages > 1 && (
+                <div className="mt-6">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, paginationMeta.total || 0)} of {paginationMeta.total || 0} redemptions
+                    </div>
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={setCurrentPage}
+                    />
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       ),
@@ -297,20 +376,29 @@ export default function UserRewards() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Rewards
         </h1>
-        <div className="sm:hidden">
-          <StoreSwitcher
-            stores={connectedStores}
-            currentStore={currentStore}
-            onStoreChange={setCurrentStore}
-          />
-        </div>
+        <StoreSwitcher
+          stores={connectedStores}
+          currentStore={currentStore}
+          onStoreChange={setCurrentStore}
+        />
       </div>
 
       <Tabs tabs={tabs} />
+
+      {/* Redemption Modal */}
+      {currentStoreData && (
+        <RedeemPointsModal
+          isOpen={showRedeemModal}
+          onClose={() => setShowRedeemModal(false)}
+          store={currentStoreData}
+          userPoints={userPoints}
+          onRedemptionSuccess={handleRedemptionSuccess}
+        />
+      )}
     </div>
   );
 }

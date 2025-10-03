@@ -53,6 +53,13 @@ const storeSchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
+    rewardQRCode: {
+      type: String, // URL or data URI of the generated QR code image
+    },
+    rewardQREmail: {
+      type: String, // Email used when generating reward QR
+      trim: true,
+    },
   },
   {
     timestamps: true,

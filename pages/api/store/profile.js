@@ -34,17 +34,22 @@ export default async function handler(req, res) {
           const calculatedTier = calculateTierFromUserCount(userCount);
 
           res.json({
-            id: store._id,
-            name: store.name,
-            slug: store.slug,
-            tier: calculatedTier,
-            userCount,
-            isActive: store.isActive,
-            rewardConfig: store.rewardConfig,
-            qrCode: store.qrCode,
-            owner: store.ownerId,
-            createdAt: store.createdAt,
-            updatedAt: store.updatedAt,
+            store: {
+              id: store._id,
+              _id: store._id,
+              name: store.name,
+              slug: store.slug,
+              tier: calculatedTier,
+              userCount,
+              isActive: store.isActive,
+              rewardConfig: store.rewardConfig,
+              qrCode: store.qrCode,
+              rewardQRCode: store.rewardQRCode,
+              rewardQREmail: store.rewardQREmail,
+              owner: store.ownerId,
+              createdAt: store.createdAt,
+              updatedAt: store.updatedAt,
+            }
           });
         } else if (req.method === "PUT") {
           // Update store profile

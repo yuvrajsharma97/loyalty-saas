@@ -20,193 +20,15 @@ import Button from "@/components/ui/Button";
 import QRPreview from "@/components/store/QRPreview";
 import Badge from "@/components/ui/Badge";
 import StoreAnalyticsChart from "@/components/store/StoreAnalyticsChart";
+import RedemptionVerifier from "@/components/store/RedemptionVerifier";
+import RewardQRGenerator from "@/components/store/RewardQRGenerator";
 import { formatPoints } from "@/lib/formatters";
 
 export default function StoreDashboard() {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const MOCK_STORE_META = {
-      id: "bloom-coffee",
-      name: "Bloom Coffee Co.",
-      slug: "bloom-coffee",
-      location: "London, UK",
-      tier: "gold",
-      userCount: 245,
-      paused: false,
-      rewardConfig: {
-        type: "hybrid",
-        pointsPerPound: 2,
-        pointsPerVisit: 10,
-        conversionRate: 100,
-      },
-    };
-
-    const MOCK_USERS = [
-      {
-        id: "1",
-        name: "John Smith",
-        email: "john@example.com",
-        points: 245,
-        visits: 12,
-        lastVisit: "2024-03-15",
-        joinedAt: "2024-01-20",
-        status: "active",
-        hasRewards: true,
-      },
-      {
-        id: "2",
-        name: "Alice Johnson",
-        email: "alice@example.com",
-        points: 156,
-        visits: 8,
-        lastVisit: "2024-03-14",
-        joinedAt: "2024-02-03",
-        status: "active",
-        hasRewards: true,
-      },
-      {
-        id: "3",
-        name: "Bob Wilson",
-        email: "bob@example.com",
-        points: 89,
-        visits: 5,
-        lastVisit: "2024-03-10",
-        joinedAt: "2024-02-15",
-        status: "suspended",
-        hasRewards: false,
-      },
-      {
-        id: "4",
-        name: "Sarah Davis",
-        email: "sarah@example.com",
-        points: 320,
-        visits: 18,
-        lastVisit: "2024-03-16",
-        joinedAt: "2024-01-10",
-        status: "active",
-        hasRewards: true,
-      },
-      {
-        id: "5",
-        name: "Mike Brown",
-        email: "mike@example.com",
-        points: 78,
-        visits: 4,
-        lastVisit: "2024-03-12",
-        joinedAt: "2024-02-28",
-        status: "active",
-        hasRewards: false,
-      },
-    ];
-
-    const MOCK_VISITS_PENDING = [
-      {
-        id: "1",
-        userName: "John Smith",
-        date: "2024-03-16",
-        method: "qr",
-        spendAmount: 12.5,
-        points: 35,
-      },
-      {
-        id: "2",
-        userName: "Alice Johnson",
-        date: "2024-03-16",
-        method: "manual",
-        spendAmount: 8.0,
-        points: 26,
-      },
-      {
-        id: "3",
-        userName: "Sarah Davis",
-        date: "2024-03-15",
-        method: "qr",
-        spendAmount: 15.75,
-        points: 42,
-      },
-    ];
-
-    const MOCK_VISITS_HISTORY = [
-      {
-        id: "4",
-        userName: "John Smith",
-        date: "2024-03-15",
-        method: "qr",
-        status: "approved",
-        pointsEarned: 35,
-        spendAmount: 12.5,
-      },
-      {
-        id: "5",
-        userName: "Bob Wilson",
-        date: "2024-03-14",
-        method: "manual",
-        status: "approved",
-        pointsEarned: 26,
-        spendAmount: 8.0,
-      },
-      {
-        id: "6",
-        userName: "Sarah Davis",
-        date: "2024-03-13",
-        method: "qr",
-        status: "approved",
-        pointsEarned: 42,
-        spendAmount: 15.75,
-      },
-      {
-        id: "7",
-        userName: "Alice Johnson",
-        date: "2024-03-12",
-        method: "qr",
-        status: "approved",
-        pointsEarned: 30,
-        spendAmount: 10.25,
-      },
-      {
-        id: "8",
-        userName: "Mike Brown",
-        date: "2024-03-11",
-        method: "manual",
-        status: "approved",
-        pointsEarned: 20,
-        spendAmount: 5.5,
-      },
-    ];
-
-    const MOCK_REDEMPTIONS = [
-      {
-        id: "1",
-        userName: "John Smith",
-        date: "2024-03-10",
-        pointsUsed: 100,
-        value: 1.0,
-        autoTriggered: true,
-      },
-      {
-        id: "2",
-        userName: "Sarah Davis",
-        date: "2024-03-08",
-        pointsUsed: 200,
-        value: 2.0,
-        autoTriggered: false,
-      },
-      {
-        id: "3",
-        userName: "Alice Johnson",
-        date: "2024-03-05",
-        pointsUsed: 150,
-        value: 1.5,
-        autoTriggered: true,
-      },
-    ];
-
-
-
   const [storeMeta, setStoreMeta] = useState(null);
-  const [users, setUsers] = useState([]);
   const [pendingVisits, setPendingVisits] = useState([]);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
@@ -219,39 +41,66 @@ export default function StoreDashboard() {
       setLoading(true);
       setError(null);
 
-      const [metricsResponse, visitsResponse] = await Promise.all([
+      const [metricsResponse, visitsResponse, storeResponse] = await Promise.all([
         fetch('/api/store/dashboard/metrics'),
-        fetch('/api/store/visits?status=pending&limit=10')
+        fetch('/api/store/visits?status=pending&limit=10'),
+        fetch('/api/store/profile')
       ]);
 
-      if (!metricsResponse.ok || !visitsResponse.ok) {
-        throw new Error('Failed to fetch dashboard data');
+      if (!metricsResponse.ok) {
+        throw new Error('Failed to fetch dashboard metrics');
       }
 
       const metrics = await metricsResponse.json();
-      const visitsData = await visitsResponse.json();
+
+      // Handle visits response
+      let visitsData = { visits: [] };
+      if (visitsResponse.ok) {
+        visitsData = await visitsResponse.json();
+      }
+
+      // Handle store profile response
+      let storeData = null;
+      if (storeResponse.ok) {
+        storeData = await storeResponse.json();
+      }
 
       setDashboardData(metrics);
       setStoreMeta({
-        id: metrics.store.id,
-        name: metrics.store.name,
-        tier: metrics.store.tier,
-        userCount: metrics.users.total,
-        paused: !metrics.store.isActive,
-        rewardConfig: {
-          type: "hybrid", // Will be populated from store profile API
-          pointsPerPound: 2,
+        id: metrics.store?.id || storeData?.store?.id,
+        name: metrics.store?.name || storeData?.store?.name || 'Store',
+        slug: storeData?.store?.slug || 'store',
+        tier: metrics.store?.tier || storeData?.store?.tier || 'silver',
+        userCount: metrics.users?.total || 0,
+        paused: !(metrics.store?.isActive ?? storeData?.store?.isActive ?? true),
+        rewardConfig: storeData?.store?.rewardConfig || {
+          type: "visit",
+          pointsPerPound: 0,
           pointsPerVisit: 10,
           conversionRate: 100,
         },
+        ownerEmail: storeData?.store?.owner?.email || '',
       });
       setPendingVisits(visitsData.visits || []);
     } catch (err) {
       setError(err.message);
       console.error('Dashboard fetch error:', err);
-      // Fallback to mock data
-      setStoreMeta(MOCK_STORE_META);
-      setPendingVisits(MOCK_VISITS_PENDING);
+      // Set minimal fallback data instead of mock
+      setStoreMeta({
+        id: 'store-1',
+        name: 'Your Store',
+        slug: 'your-store',
+        tier: 'silver',
+        userCount: 0,
+        paused: false,
+        rewardConfig: {
+          type: "visit",
+          pointsPerPound: 0,
+          pointsPerVisit: 10,
+          conversionRate: 100,
+        },
+      });
+      setPendingVisits([]);
     } finally {
       setLoading(false);
     }
@@ -379,6 +228,21 @@ export default function StoreDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Welcome Banner */}
+      {storeMeta && (
+        <div className="bg-gradient-to-r from-[#014421] to-[#016b32] rounded-xl p-6 text-white shadow-lg">
+          <h1 className="text-2xl font-bold mb-2">
+            Welcome back! 👋
+          </h1>
+          <div className="space-y-1">
+            <p className="text-lg font-semibold">{storeMeta.name}</p>
+            {storeMeta.ownerEmail && (
+              <p className="text-sm opacity-90">{storeMeta.ownerEmail}</p>
+            )}
+          </div>
+        </div>
+      )}
+
       {successBanner && (
         <Banner
           type={successBanner.includes("Error") ? "error" : "success"}
@@ -491,6 +355,15 @@ export default function StoreDashboard() {
           />
         </div>
       </div>
+
+      {/* Reward QR Code Generator */}
+      <RewardQRGenerator
+        storeId={storeMeta?.id}
+        storeName={storeMeta?.name}
+      />
+
+      {/* Redemption Verifier */}
+      <RedemptionVerifier storeId={storeMeta?.id} />
 
       {/* Store Analytics Chart */}
       <StoreAnalyticsChart />

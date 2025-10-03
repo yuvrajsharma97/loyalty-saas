@@ -1,5 +1,5 @@
 "use client";
-import { useState, createContext, useContext } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
 import SidebarUser from "@/components/user/SidebarUser";
 import TopbarUser from "@/components/user/TopbarUser";
 import StoreSwitcher from "@/components/user/StoreSwitcher";
@@ -16,64 +16,34 @@ export const useUserStore = () => {
 };
 
 export default function UserLayout({ children }) {
-
-    const MOCK_CONNECTED_STORES = [
-      {
-        id: "bloom-coffee",
-        name: "Bloom Coffee Co.",
-        slug: "bloom-coffee",
-        tier: "gold",
-        points: 245,
-        visitsMTD: 8,
-        visitsLifetime: 47,
-        joinedAt: "2024-01-20",
-        conversionRate: 100,
-        rewardConfig: {
-          type: "hybrid",
-          pointsPerPound: 2,
-          pointsPerVisit: 10,
-          conversionRate: 100,
-        },
-      },
-      {
-        id: "grooming-lounge",
-        name: "The Grooming Lounge",
-        slug: "grooming-lounge",
-        tier: "platinum",
-        points: 156,
-        visitsMTD: 3,
-        visitsLifetime: 18,
-        joinedAt: "2024-02-15",
-        conversionRate: 100,
-        rewardConfig: {
-          type: "spend",
-          pointsPerPound: 3,
-          pointsPerVisit: 0,
-          conversionRate: 150,
-        },
-      },
-      {
-        id: "fresh-bakes",
-        name: "Fresh Bakes Bakery",
-        slug: "fresh-bakes",
-        tier: "silver",
-        points: 89,
-        visitsMTD: 5,
-        visitsLifetime: 12,
-        joinedAt: "2024-03-01",
-        conversionRate: 100,
-        rewardConfig: {
-          type: "visit",
-          pointsPerPound: 0,
-          pointsPerVisit: 15,
-          conversionRate: 100,
-        },
-      },
-    ];
-
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentStore, setCurrentStore] = useState(""); // Empty = all stores
-  const [connectedStores] = useState(MOCK_CONNECTED_STORES);
+  const [connectedStores, setConnectedStores] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch connected stores from API
+  const fetchConnectedStores = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/user/stores');
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch connected stores');
+      }
+
+      const data = await response.json();
+      setConnectedStores(data.stores || []);
+    } catch (error) {
+      console.error('Error fetching connected stores:', error);
+      setConnectedStores([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchConnectedStores();
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -83,11 +53,17 @@ export default function UserLayout({ children }) {
     return connectedStores.find((store) => store.id === currentStore) || null;
   };
 
+  const refreshStores = () => {
+    fetchConnectedStores();
+  };
+
   const contextValue = {
     currentStore,
     setCurrentStore,
     connectedStores,
     getCurrentStoreData,
+    loading,
+    refreshStores,
   };
 
   return (

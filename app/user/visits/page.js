@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Download } from "lucide-react";
 import { useUserStore } from "../layout";
 import Table from "@/components/ui/Table";
@@ -98,7 +98,8 @@ const MOCK_VISITS = [
 
 export default function UserVisits() {
   const { currentStore, setCurrentStore, connectedStores } = useUserStore();
-  const [visits] = useState(MOCK_VISITS);
+  const [visits, setVisits] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [methodFilter, setMethodFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -107,6 +108,37 @@ export default function UserVisits() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const itemsPerPage = 10;
+
+  // Fetch visits from API
+  const fetchVisits = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+      if (currentStore) params.append('storeId', currentStore);
+      if (statusFilter) params.append('status', statusFilter);
+      if (methodFilter) params.append('method', methodFilter);
+      if (dateFrom) params.append('dateFrom', dateFrom);
+      if (dateTo) params.append('dateTo', dateTo);
+
+      const response = await fetch(`/api/user/visits?${params}`);
+      if (response.ok) {
+        const data = await response.json();
+        setVisits(data.visits || []);
+      } else {
+        console.error('Failed to fetch visits');
+        setVisits([]);
+      }
+    } catch (error) {
+      console.error('Error fetching visits:', error);
+      setVisits([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchVisits();
+  }, [currentStore, statusFilter, methodFilter, dateFrom, dateTo]);
 
   // Filter visits based on current store and filters
   const filteredVisits = useMemo(() => {

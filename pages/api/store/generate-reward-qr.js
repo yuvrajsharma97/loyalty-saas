@@ -31,8 +31,10 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: "Store not found" });
     }
 
-    // Generate QR code URL
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+    // Generate QR code URL - use current request host for dynamic URL
+    const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
+    const host = req.headers['x-forwarded-host'] || req.headers.host;
+    const baseUrl = process.env.NEXTAUTH_URL || `${protocol}://${host}`;
     const qrCodeUrl = `${baseUrl}/store/${store._id}/claim-reward`;
 
     // Generate QR code as data URL (base64 image)

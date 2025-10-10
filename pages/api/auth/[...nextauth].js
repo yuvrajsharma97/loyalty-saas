@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { connectDB } from "../../../lib/db";
 import { loginWithRoleSchema } from "../../../lib/validators";
 import User from "../../../models/User";
+import logger, { loggers } from "../../../lib/logger";
 
 export const authOptions = {
   providers: [
@@ -28,6 +29,7 @@ export const authOptions = {
           // Find user
           const user = await User.findOne({ email }).lean();
           if (!user) {
+            loggers.logSecurity('Failed login attempt', { email, reason: 'User not found' });
             throw new Error("Invalid credentials");
           }
 
@@ -37,13 +39,17 @@ export const authOptions = {
             user.passwordHash
           );
           if (!isPasswordValid) {
+            loggers.logSecurity('Failed login attempt', { email, reason: 'Invalid password' });
             throw new Error("Invalid credentials");
           }
 
           // Check if user has the requested role
           if (user.role !== role) {
+            loggers.logSecurity('Failed login attempt', { email, requestedRole: role, actualRole: user.role, reason: 'Role mismatch' });
             throw new Error("Role not allowed for this user");
           }
+
+          loggers.logAuth('Login success', user._id.toString(), user.email, true);
           
           const userForToken = {
             id: user._id.toString(),
@@ -58,7 +64,7 @@ export const authOptions = {
 
           return userForToken;
         } catch (error) {
-          console.error("Auth error:", error);
+          loggers.logError(error, { context: 'NextAuth authorize', email: credentials?.email });
           throw new Error(error.message || "Authentication failed");
         }
       },

@@ -67,5 +67,7 @@ redemptionSchema.virtual('value_computed').get(function() {
 redemptionSchema.index({ userId: 1, createdAt: -1 });
 redemptionSchema.index({ storeId: 1, redemptionDate: -1 });
 redemptionSchema.index({ code: 1 }, { unique: true });
+redemptionSchema.index({ used: 1 }); // For filtering used/unused redemptions
+redemptionSchema.index({ storeId: 1, used: 1 }); // Compound for store-specific filtering
 
 export default mongoose.models.Redemption || mongoose.model("Redemption", redemptionSchema);

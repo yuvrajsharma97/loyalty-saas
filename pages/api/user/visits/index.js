@@ -2,6 +2,7 @@ import { connectDB } from "../../../../lib/db";
 import Visit from "../../../../models/Visit";
 import { requireUser } from "../../../../middleware/auth";
 import { visitFilterSchema } from "../../../../lib/validations";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -65,7 +66,7 @@ export default async function handler(req, res) {
             details: error.errors,
           });
         }
-        console.error("Get visits error:", error);
+        loggers.logError(error, { context: "Get visits error" });
         res.status(500).json({ error: "Internal server error" });
       }
     } else {

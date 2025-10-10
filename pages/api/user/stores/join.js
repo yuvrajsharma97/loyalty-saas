@@ -3,6 +3,7 @@ import User from "../../../../models/User";
 import Store from "../../../../models/Store";
 import { requireUser } from "../../../../middleware/auth";
 import { joinStoreSchema } from "../../../../lib/validations";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -58,7 +59,7 @@ export default async function handler(req, res) {
             details: error.errors,
           });
         }
-        console.error("Join store error:", error);
+        loggers.logError(error, { context: "Join store error" });
         res.status(500).json({ error: "Internal server error" });
       }
     } else {

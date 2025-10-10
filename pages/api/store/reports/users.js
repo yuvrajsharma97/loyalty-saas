@@ -4,6 +4,7 @@ import { requireStoreOwnership } from "../../../../lib/utils/storeAuth";
 import User from "../../../../models/User";
 import Visit from "../../../../models/Visit";
 import mongoose from "mongoose";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -146,7 +147,7 @@ export default async function handler(req, res) {
         });
 
       } catch (error) {
-        console.error("Store user report error:", error);
+        loggers.logError(error, { context: "Store user report" });
         res.status(500).json({
           error: "Internal server error",
           message: error.message

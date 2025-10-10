@@ -2,13 +2,13 @@
 import { useState, useMemo, useEffect } from "react";
 import { Download, UserCheck, AlertTriangle } from "lucide-react";
 import DataTable from "@/components/admin/DataTable";
-import TableToolbar from "@/components/admin/TableToolbar";
-import Pagination from "@/components/admin/Pagination";
+import TableToolbar from "@/components/ui/TableToolbar";
+import Pagination from "@/components/ui/Pagination";
 import Button from "@/components/admin/Button";
 import Select from "@/components/admin/Select";
 import Badge from "@/components/admin/Badge";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
-import Banner from "@/components/admin/Banner";
+import Banner from "@/components/ui/Banner";
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);

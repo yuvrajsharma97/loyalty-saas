@@ -3,6 +3,7 @@ import { authOptions } from "../auth/[...nextauth]";
 import { connectDB } from "@/lib/db";
 import Store from "@/models/Store";
 import QRCode from "qrcode";
+import logger, { loggers } from "../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -62,7 +63,7 @@ export default async function handler(req, res) {
       message: "Reward QR code generated successfully",
     });
   } catch (error) {
-    console.error("Error generating reward QR code:", error);
+    loggers.logError(error, { context: "Error generating reward QR code:" });
     return res.status(500).json({ error: "Failed to generate QR code" });
   }
 }

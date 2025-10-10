@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/db";
 import RewardClaim from "@/models/RewardClaim";
 import User from "@/models/User";
 import Store from "@/models/Store";
+import logger, { loggers } from "@/lib/logger";
 
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);
@@ -74,7 +75,7 @@ async function handleCreateClaim(req, res, session) {
       },
     });
   } catch (error) {
-    console.error("Error creating reward claim:", error);
+    loggers.logError(error, { context: "Error creating reward claim" });
     return res.status(500).json({ error: "Failed to submit claim" });
   }
 }
@@ -111,7 +112,7 @@ async function handleGetClaims(req, res, session) {
       })),
     });
   } catch (error) {
-    console.error("Error fetching reward claims:", error);
+    loggers.logError(error, { context: "Error fetching reward claims" });
     return res.status(500).json({ error: "Failed to fetch claims" });
   }
 }

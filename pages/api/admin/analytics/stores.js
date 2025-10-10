@@ -6,6 +6,7 @@ import User from "../../../../models/User";
 import Visit from "../../../../models/Visit";
 import Redemption from "../../../../models/Redemption";
 import mongoose from "mongoose";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -304,7 +305,7 @@ export default async function handler(req, res) {
       });
 
     } catch (error) {
-      console.error("Store analytics error:", error);
+      loggers.logError(error, { context: "Store analytics" });
       res.status(500).json({
         success: false,
         error: "Failed to fetch store analytics"

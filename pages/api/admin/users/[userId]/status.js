@@ -3,6 +3,7 @@ import { requireSuperAdmin } from "../../../../../middleware/auth";
 import { userStatusChangeSchema } from "../../../../../lib/validations/admin";
 import { mongoIdSchema } from "../../../../../lib/validations";
 import User from "../../../../../models/User";
+import logger, { loggers } from "../../../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "PUT") {
@@ -35,7 +36,7 @@ export default async function handler(req, res) {
         lastStatusChange: new Date(),
       });
 
-      console.log(
+      logger.info(
         `Status changed for user ${user.name} (${
           user.email
         }): ${oldStatus} -> ${newStatus}. Reason: ${reason || "Not provided"}`
@@ -56,7 +57,7 @@ export default async function handler(req, res) {
         } successfully`,
       });
     } catch (error) {
-      console.error("User status change error:", error);
+      loggers.logError(error, { context: "User status change error" });
       return res.status(500).json({
         success: false,
         error: "Failed to change user status",

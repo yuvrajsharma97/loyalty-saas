@@ -3,6 +3,7 @@ import { requireSuperAdmin } from "../../../../middleware/auth";
 import { adminBulkUserActionSchema } from "../../../../lib/validations/admin";
 import User from "../../../../models/User";
 import Store from "../../../../models/Store";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -57,7 +58,7 @@ export default async function handler(req, res) {
         message: `Bulk ${action} completed. ${results.successful} successful, ${results.failed} failed.`,
       });
     } catch (error) {
-      console.error("Bulk action error:", error);
+      loggers.logError(error, { context: "Bulk action" });
       return res.status(500).json({
         success: false,
         error: "Failed to perform bulk action",

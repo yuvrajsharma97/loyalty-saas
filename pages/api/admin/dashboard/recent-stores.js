@@ -2,6 +2,7 @@ import { connectDB } from "../../../../lib/db";
 import { requireSuperAdmin } from "../../../../middleware/auth";
 import Store from "../../../../models/Store";
 import User from "../../../../models/User";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -46,7 +47,7 @@ export default async function handler(req, res) {
         data: storesWithMetadata,
       });
     } catch (error) {
-      console.error("Recent stores error:", error);
+      loggers.logError(error, { context: "Recent stores" });
       return res.status(500).json({
         success: false,
         error: "Failed to fetch recent stores",

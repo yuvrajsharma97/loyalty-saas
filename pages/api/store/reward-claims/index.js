@@ -3,6 +3,7 @@ import { authOptions } from "../../auth/[...nextauth]";
 import { connectDB } from "@/lib/db";
 import RewardClaim from "@/models/RewardClaim";
 import Store from "@/models/Store";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -50,7 +51,7 @@ export default async function handler(req, res) {
       })),
     });
   } catch (error) {
-    console.error("Error fetching reward claims:", error);
+    loggers.logError(error, { context: "Error fetching reward claims:" });
     return res.status(500).json({ error: "Failed to fetch reward claims" });
   }
 }

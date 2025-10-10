@@ -5,6 +5,7 @@ import Store from "../../../../models/Store";
 import User from "../../../../models/User";
 import Visit from "../../../../models/Visit";
 import Redemption from "../../../../models/Redemption";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -157,7 +158,7 @@ export default async function handler(req, res) {
 
       return res.status(200).send(csvContent);
     } catch (error) {
-      console.error("CSV export error:", error);
+      loggers.logError(error, { context: "CSV export" });
 
       if (error.name === "ZodError") {
         return res.status(400).json({

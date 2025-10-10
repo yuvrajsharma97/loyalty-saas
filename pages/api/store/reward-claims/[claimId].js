@@ -3,6 +3,7 @@ import { authOptions } from "../../auth/[...nextauth]";
 import { connectDB } from "@/lib/db";
 import RewardClaim from "@/models/RewardClaim";
 import Store from "@/models/Store";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "PUT") {
@@ -70,7 +71,7 @@ export default async function handler(req, res) {
       },
     });
   } catch (error) {
-    console.error("Error updating reward claim:", error);
+    loggers.logError(error, { context: "Error updating reward claim:" });
     return res.status(500).json({ error: "Failed to update claim" });
   }
 }

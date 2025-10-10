@@ -1,5 +1,6 @@
 import { connectDB } from "@/lib/db";
 import Store from "@/models/Store";
+import logger, { loggers } from "../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -39,7 +40,7 @@ export default async function handler(req, res) {
       },
     });
   } catch (error) {
-    console.error("Error fetching store:", error);
+    loggers.logError(error, { context: "Error fetching store:" });
     return res.status(500).json({ error: "Failed to fetch store" });
   }
 }

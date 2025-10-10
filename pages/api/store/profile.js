@@ -6,6 +6,7 @@ import { calculateTierFromUserCount } from "../../../lib/utils/pointsCalculation
 import Store from "../../../models/Store";
 import User from "../../../models/User";
 import mongoose from "mongoose";
+import logger, { loggers } from "../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -98,7 +99,7 @@ export default async function handler(req, res) {
             details: error.errors,
           });
         }
-        console.error("Store profile error:", error);
+        loggers.logError(error, { context: "Store profile error" });
         res.status(500).json({ error: "Internal server error" });
       }
     })

@@ -1,6 +1,7 @@
 import { connectDB } from "../../../../lib/db";
 import Visit from "../../../../models/Visit";
 import { requireUser } from "../../../../middleware/auth";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -34,7 +35,7 @@ export default async function handler(req, res) {
           approvedAt: visit.approvedAt,
         });
       } catch (error) {
-        console.error("Get visit error:", error);
+        loggers.logError(error, { context: "Get visit error" });
         res.status(500).json({ error: "Internal server error" });
       }
     } else {

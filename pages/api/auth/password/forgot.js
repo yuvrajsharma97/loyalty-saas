@@ -1,11 +1,12 @@
 // /pages/api/auth/password/forgot.js
 import { nanoid } from "nanoid";
 import { connectDB } from "../../../../lib/db";
-import { withRateLimit } from "../../../../lib/rate-limit";
+import { withPresetRateLimit } from "../../../../lib/rate-limit-redis";
 import { forgotPasswordSchema } from "../../../../lib/validators";
 import { sendEmail, passwordResetTemplate } from "../../../../lib/email";
 import User from "../../../../models/User";
 import PasswordReset from "../../../../models/PasswordReset";
+import logger, { loggers } from "../../../../lib/logger";
 
 async function handler(req, res) {
   if (req.method !== "POST") {
@@ -52,7 +53,7 @@ async function handler(req, res) {
       message: "If the account exists, a reset link has been sent.",
     });
   } catch (error) {
-    console.error("Forgot password error:", error);
+    loggers.logError(error, { context: "Forgot password error" });
 
     if (error.name === "ZodError") {
       return res.status(400).json({
@@ -66,4 +67,5 @@ async function handler(req, res) {
   }
 }
 
-export default withRateLimit(handler, { max: 3, windowMs: 60_000 });
+// Use sensitive rate limiting (3 requests per 5 minutes)
+export default withPresetRateLimit('sensitive')(null, null, handler);

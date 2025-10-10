@@ -4,6 +4,7 @@ import User from "../../../../models/User";
 import Store from "../../../../models/Store";
 import Visit from "../../../../models/Visit";
 import Redemption from "../../../../models/Redemption";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -84,7 +85,7 @@ export default async function handler(req, res) {
         },
       });
     } catch (error) {
-      console.error("Platform stats error:", error);
+      loggers.logError(error, { context: "Platform stats" });
       return res.status(500).json({
         success: false,
         error: "Failed to fetch platform statistics",

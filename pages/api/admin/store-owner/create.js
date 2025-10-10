@@ -5,6 +5,7 @@ import User from "../../../../models/User";
 import Store from "../../../../models/Store";
 import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -79,7 +80,7 @@ export default async function handler(req, res) {
       await store.save();
 
       // TODO: Implement proper email service
-      console.log(
+      logger.info(
         `Store owner created: ${ownerEmail} with temp password: ${tempPassword}`
       );
 
@@ -105,15 +106,15 @@ export default async function handler(req, res) {
         message: "Store owner and store created successfully",
       });
     } catch (error) {
-      console.error("Store owner creation error:", error);
+      loggers.logError(error, { context: "Store owner creation error" });
 
       // Clean up created user if store creation failed
       if (createdUser && error.message.includes("Store")) {
         try {
           await User.findByIdAndDelete(createdUser._id);
-          console.log("Cleaned up created user due to store creation failure");
+          logger.info("Cleaned up created user due to store creation failure");
         } catch (cleanupError) {
-          console.error("Failed to cleanup user:", cleanupError);
+          loggers.logError(cleanupError, { context: "Failed to cleanup user" });
         }
       }
 

@@ -4,6 +4,7 @@ import { adminRoleChangeSchema } from "../../../../lib/validations/admin";
 import { mongoIdSchema } from "../../../../lib/validations";
 import User from "../../../../models/User";
 import Store from "../../../../models/Store";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "PUT") {
@@ -52,7 +53,7 @@ export default async function handler(req, res) {
       await user.save();
 
       // Log the role change (you could add to an audit log collection)
-      console.log(
+      logger.info(
         `Role changed for user ${user.email}: ${oldRole} -> ${newRole}. Reason: ${reason || "Not provided"}`
       );
 
@@ -69,7 +70,7 @@ export default async function handler(req, res) {
         message: `Role changed to ${newRole}`,
       });
     } catch (error) {
-      console.error("Role change error:", error);
+      loggers.logError(error, { context: "Role change error" });
 
       if (error.name === "ZodError") {
         return res.status(400).json({

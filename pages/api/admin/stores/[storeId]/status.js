@@ -3,6 +3,7 @@ import { requireSuperAdmin } from "../../../../../middleware/auth";
 import { storeStatusChangeSchema } from "../../../../../lib/validations/admin";
 import { mongoIdSchema } from "../../../../../lib/validations";
 import Store from "../../../../../models/Store";
+import logger, { loggers } from "../../../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "PUT") {
@@ -33,7 +34,7 @@ export default async function handler(req, res) {
       store.isActive = status === "active";
       await store.save();
 
-      console.log(
+      logger.info(
         `Status changed for store ${
           store.name
         }: ${oldStatus} -> ${newStatus}. Reason: ${reason || "Not provided"}`
@@ -53,7 +54,7 @@ export default async function handler(req, res) {
         } successfully`,
       });
     } catch (error) {
-      console.error("Store status change error:", error);
+      loggers.logError(error, { context: "Store status change error" });
       return res.status(500).json({
         success: false,
         error: "Failed to change store status",

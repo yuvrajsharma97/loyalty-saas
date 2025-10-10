@@ -3,6 +3,7 @@ import User from "../../../../models/User";
 import Visit from "../../../../models/Visit";
 import Store from "../../../../models/Store";
 import { requireUser } from "../../../../middleware/auth";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -144,7 +145,7 @@ export default async function handler(req, res) {
           storeBreakdown,
         });
       } catch (error) {
-        console.error("Get dashboard metrics error:", error);
+        loggers.logError(error, { context: "Get dashboard metrics error" });
         res.status(500).json({ error: "Internal server error" });
       }
     } else {

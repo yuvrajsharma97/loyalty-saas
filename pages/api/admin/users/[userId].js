@@ -5,6 +5,7 @@ import { mongoIdSchema } from "../../../../lib/validations";
 import User from "../../../../models/User";
 import Store from "../../../../models/Store";
 import Visit from "../../../../models/Visit";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   return requireSuperAdmin(req, res, async (req, res) => {
@@ -29,7 +30,7 @@ export default async function handler(req, res) {
         });
       }
     } catch (error) {
-      console.error("User API error:", error);
+      loggers.logError(error, { context: "User API" });
       return res.status(500).json({
         success: false,
         error: "Internal server error"

@@ -3,7 +3,7 @@ import { useState, useMemo } from 'react';
 import { Download, Store, Users, TrendingUp, Activity, Gift } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import DataTable from '@/components/admin/DataTable';
-import TableToolbar from '@/components/admin/TableToolbar';
+import TableToolbar from '@/components/ui/TableToolbar';
 import Button from '@/components/admin/Button';
 import Select from '@/components/admin/Select';
 import Badge from '@/components/admin/Badge';

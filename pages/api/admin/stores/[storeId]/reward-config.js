@@ -3,6 +3,7 @@ import { requireSuperAdmin } from "../../../../../middleware/auth";
 import { rewardConfigOverrideSchema } from "../../../../../lib/validations/admin";
 import { mongoIdSchema } from "../../../../../lib/validations";
 import Store from "../../../../../models/Store";
+import logger, { loggers } from "../../../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "PUT") {
@@ -39,7 +40,7 @@ export default async function handler(req, res) {
 
       await store.save();
 
-      console.log(
+      logger.info(
         `Reward config overridden for store ${store.name}. Reason: ${
           reason || "Not provided"
         }`
@@ -57,7 +58,7 @@ export default async function handler(req, res) {
         message: "Reward configuration updated successfully",
       });
     } catch (error) {
-      console.error("Reward config override error:", error);
+      loggers.logError(error, { context: "Reward config override error" });
       return res.status(500).json({
         success: false,
         error: "Failed to override reward configuration",

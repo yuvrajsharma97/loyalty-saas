@@ -3,6 +3,7 @@ import { requireSuperAdmin } from "../../../../../middleware/auth";
 import { storeTierChangeSchema } from "../../../../../lib/validations/admin";
 import { mongoIdSchema } from "../../../../../lib/validations";
 import Store from "../../../../../models/Store";
+import logger, { loggers } from "../../../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "PUT") {
@@ -31,7 +32,7 @@ export default async function handler(req, res) {
       store.tier = newTier;
       await store.save();
 
-      console.log(
+      logger.info(
         `Tier changed for store ${
           store.name
         }: ${oldTier} -> ${newTier}. Reason: ${reason || "Not provided"}`
@@ -49,7 +50,7 @@ export default async function handler(req, res) {
         message: `Store tier updated to ${newTier}`,
       });
     } catch (error) {
-      console.error("Tier change error:", error);
+      loggers.logError(error, { context: "Tier change error" });
 
       if (error.name === "ZodError") {
         return res.status(400).json({

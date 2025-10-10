@@ -10,6 +10,7 @@ import User from "../../../../models/User";
 import Visit from "../../../../models/Visit";
 import Redemption from "../../../../models/Redemption";
 import mongoose from "mongoose";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   return requireSuperAdmin(req, res, async (req, res) => {
@@ -32,7 +33,7 @@ export default async function handler(req, res) {
         });
       }
     } catch (error) {
-      console.error("Store API error:", error);
+      loggers.logError(error, { context: "Store API" });
       return res.status(500).json({
         success: false,
         error: "Internal server error",

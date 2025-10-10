@@ -3,6 +3,8 @@ import { requireSuperAdmin } from "../../../../middleware/auth";
 import { adminUserFiltersSchema } from "../../../../lib/validations/admin";
 import User from "../../../../models/User";
 import Store from "../../../../models/Store";
+import logger, { loggers } from "../../../../lib/logger";
+import { sendSuccess, sendError, sendPaginatedSuccess, sendCreated } from "../../../../lib/api-response";
 
 export default async function handler(req, res) {
   return requireSuperAdmin(req, res, async (req, res) => {
@@ -14,17 +16,11 @@ export default async function handler(req, res) {
       } else if (req.method === "POST") {
         return await createUser(req, res);
       } else {
-        return res.status(405).json({
-          success: false,
-          error: "Method not allowed",
-        });
+        return sendError(res, "Method not allowed", 405);
       }
     } catch (error) {
-      console.error("Users API error:", error);
-      return res.status(500).json({
-        success: false,
-        error: "Internal server error",
-      });
+      loggers.logError(error, { context: 'Admin users API', method: req.method });
+      return sendError(res, "Internal server error", 500);
     }
   });
 }
@@ -99,17 +95,7 @@ async function getUsersList(req, res) {
       );
     }
 
-    return res.status(200).json({
-      success: true,
-      data: filteredUsers,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-        hasMore: total > skip + limit,
-      },
-    });
+    return sendPaginatedSuccess(res, filteredUsers, { page, limit, total });
   } catch (error) {
     throw error;
   }
@@ -123,10 +109,7 @@ async function createUser(req, res) {
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        error: "User with this email already exists",
-      });
+      return sendError(res, "User with this email already exists", 400);
     }
 
     // Create user with temporary password
@@ -144,17 +127,18 @@ async function createUser(req, res) {
     await user.save();
 
     // TODO: Send invitation email with temporary password
-    console.log(`User created: ${email} with temp password: ${tempPassword}`);
+    logger.info('User created by admin', {
+      userId: user._id.toString(),
+      email: user.email,
+      role: user.role
+    });
 
-    return res.status(201).json({
-      success: true,
-      data: {
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        },
+    return sendCreated(res, {
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
       },
     });
   } catch (error) {

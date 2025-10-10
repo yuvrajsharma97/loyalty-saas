@@ -5,12 +5,12 @@ import { Settings, Users, Activity, Gift } from "lucide-react";
 import StatCard from "@/components/admin/StatCard";
 import Badge from "@/components/admin/Badge";
 import Button from "@/components/admin/Button";
-import Tabs from "@/components/admin/Tabs";
+import Tabs from "@/components/ui/Tabs";
 import DataTable from "@/components/admin/DataTable";
 import Modal from "@/components/admin/Modal";
 import Select from "@/components/admin/Select";
 import Input from "@/components/admin/Input";
-import Banner from "@/components/admin/Banner";
+import Banner from "@/components/ui/Banner";
 
 const MOCK_STORES = [
   {

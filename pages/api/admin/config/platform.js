@@ -1,6 +1,7 @@
 import { connectDB } from "../../../../lib/db";
 import { requireSuperAdmin } from "../../../../middleware/auth";
 import { adminPlatformConfigSchema } from "../../../../lib/validations/admin";
+import logger, { loggers } from "../../../../lib/logger";
 
 // In a real app, you'd have a Config model. For now, we'll simulate it.
 let platformConfig = {
@@ -49,7 +50,7 @@ export default async function handler(req, res) {
         });
       }
     } catch (error) {
-      console.error("Platform config error:", error);
+      loggers.logError(error, { context: "Platform config" });
       return res.status(500).json({
         success: false,
         error: "Failed to manage platform configuration",

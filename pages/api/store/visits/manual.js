@@ -7,6 +7,7 @@ import Visit from "../../../../models/Visit";
 import Store from "../../../../models/Store";
 import User from "../../../../models/User";
 import mongoose from "mongoose";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -117,7 +118,7 @@ export default async function handler(req, res) {
             details: error.errors,
           });
         }
-        console.error("Manual visit error:", error);
+        loggers.logError(error, { context: "Manual visit" });
         res
           .status(500)
           .json({ error: error.message || "Internal server error" });

@@ -5,6 +5,7 @@ import Redemption from "../../../../models/Redemption";
 import { requireUser } from "../../../../middleware/auth";
 import { redeemPointsSchema } from "../../../../lib/validations";
 import mongoose from "mongoose";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -87,7 +88,7 @@ export default async function handler(req, res) {
             details: error.errors,
           });
         }
-        console.error("Redemption error:", error);
+        loggers.logError(error, { context: "Redemption error" });
         res.status(500).json({ error: "Internal server error" });
       }
     } else {

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Store, Users, CheckCircle, Gift, TrendingUp } from "lucide-react";
 import StatCard from "@/components/admin/StatCard";
 import DataTable from "@/components/admin/DataTable";
-import Banner from "@/components/admin/Banner";
+import Banner from "@/components/ui/Banner";
 
 export default function AdminDashboard() {
   const [showBanner, setShowBanner] = useState(true);

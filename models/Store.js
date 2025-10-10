@@ -69,5 +69,9 @@ const storeSchema = new mongoose.Schema(
 storeSchema.index({ slug: 1 });
 storeSchema.index({ ownerId: 1 });
 storeSchema.index({ qrCode: 1 });
+storeSchema.index({ isActive: 1 }); // For filtering active/inactive stores
+storeSchema.index({ tier: 1 }); // For filtering by tier
+storeSchema.index({ createdAt: -1 }); // For sorting by creation date
+storeSchema.index({ isActive: 1, tier: 1 }); // Compound index for common queries
 
 export default mongoose.models.Store || mongoose.model("Store", storeSchema);

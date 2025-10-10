@@ -56,5 +56,8 @@ const visitSchema = new mongoose.Schema(
 visitSchema.index({ userId: 1, createdAt: -1 });
 visitSchema.index({ storeId: 1, createdAt: -1 });
 visitSchema.index({ status: 1 });
+visitSchema.index({ status: 1, createdAt: -1 }); // Compound index for filtering + sorting
+visitSchema.index({ storeId: 1, status: 1 }); // For store-specific status filtering
+visitSchema.index({ approvedAt: -1 }); // For analytics
 
 export default mongoose.models.Visit || mongoose.model("Visit", visitSchema);

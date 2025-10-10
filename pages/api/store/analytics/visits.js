@@ -5,6 +5,7 @@ import { analyticsQuerySchema } from "../../../../lib/validations/store";
 import { getVisitTrendsAggregation } from "../../../../lib/utils/aggregations";
 import Visit from "../../../../models/Visit";
 import mongoose from "mongoose";
+import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -72,7 +73,7 @@ export default async function handler(req, res) {
             details: error.errors,
           });
         }
-        console.error("Visit analytics error:", error);
+        loggers.logError(error, { context: "Visit analytics" });
         res.status(500).json({ error: "Internal server error" });
       }
     })

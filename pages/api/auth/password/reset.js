@@ -1,10 +1,11 @@
 // /pages/api/auth/password/reset.js
 import bcrypt from "bcryptjs";
 import { connectDB } from "../../../../lib/db";
-import { withRateLimit } from "../../../../lib/rate-limit";
+import { withPresetRateLimit } from "../../../../lib/rate-limit-redis";
 import { resetPasswordSchema } from "../../../../lib/validators";
 import User from "../../../../models/User";
 import PasswordReset from "../../../../models/PasswordReset";
+import logger, { loggers } from "../../../../lib/logger";
 
 async function handler(req, res) {
   if (req.method !== "POST") {
@@ -45,7 +46,7 @@ async function handler(req, res) {
 
     return res.status(200).json({ ok: true });
   } catch (error) {
-    console.error("Reset password error:", error);
+    loggers.logError(error, { context: "Reset password error" });
 
     if (error.name === "ZodError") {
       return res.status(400).json({
@@ -59,4 +60,5 @@ async function handler(req, res) {
   }
 }
 
-export default withRateLimit(handler, { max: 5, windowMs: 60_000 });
+// Use auth rate limiting (5 requests per minute)
+export default withPresetRateLimit('auth')(null, null, handler);

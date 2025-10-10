@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import Button from "@/components/admin/Button";
 import Input from "@/components/admin/Input";
-import Banner from "@/components/admin/Banner";
+import Banner from "@/components/ui/Banner";
 
 export default function CreateStoreOwner() {
   const router = useRouter();

@@ -1,9 +1,10 @@
 // /pages/api/auth/register.js
 import bcrypt from "bcryptjs";
 import { connectDB } from "../../../lib/db";
-import { withRateLimit } from "../../../lib/rate-limit";
+import { withPresetRateLimit } from "../../../lib/rate-limit-redis";
 import { registerUserSchema } from "../../../lib/validators";
 import User from "../../../models/User";
+import logger, { loggers } from "../../../lib/logger";
 
 async function handler(req, res) {
   if (req.method !== "POST") {
@@ -45,7 +46,7 @@ async function handler(req, res) {
       },
     });
   } catch (error) {
-    console.error("Registration error:", error);
+    loggers.logError(error, { context: "Registration error" });
 
     if (error.name === "ZodError") {
       return res.status(400).json({
@@ -59,4 +60,5 @@ async function handler(req, res) {
   }
 }
 
-export default withRateLimit(handler, { max: 5, windowMs: 60_000 });
+// Use strict auth rate limiting (5 requests per minute)
+export default withPresetRateLimit('auth')(null, null, handler);

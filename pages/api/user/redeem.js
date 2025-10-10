@@ -5,6 +5,7 @@ import { redeemPoints } from "../../../lib/points";
 import User from "../../../models/User";
 import Store from "../../../models/Store";
 import { mongoIdSchema } from "../../../lib/validations";
+import logger, { loggers } from "../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -81,11 +82,12 @@ export default async function handler(req, res) {
       });
 
     } catch (error) {
-      console.error("Redemption error:", error);
-      console.error("Error details:", {
-        message: error.message,
-        stack: error.stack,
-        name: error.name
+      loggers.logError(error, {
+        context: "Redemption error",
+        details: {
+          message: error.message,
+          name: error.name
+        }
       });
 
       if (error.name === "ZodError") {

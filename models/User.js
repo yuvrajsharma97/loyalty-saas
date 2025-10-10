@@ -76,5 +76,7 @@ const userSchema = new mongoose.Schema(
 
 // Add additional indexes for performance
 userSchema.index({ "pointsByStore.storeId": 1 });
+userSchema.index({ lastLogin: -1 }); // For analytics/recent activity
+userSchema.index({ createdAt: -1 }); // For sorting by registration date
 
 export default mongoose.models.User || mongoose.model("User", userSchema);

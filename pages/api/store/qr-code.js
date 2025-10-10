@@ -4,6 +4,7 @@ import { requireStoreOwnership } from "../../../lib/utils/storeAuth";
 import Store from "../../../models/Store";
 import { v4 as uuidv4 } from "uuid";
 import mongoose from "mongoose";
+import logger, { loggers } from "../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -39,7 +40,7 @@ export default async function handler(req, res) {
           qrUrl: `${process.env.NEXTAUTH_URL}/visit/${store.slug}?qr=${newQrCode}`,
         });
       } catch (error) {
-        console.error("Generate QR code error:", error);
+        loggers.logError(error, { context: "Generate QR code error" });
         res.status(500).json({ error: "Internal server error" });
       }
     })

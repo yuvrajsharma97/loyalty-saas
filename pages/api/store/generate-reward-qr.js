@@ -3,7 +3,7 @@ import { authOptions } from "../auth/[...nextauth]";
 import { connectDB } from "@/lib/db";
 import Store from "@/models/Store";
 import QRCode from "qrcode";
-import logger, { loggers } from "../lib/logger";
+import logger, { loggers } from "../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {

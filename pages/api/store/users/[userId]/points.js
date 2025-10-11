@@ -4,7 +4,7 @@ import { requireStoreOwnership } from "../../../../../lib/utils/storeAuth";
 import { pointsAdjustmentSchema } from "../../../../../lib/validations/store";
 import User from "../../../../../models/User";
 import mongoose from "mongoose";
-import logger, { loggers } from "../../../lib/logger";
+import logger, { loggers } from "../../../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();

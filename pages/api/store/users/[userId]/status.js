@@ -3,7 +3,7 @@ import { requireStoreAdmin } from "../../../../../middleware/auth";
 import { requireStoreOwnership } from "../../../../../lib/utils/storeAuth";
 import User from "../../../../../models/User";
 import mongoose from "mongoose";
-import logger, { loggers } from "../../../lib/logger";
+import logger, { loggers } from "../../../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();

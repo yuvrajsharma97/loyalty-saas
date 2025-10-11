@@ -4,7 +4,7 @@ import { requireStoreAdmin } from "../../../middleware/auth";
 import Redemption from "../../../models/Redemption";
 import Store from "../../../models/Store";
 import { mongoIdSchema } from "../../../lib/validations";
-import logger, { loggers } from "../lib/logger";
+import logger, { loggers } from "../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {

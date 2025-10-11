@@ -1,6 +1,5 @@
 import { ZodError } from 'zod';
 import { sendValidationError } from '../lib/api-response.js';
-import logger from '../lib/logger.js';
 
 /**
  * Validates request data against a Zod schema
@@ -31,7 +30,7 @@ export function validateRequest(schema, source = 'body') {
           code: err.code,
         }));
 
-        logger.warn('Validation error', {
+        console.warn('Validation error', {
           source,
           errors: formattedErrors,
           path: req.url,
@@ -41,7 +40,7 @@ export function validateRequest(schema, source = 'body') {
       }
 
       // Handle unexpected errors
-      logger.error('Unexpected validation error', { error, source, path: req.url });
+      console.error('Unexpected validation error', { error, source, path: req.url });
       return sendValidationError(res, [{ message: 'Validation failed' }]);
     }
   };

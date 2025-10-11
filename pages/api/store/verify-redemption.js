@@ -4,7 +4,6 @@ import { requireStoreAdmin } from "../../../middleware/auth";
 import Redemption from "../../../models/Redemption";
 import Store from "../../../models/Store";
 import { mongoIdSchema } from "../../../lib/validations";
-import logger, { loggers } from "../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -90,7 +89,7 @@ export default async function handler(req, res) {
       });
 
     } catch (error) {
-      loggers.logError(error, { context: "Redemption verification" });
+      console.error('Error:', error.message || error);
 
       if (error.name === "ZodError") {
         return res.status(400).json({

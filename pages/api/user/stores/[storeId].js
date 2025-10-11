@@ -1,7 +1,6 @@
 import { connectDB } from "../../../../lib/db";
 import User from "../../../../models/User";
 import { requireUser } from "../../../../middleware/auth";
-import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -28,7 +27,7 @@ export default async function handler(req, res) {
 
         res.json({ message: "Successfully left store" });
       } catch (error) {
-        loggers.logError(error, { context: "Leave store error" });
+        console.error('Error:', error.message || error);
         res.status(500).json({ error: "Internal server error" });
       }
     } else {

@@ -4,7 +4,6 @@ import { requireStoreOwnership } from "../../../lib/utils/storeAuth";
 import { storeStatusSchema } from "../../../lib/validations/store";
 import Store from "../../../models/Store";
 import mongoose from "mongoose";
-import logger, { loggers } from "../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -51,7 +50,7 @@ export default async function handler(req, res) {
             details: error.errors,
           });
         }
-        loggers.logError(error, { context: "Update store status error" });
+        console.error('Error:', error.message || error);
         res.status(500).json({ error: "Internal server error" });
       }
     })

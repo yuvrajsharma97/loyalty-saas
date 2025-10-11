@@ -6,7 +6,6 @@ import { forgotPasswordSchema } from "../../../../lib/validators";
 import { sendEmail, passwordResetTemplate } from "../../../../lib/email";
 import User from "../../../../models/User";
 import PasswordReset from "../../../../models/PasswordReset";
-import logger, { loggers } from "../../../../lib/logger";
 
 async function handler(req, res) {
   if (req.method !== "POST") {
@@ -53,7 +52,7 @@ async function handler(req, res) {
       message: "If the account exists, a reset link has been sent.",
     });
   } catch (error) {
-    loggers.logError(error, { context: "Forgot password error" });
+    console.error('Error:', error.message || error);
 
     if (error.name === "ZodError") {
       return res.status(400).json({

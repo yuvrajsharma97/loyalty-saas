@@ -4,7 +4,6 @@ import { requireStoreOwnership } from "../../../../../lib/utils/storeAuth";
 import { visitRejectionSchema } from "../../../../../lib/validations/store";
 import Visit from "../../../../../models/Visit";
 import mongoose from "mongoose";
-import logger, { loggers } from "../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -66,7 +65,7 @@ export default async function handler(req, res) {
             details: error.errors,
           });
         }
-        loggers.logError(error, { context: "Reject visit" });
+        console.error('Error:', error.message || error);
         res.status(500).json({ error: "Internal server error" });
       }
     })

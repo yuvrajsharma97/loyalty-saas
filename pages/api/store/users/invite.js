@@ -5,7 +5,6 @@ import { userInviteSchema } from "../../../../lib/validations/store";
 import User from "../../../../models/User";
 import Store from "../../../../models/Store";
 import mongoose from "mongoose";
-import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -103,7 +102,7 @@ export default async function handler(req, res) {
         if (error.code === 11000) {
           return res.status(400).json({ error: "Email already exists" });
         }
-        loggers.logError(error, { context: "Invite user" });
+        console.error('Error:', error.message || error);
         res.status(500).json({ error: "Internal server error" });
       }
     })

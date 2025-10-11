@@ -4,7 +4,6 @@ import { connectDB } from "../../../lib/db";
 import { withPresetRateLimit } from "../../../lib/rate-limit-redis";
 import { registerUserSchema } from "../../../lib/validators";
 import User from "../../../models/User";
-import logger, { loggers } from "../../../lib/logger";
 
 async function handler(req, res) {
   if (req.method !== "POST") {
@@ -46,7 +45,7 @@ async function handler(req, res) {
       },
     });
   } catch (error) {
-    loggers.logError(error, { context: "Registration error" });
+    console.error('Error:', error.message || error);
 
     if (error.name === "ZodError") {
       return res.status(400).json({

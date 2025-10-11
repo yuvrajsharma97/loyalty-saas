@@ -5,7 +5,6 @@ import {
   paginationSchema,
 } from "../../../../../lib/validations";
 import User from "../../../../../models/User";
-import logger, { loggers } from "../../../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -62,7 +61,7 @@ export default async function handler(req, res) {
         },
       });
     } catch (error) {
-      loggers.logError(error, { context: "Store visits" });
+      console.error('Error:', error.message || error);
       return res.status(500).json({
         success: false,
         error: "Failed to fetch store visits",

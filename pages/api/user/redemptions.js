@@ -3,7 +3,6 @@ import { connectDB } from "../../../lib/db";
 import { requireUser } from "../../../middleware/auth";
 import Redemption from "../../../models/Redemption";
 import { paginationSchema } from "../../../lib/validations";
-import logger, { loggers } from "../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -60,7 +59,7 @@ export default async function handler(req, res) {
       });
 
     } catch (error) {
-      loggers.logError(error, { context: "Redemptions fetch error" });
+      console.error('Error:', error.message || error);
 
       if (error.name === "ZodError") {
         return res.status(400).json({

@@ -5,7 +5,6 @@ import {
   paginationSchema,
 } from "../../../../../lib/validations";
 import Redemption from "../../../../../models/Redemption";
-import logger, { loggers } from "../../../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -57,7 +56,7 @@ export default async function handler(req, res) {
         },
       });
     } catch (error) {
-      loggers.logError(error, { context: "Store rewards" });
+      console.error('Error:', error.message || error);
       return res.status(500).json({
         success: false,
         error: "Failed to fetch store rewards",

@@ -1,7 +1,6 @@
 // /pages/api/auth/whoami.js
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "./[...nextauth]";
-import logger, { loggers } from "../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -27,7 +26,7 @@ export default async function handler(req, res) {
       },
     });
   } catch (error) {
-    loggers.logError(error, { context: "Whoami error" });
+    console.error('Error:', error.message || error);
     return res.status(500).json({ ok: false, error: "Internal server error" });
   }
 }

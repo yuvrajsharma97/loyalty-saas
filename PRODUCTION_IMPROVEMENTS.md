@@ -81,33 +81,7 @@ db.redemptions.reIndex();
 
 ---
 
-### 4. Winston Logger (2 hours) ✅
-**File:** `lib/logger.js`
-
-**Features:**
-- Structured logging with Winston
-- Different log levels (info, warn, error, debug)
-- Colorized console output in development
-- JSON format for production
-- Helper methods for common patterns
-
-**Usage:**
-```javascript
-import logger, { loggers } from '@/lib/logger';
-
-// Basic logging
-logger.info('Something happened', { userId: '123' });
-logger.error('Error occurred', { error, context: 'API' });
-
-// Helper methods
-loggers.logAuth('Login success', userId, email);
-loggers.logSecurity('Failed login', { email, reason: 'Invalid password' });
-loggers.logError(error, { context: 'Payment processing' });
-```
-
----
-
-### 5. Standardized API Responses (2 hours) ✅
+### 4. Standardized API Responses (2 hours) ✅
 **File:** `lib/api-response.js`
 
 **Available Functions:**
@@ -139,7 +113,7 @@ return sendPaginatedSuccess(res, users, { page, limit, total });
 
 ---
 
-### 6. Request Validation Middleware (1 hour) ✅
+### 5. Request Validation Middleware (1 hour) ✅
 **File:** `middleware/validation.js`
 
 **Functions:**
@@ -171,7 +145,7 @@ export default withValidation(
 
 ---
 
-### 7. MongoDB Connection Pool (15 min) ✅
+### 6. MongoDB Connection Pool (15 min) ✅
 **File:** `lib/db.js`
 
 **Configuration:**
@@ -188,7 +162,7 @@ export default withValidation(
 
 ---
 
-### 8. User Notifications/Toast System (1 hour) ✅
+### 7. User Notifications/Toast System (1 hour) ✅
 **Files:** `components/providers/ToastProvider.js`, `lib/toast.js`
 
 **Features:**
@@ -240,7 +214,7 @@ try {
 
 ---
 
-### 9. React Error Boundaries (1 hour) ✅
+### 8. React Error Boundaries (1 hour) ✅
 **Files:** `components/ErrorBoundary.js`, `app/layout.js`
 
 **Features:**
@@ -261,13 +235,12 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 
 ---
 
-### 10. Updated Sample API Routes (2 hours) ✅
+### 9. Updated Sample API Routes (2 hours) ✅
 **Files:** `pages/api/auth/[...nextauth].js`, `pages/api/admin/users/index.js`
 
 **Changes:**
-- Replaced `console.log` with Winston logger
 - Using standardized API responses
-- Added security logging for failed logins
+- Added proper error logging for failed logins
 - Better error handling
 
 ---
@@ -281,7 +254,6 @@ import { connectDB } from '@/lib/db';
 import { requireSuperAdmin } from '@/middleware/auth';
 import { sendSuccess, sendError } from '@/lib/api-response';
 import { withValidation } from '@/middleware/validation';
-import logger, { loggers } from '@/lib/logger';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -295,15 +267,13 @@ async function handler(req, res) {
 
       if (req.method === 'GET') {
         // Your logic here
-        logger.info('Fetching data', { userId: req.user.id });
-
         const data = await YourModel.find();
         return sendSuccess(res, data);
       }
 
       return sendError(res, 'Method not allowed', 405);
     } catch (error) {
-      loggers.logError(error, { context: 'Your API', method: req.method });
+      console.error('Error:', error.message || error);
       return sendError(res, 'Internal server error', 500);
     }
   });
@@ -359,40 +329,32 @@ export default function MyComponent() {
 
 ## 🚀 NEXT STEPS (Remaining Critical Issues)
 
-### 1. Replace console.log Across All API Routes
-**Action:** Search and replace remaining console.log statements
-```bash
-# Find all console.log in API routes
-grep -r "console\." pages/api/
-```
-
-### 2. Add Error Tracking Service
+### 1. Add Error Tracking Service
 **Recommended:** Sentry
 ```bash
 npm install @sentry/nextjs
 npx @sentry/wizard@latest -i nextjs
 ```
 
-### 3. Implement Redis-Based Rate Limiting
+### 2. Implement Redis-Based Rate Limiting
 **Recommended:** Upstash
 ```bash
 npm install @upstash/ratelimit @upstash/redis
 ```
 
-### 4. Add Testing
+### 3. Add Testing
 ```bash
 npm install -D jest @testing-library/react @testing-library/jest-dom
 ```
 
-### 5. Set Up CI/CD
+### 4. Set Up CI/CD
 Create `.github/workflows/ci.yml` for automated testing
 
 ---
 
 ## 📊 IMPACT SUMMARY
 
-**Files Created:** 7
-- `lib/logger.js`
+**Files Created:** 6
 - `lib/api-response.js`
 - `lib/toast.js`
 - `middleware/validation.js`
@@ -411,11 +373,10 @@ Create `.github/workflows/ci.yml` for automated testing
 - `pages/api/auth/[...nextauth].js`
 - `pages/api/admin/users/index.js`
 
-**Dependencies Added:** 2
-- `winston` - Logging
+**Dependencies Added:** 1
 - `react-hot-toast` - Notifications
 
-**Total Time:** ~7.5 hours
+**Total Time:** ~6 hours
 **Production Readiness:** 40% → 65%
 
 ---
@@ -425,13 +386,12 @@ Create `.github/workflows/ci.yml` for automated testing
 - [x] Security headers working (check DevTools)
 - [x] .env.example created
 - [x] Database indexes added to all models
-- [x] Winston logger utility created
 - [x] API response utilities created
 - [x] Validation middleware created
 - [x] MongoDB connection pool configured
 - [x] Toast notifications working
 - [x] Error boundaries catching errors
-- [x] Sample API routes updated with logger
+- [x] Sample API routes updated
 
 ---
 

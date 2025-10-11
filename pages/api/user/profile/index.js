@@ -2,7 +2,6 @@ import { connectDB } from "../../../../lib/db";
 import User from "../../../../models/User";
 import { requireUser } from "../../../../middleware/auth";
 import { profileUpdateSchema } from "../../../../lib/validations";
-import logger, { loggers } from "../../../../lib/logger";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -28,7 +27,7 @@ export default async function handler(req, res) {
           lastLogin: user.lastLogin,
         });
       } catch (error) {
-        loggers.logError(error, { context: "Get profile error" });
+        console.error('Error:', error.message || error);
         res.status(500).json({ error: "Internal server error" });
       }
     } else if (req.method === "PUT") {
@@ -61,7 +60,7 @@ export default async function handler(req, res) {
             details: error.errors,
           });
         }
-        loggers.logError(error, { context: "Update profile error" });
+        console.error('Error:', error.message || error);
         res.status(500).json({ error: "Internal server error" });
       }
     } else {

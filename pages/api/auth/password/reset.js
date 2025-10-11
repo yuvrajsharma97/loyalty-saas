@@ -5,7 +5,6 @@ import { withPresetRateLimit } from "../../../../lib/rate-limit-redis";
 import { resetPasswordSchema } from "../../../../lib/validators";
 import User from "../../../../models/User";
 import PasswordReset from "../../../../models/PasswordReset";
-import logger, { loggers } from "../../../../lib/logger";
 
 async function handler(req, res) {
   if (req.method !== "POST") {
@@ -46,7 +45,7 @@ async function handler(req, res) {
 
     return res.status(200).json({ ok: true });
   } catch (error) {
-    loggers.logError(error, { context: "Reset password error" });
+    console.error('Error:', error.message || error);
 
     if (error.name === "ZodError") {
       return res.status(400).json({

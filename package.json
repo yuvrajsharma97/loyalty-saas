@@ -6,9 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "seed": "node scripts/seedDatabase.js",
-    "verify": "node scripts/verifyData.js"
+    "lint": "eslint"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

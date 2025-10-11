@@ -5,7 +5,7 @@ import {
   paginationSchema,
 } from "../../../../../lib/validations";
 import User from "../../../../../models/User";
-import logger, { loggers } from "../../../lib/logger";
+import logger, { loggers } from "../../../../../lib/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {

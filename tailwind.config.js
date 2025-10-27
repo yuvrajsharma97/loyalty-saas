@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -52,7 +53,7 @@ module.exports = {
   daisyui: {
     themes: [
       {
-        loyalty: {
+        dark: {
           // Primary colors (dark green)
           primary: "#014421",
           "primary-focus": "#012f18",
@@ -64,15 +65,15 @@ module.exports = {
           "secondary-content": "#014421",
 
           // Neutral colors for text and backgrounds
-          neutral: "#2a2e37",
-          "neutral-focus": "#16181d",
-          "neutral-content": "#ffffff",
+          neutral: "#27272a",
+          "neutral-focus": "#18181b",
+          "neutral-content": "#e4e4e7",
 
-          // Base colors for backgrounds
-          "base-100": "#ffffff",
-          "base-200": "#f9fafb",
-          "base-300": "#f3f4f6",
-          "base-content": "#1f2937",
+          // Base colors for dark backgrounds
+          "base-100": "#18181b",
+          "base-200": "#27272a",
+          "base-300": "#3f3f46",
+          "base-content": "#e4e4e7",
 
           // State colors
           info: "#3abff8",

@@ -16,15 +16,25 @@ export default async function RootLayout({ children }) {
   const session = await getServerSession(authOptions);
 
   return (
-    <html lang="en" data-theme="light" className="loyaltyos-theme">
+    <html lang="en" data-theme="dark" className="dark loyaltyos-theme">
       <head>
         <link
           href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css"
           rel="stylesheet"
           type="text/css"
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                document.documentElement.classList.add('dark');
+                document.documentElement.setAttribute('data-theme', 'dark');
+              })();
+            `,
+          }}
+        />
       </head>
-      <body className="antialiased" style={{backgroundColor: '#D0D8C3', color: '#014421'}}>
+      <body className="antialiased bg-zinc-900 text-white">
         <SessionProvider session={session}>
           <LoadingProvider>
             {children}

@@ -57,17 +57,43 @@ export default function CreateStoreOwner() {
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
 
-      // Simulate API call
-      console.log("Creating store owner:", formData);
+      try {
+        const response = await fetch("/api/admin/store-owner/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
 
-      // Generate placeholder ID
-      const id = Date.now().toString();
-      setNewStoreId(id);
+        const data = await response.json();
 
-      setTimeout(() => {
-        setLoading(false);
+        if (!response.ok) {
+          // Handle error response
+          setLoading(false);
+          if (data.details) {
+            // Zod validation errors
+            const zodErrors = {};
+            data.details.forEach((err) => {
+              zodErrors[err.path[0]] = err.message;
+            });
+            setErrors(zodErrors);
+          } else {
+            // Generic error
+            setErrors({ general: data.error || "Failed to create store owner" });
+          }
+          return;
+        }
+
+        // Success
+        setNewStoreId(data.data.store.id);
         setSuccess(true);
-      }, 2000);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error creating store owner:", error);
+        setLoading(false);
+        setErrors({ general: "Network error. Please try again." });
+      }
     }
   };
 
@@ -142,6 +168,17 @@ export default function CreateStoreOwner() {
       {/* Form Card */}
       <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-md p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* General Error Banner */}
+          {errors.general && (
+            <Banner
+              type="error"
+              title="Error"
+              message={errors.general}
+              dismissible={true}
+              onDismiss={() => setErrors((prev) => ({ ...prev, general: "" }))}
+            />
+          )}
+
           {/* Owner Information */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">

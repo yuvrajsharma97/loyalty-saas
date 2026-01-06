@@ -16,7 +16,7 @@
     "lucide-react": "^0.542.0",
     "mongoose": "^8.18.1",
     "nanoid": "^5.1.5",
-    "next": "15.5.1",
+    "next": "15.5.9",
     "next-auth": "^4.24.11",
     "postcss": "^8.5.6",
     "qrcode": "^1.5.4",

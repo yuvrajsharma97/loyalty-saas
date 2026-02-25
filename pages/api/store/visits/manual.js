@@ -29,59 +29,59 @@ export default async function handler(req, res) {
 
           const storeId = new mongoose.Types.ObjectId(req.storeId);
 
-          // Verify user exists and is connected to store
+
           const user = await User.findOne({
             _id: userId,
-            connectedStores: storeId,
+            connectedStores: storeId
           }).session(session);
 
           if (!user) {
             throw new Error("User not found or not connected to this store");
           }
 
-          // Get store configuration
+
           const store = await Store.findById(storeId).session(session);
           if (!store) {
             throw new Error("Store not found");
           }
 
-          // Calculate points
+
           const points = calculatePoints({ spend }, store);
 
-          // Create visit
+
           const visit = await Visit.create(
             [
-              {
-                userId,
-                storeId,
-                method: "manual",
-                status: "approved", // Manual visits are auto-approved
-                points,
-                spend,
-                approvedBy: req.user.id,
-                approvedAt: new Date(),
-                metadata: {
-                  notes,
-                  createdBy: req.user.id,
-                },
-              },
-            ],
+            {
+              userId,
+              storeId,
+              method: "manual",
+              status: "approved",
+              points,
+              spend,
+              approvedBy: req.user.id,
+              approvedAt: new Date(),
+              metadata: {
+                notes,
+                createdBy: req.user.id
+              }
+            }],
+
             { session }
           );
 
-          // Update user points
+
           const userPointsUpdate = await User.findOneAndUpdate(
             {
               _id: userId,
-              "pointsByStore.storeId": storeId,
+              "pointsByStore.storeId": storeId
             },
             {
-              $inc: { "pointsByStore.$.points": points },
+              $inc: { "pointsByStore.$.points": points }
             },
             { session, new: true }
           );
 
-          // If user doesn't have points entry for this store, create it
+
           if (!userPointsUpdate) {
             await User.findByIdAndUpdate(
               userId,
@@ -89,9 +89,9 @@ export default async function handler(req, res) {
                 $push: {
                   pointsByStore: {
                     storeId: storeId,
-                    points: points,
-                  },
-                },
+                    points: points
+                  }
+                }
               },
               { session }
             );
@@ -107,20 +107,20 @@ export default async function handler(req, res) {
             userId: result.userId,
             spend: result.spend,
             points: result.points,
-            createdAt: result.createdAt,
-          },
+            createdAt: result.createdAt
+          }
         });
       } catch (error) {
         if (error.name === "ZodError") {
           return res.status(400).json({
             error: "Invalid request data",
-            details: error.errors,
+            details: error.errors
           });
         }
         console.error("Manual visit error:", error);
-        res
-          .status(500)
-          .json({ error: error.message || "Internal server error" });
+        res.
+        status(500).
+        json({ error: error.message || "Internal server error" });
       } finally {
         await session.endSession();
       }

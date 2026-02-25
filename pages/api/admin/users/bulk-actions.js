@@ -6,9 +6,9 @@ import Store from "../../../../models/Store";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res
-      .status(405)
-      .json({ success: false, error: "Method not allowed" });
+    return res.
+    status(405).
+    json({ success: false, error: "Method not allowed" });
   }
 
   return requireSuperAdmin(req, res, async (req, res) => {
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
           if (!params?.newRole) {
             return res.status(400).json({
               success: false,
-              error: "newRole parameter required for role change",
+              error: "newRole parameter required for role change"
             });
           }
           results = await bulkUpdateUsers(userIds, { role: params.newRole });
@@ -47,20 +47,20 @@ export default async function handler(req, res) {
         default:
           return res.status(400).json({
             success: false,
-            error: "Invalid bulk action",
+            error: "Invalid bulk action"
           });
       }
 
       return res.status(200).json({
         success: true,
         data: results,
-        message: `Bulk ${action} completed. ${results.successful} successful, ${results.failed} failed.`,
+        message: `Bulk ${action} completed. ${results.successful} successful, ${results.failed} failed.`
       });
     } catch (error) {
       console.error("Bulk action error:", error);
       return res.status(500).json({
         success: false,
-        error: "Failed to perform bulk action",
+        error: "Failed to perform bulk action"
       });
     }
   });
@@ -91,7 +91,7 @@ async function bulkDeleteUsers(userIds) {
 
   for (const userId of userIds) {
     try {
-      // Check if user owns stores
+
       const ownedStores = await Store.find({ ownerId: userId });
       if (ownedStores.length > 0) {
         failed++;

@@ -51,11 +51,11 @@ export default function RewardClaimsPage() {
       const response = await fetch(`/api/store/reward-claims/${claimId}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          status: "approved",
-        }),
+          status: "approved"
+        })
       });
 
       if (!response.ok) {
@@ -82,12 +82,12 @@ export default function RewardClaimsPage() {
       const response = await fetch(`/api/store/reward-claims/${selectedClaim.id}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           status: "rejected",
-          rejectionReason,
-        }),
+          rejectionReason
+        })
       });
 
       if (!response.ok) {
@@ -138,18 +138,18 @@ export default function RewardClaimsPage() {
         </div>
         <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-md p-6">
           <div className="animate-pulse space-y-4">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
-            ))}
+            {[...Array(3)].map((_, i) =>
+            <div key={i} className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            )}
           </div>
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -168,15 +168,15 @@ export default function RewardClaimsPage() {
         </Button>
       </div>
 
-      {/* Banners */}
-      {error && (
-        <Banner type="error" message={error} onDismiss={() => setError(null)} />
-      )}
-      {success && (
-        <Banner type="success" message={success} onDismiss={() => setSuccess(null)} />
-      )}
+      {}
+      {error &&
+      <Banner type="error" message={error} onDismiss={() => setError(null)} />
+      }
+      {success &&
+      <Banner type="success" message={success} onDismiss={() => setSuccess(null)} />
+      }
 
-      {/* Stats */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-md p-6">
           <div className="flex items-center justify-between">
@@ -215,17 +215,17 @@ export default function RewardClaimsPage() {
         </div>
       </div>
 
-      {/* Pending Claims */}
-      {pendingClaims.length > 0 && (
-        <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-md overflow-hidden">
+      {}
+      {pendingClaims.length > 0 &&
+      <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-md overflow-hidden">
           <div className="p-6 border-b border-gray-200 dark:border-zinc-700">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Pending Requests ({pendingClaims.length})
             </h2>
           </div>
           <div className="divide-y divide-gray-200 dark:divide-zinc-700">
-            {pendingClaims.map((claim) => (
-              <div key={claim.id} className="p-6 hover:bg-gray-50 dark:hover:bg-zinc-700/50">
+            {pendingClaims.map((claim) =>
+          <div key={claim.id} className="p-6 hover:bg-gray-50 dark:hover:bg-zinc-700/50">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
@@ -246,24 +246,24 @@ export default function RewardClaimsPage() {
                   </div>
                   <div className="flex gap-2">
                     <Button
-                      size="sm"
-                      onClick={() => handleApprove(claim.id)}
-                      disabled={processing}
-                      icon={CheckCircle}>
+                  size="sm"
+                  onClick={() => handleApprove(claim.id)}
+                  disabled={processing}
+                  icon={CheckCircle}>
                       Approve
                     </Button>
                     <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => openRejectModal(claim)}
-                      disabled={processing}
-                      icon={XCircle}>
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => openRejectModal(claim)}
+                  disabled={processing}
+                  icon={XCircle}>
                       Reject
                     </Button>
                   </div>
                 </div>
-                {claim.message && (
-                  <div className="bg-gray-50 dark:bg-zinc-900 rounded-lg p-3">
+                {claim.message &&
+            <div className="bg-gray-50 dark:bg-zinc-900 rounded-lg p-3">
                     <div className="flex items-start gap-2">
                       <MessageSquare className="w-4 h-4 text-gray-400 mt-0.5" />
                       <p className="text-sm text-gray-700 dark:text-gray-300">
@@ -271,24 +271,24 @@ export default function RewardClaimsPage() {
                       </p>
                     </div>
                   </div>
-                )}
+            }
               </div>
-            ))}
+          )}
           </div>
         </div>
-      )}
+      }
 
-      {/* Reviewed Claims */}
-      {reviewedClaims.length > 0 && (
-        <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-md overflow-hidden">
+      {}
+      {reviewedClaims.length > 0 &&
+      <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-md overflow-hidden">
           <div className="p-6 border-b border-gray-200 dark:border-zinc-700">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Reviewed Claims ({reviewedClaims.length})
             </h2>
           </div>
           <div className="divide-y divide-gray-200 dark:divide-zinc-700">
-            {reviewedClaims.map((claim) => (
-              <div key={claim.id} className="p-6">
+            {reviewedClaims.map((claim) =>
+          <div key={claim.id} className="p-6">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
@@ -308,8 +308,8 @@ export default function RewardClaimsPage() {
                         Reviewed: {new Date(claim.reviewedAt).toLocaleString()}
                       </span>
                     </div>
-                    {claim.message && (
-                      <div className="bg-gray-50 dark:bg-zinc-900 rounded-lg p-3 mt-3">
+                    {claim.message &&
+                <div className="bg-gray-50 dark:bg-zinc-900 rounded-lg p-3 mt-3">
                         <div className="flex items-start gap-2">
                           <MessageSquare className="w-4 h-4 text-gray-400 mt-0.5" />
                           <p className="text-sm text-gray-700 dark:text-gray-300">
@@ -317,25 +317,25 @@ export default function RewardClaimsPage() {
                           </p>
                         </div>
                       </div>
-                    )}
-                    {claim.rejectionReason && (
-                      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 mt-3">
+                }
+                    {claim.rejectionReason &&
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 mt-3">
                         <p className="text-sm text-red-900 dark:text-red-100">
                           <strong>Rejection Reason:</strong> {claim.rejectionReason}
                         </p>
                       </div>
-                    )}
+                }
                   </div>
                 </div>
               </div>
-            ))}
+          )}
           </div>
         </div>
-      )}
+      }
 
-      {/* Empty State */}
-      {claims.length === 0 && !loading && (
-        <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-md p-12 text-center">
+      {}
+      {claims.length === 0 && !loading &&
+      <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-md p-12 text-center">
           <Clock className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
             No Reward Claims Yet
@@ -344,9 +344,9 @@ export default function RewardClaimsPage() {
             Reward claims from users will appear here for review.
           </p>
         </div>
-      )}
+      }
 
-      {/* Reject Modal */}
+      {}
       <Modal
         isOpen={showRejectModal}
         onClose={() => {
@@ -356,15 +356,15 @@ export default function RewardClaimsPage() {
         }}
         title="Reject Reward Claim"
         actions={
-          <>
+        <>
             <Button
-              variant="ghost"
-              onClick={() => {
-                setShowRejectModal(false);
-                setSelectedClaim(null);
-                setRejectionReason("");
-              }}
-              disabled={processing}>
+            variant="ghost"
+            onClick={() => {
+              setShowRejectModal(false);
+              setSelectedClaim(null);
+              setRejectionReason("");
+            }}
+            disabled={processing}>
               Cancel
             </Button>
             <Button onClick={handleReject} disabled={processing || !rejectionReason}>
@@ -387,11 +387,11 @@ export default function RewardClaimsPage() {
               placeholder="Explain why this claim is being rejected..."
               rows={4}
               required
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#014421] focus:border-transparent"
-            />
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#014421] focus:border-transparent" />
+            
           </div>
         </div>
       </Modal>
-    </div>
-  );
+    </div>);
+
 }

@@ -35,8 +35,8 @@ export default async function handler(req, res) {
         slug: store.slug,
         tier: store.tier,
         isActive: store.isActive,
-        rewardConfig: store.rewardConfig,
-      },
+        rewardConfig: store.rewardConfig
+      }
     });
   } catch (error) {
     console.error("Error fetching store:", error);

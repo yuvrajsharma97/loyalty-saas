@@ -5,13 +5,13 @@ const pointsByStoreSchema = new mongoose.Schema(
     storeId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",
-      required: true,
+      required: true
     },
     points: {
       type: Number,
       default: 0,
-      min: 0,
-    },
+      min: 0
+    }
   },
   { _id: false }
 );
@@ -23,58 +23,67 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
       index: true,
-      lowercase: true,
+      lowercase: true
     },
     passwordHash: {
       type: String,
-      required: true,
+      required: true
     },
     name: {
       type: String,
-      required: true,
+      required: true
     },
     avatarUrl: {
       type: String,
-      default: null,
+      default: null
     },
     role: {
       type: String,
       enum: ["User", "StoreAdmin", "SuperAdmin"],
       required: true,
-      index: true,
+      index: true
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+      index: true
     },
     connectedStores: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Store",
-      },
-    ],
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Store"
+    }],
+
     pointsByStore: [pointsByStoreSchema],
     preferences: {
       visitApprovedEmail: {
         type: Boolean,
-        default: true,
+        default: true
       },
       rewardEmail: {
         type: Boolean,
-        default: true,
+        default: true
       },
       promotionEmail: {
         type: Boolean,
-        default: false,
-      },
+        default: false
+      }
     },
     lastLogin: {
       type: Date,
-      default: Date.now,
+      default: Date.now
     },
+    lastStatusChange: {
+      type: Date,
+      default: null
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 
-// Add additional indexes for performance
+
 userSchema.index({ "pointsByStore.storeId": 1 });
 
 export default mongoose.models.User || mongoose.model("User", userSchema);

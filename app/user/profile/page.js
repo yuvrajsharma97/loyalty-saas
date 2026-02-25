@@ -34,11 +34,11 @@ export default function UserProfile() {
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     type: "",
-    storeId: "",
+    storeId: ""
   });
   const [successBanner, setSuccessBanner] = useState("");
 
-  // Fetch user profile from API
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -52,7 +52,7 @@ export default function UserProfile() {
         }
 
         const profileData = await response.json();
-        // Ensure preferences object exists with default values
+
         const normalizedProfile = {
           ...profileData,
           preferences: {
@@ -66,7 +66,7 @@ export default function UserProfile() {
       } catch (err) {
         setError(err.message);
         console.error('Profile fetch error:', err);
-        // Fallback to mock data on error
+
         setUserProfile(MOCK_USER_PROFILE);
       } finally {
         setLoading(false);
@@ -83,16 +83,16 @@ export default function UserProfile() {
       const response = await fetch('/api/user/profile', {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           name: userProfile.name,
           preferences: userProfile.preferences || {
             visitApprovedEmail: true,
             rewardEmail: true,
-            promotionEmail: false,
-          },
-        }),
+            promotionEmail: false
+          }
+        })
       });
 
       if (!response.ok) {
@@ -133,8 +133,8 @@ export default function UserProfile() {
         rewardEmail: true,
         promotionEmail: false,
         ...prev?.preferences,
-        [key]: value,
-      },
+        [key]: value
+      }
     }));
   };
 
@@ -153,8 +153,8 @@ export default function UserProfile() {
             <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
           </div>
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   if (!userProfile) {
@@ -170,19 +170,19 @@ export default function UserProfile() {
             {error || "Failed to load profile"}
           </p>
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   return (
     <div className="space-y-6">
-      {successBanner && (
-        <Banner
-          type={successBanner.includes("Error") ? "error" : "success"}
-          message={successBanner}
-          onDismiss={() => setSuccessBanner("")}
-        />
-      )}
+      {successBanner &&
+      <Banner
+        type={successBanner.includes("Error") ? "error" : "success"}
+        message={successBanner}
+        onDismiss={() => setSuccessBanner("")} />
+
+      }
 
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
@@ -190,7 +190,7 @@ export default function UserProfile() {
         </h1>
       </div>
 
-      {/* Account Section */}
+      {}
       <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Account Information
@@ -204,10 +204,10 @@ export default function UserProfile() {
             <Input
               value={userProfile.name}
               onChange={(e) =>
-                setUserProfile((prev) => ({ ...prev, name: e.target.value }))
+              setUserProfile((prev) => ({ ...prev, name: e.target.value }))
               }
-              placeholder="Enter your full name"
-            />
+              placeholder="Enter your full name" />
+            
           </div>
 
           <div>
@@ -218,10 +218,10 @@ export default function UserProfile() {
               type="email"
               value={userProfile.email}
               onChange={(e) =>
-                setUserProfile((prev) => ({ ...prev, email: e.target.value }))
+              setUserProfile((prev) => ({ ...prev, email: e.target.value }))
               }
-              placeholder="Enter your email"
-            />
+              placeholder="Enter your email" />
+            
           </div>
         </div>
 
@@ -233,17 +233,17 @@ export default function UserProfile() {
         </Link>
       </div>
 
-      {/* Connected Stores */}
+      {}
       <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Connected Stores
         </h3>
 
         <div className="space-y-4">
-          {stores.map((store) => (
-            <div
-              key={store.id}
-              className="flex items-center justify-between p-4 border border-[#D0D8C3]/40 dark:border-zinc-600 rounded-lg">
+          {stores.map((store) =>
+          <div
+            key={store.id}
+            className="flex items-center justify-between p-4 border border-[#D0D8C3]/40 dark:border-zinc-600 rounded-lg">
               <div className="flex items-center space-x-4">
                 <div>
                   <h4 className="font-medium text-gray-900 dark:text-white">
@@ -264,24 +264,24 @@ export default function UserProfile() {
               </div>
 
               <Button
-                variant="ghost"
-                size="sm"
-                onClick={() =>
-                  setConfirmDialog({
-                    isOpen: true,
-                    type: "leave",
-                    storeId: store.id,
-                  })
-                }
-                className="text-red-600 hover:text-red-700">
+              variant="ghost"
+              size="sm"
+              onClick={() =>
+              setConfirmDialog({
+                isOpen: true,
+                type: "leave",
+                storeId: store.id
+              })
+              }
+              className="text-red-600 hover:text-red-700">
                 Leave Store
               </Button>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
-      {/* Notifications */}
+      {}
       <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -298,19 +298,19 @@ export default function UserProfile() {
             label="Visit Approved Notifications"
             description="Get notified when your visit requests are approved"
             checked={userProfile?.preferences?.visitApprovedEmail || false}
-            onChange={handlePreferenceChange("visitApprovedEmail")}
-          />
+            onChange={handlePreferenceChange("visitApprovedEmail")} />
+          
 
           <PreferenceToggle
             label="Reward Earned Notifications"
             description="Get notified when you earn rewards or points"
             checked={userProfile?.preferences?.rewardEmail || false}
-            onChange={handlePreferenceChange("rewardEmail")}
-          />
+            onChange={handlePreferenceChange("rewardEmail")} />
+          
         </div>
       </div>
 
-      {/* Danger Zone */}
+      {}
       <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md border border-red-200 dark:border-red-800">
         <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-4">
           Danger Zone
@@ -329,7 +329,7 @@ export default function UserProfile() {
           <Button
             variant="secondary"
             onClick={() =>
-              setConfirmDialog({ isOpen: true, type: "delete", storeId: "" })
+            setConfirmDialog({ isOpen: true, type: "delete", storeId: "" })
             }
             className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20">
             <Trash2 className="w-4 h-4 mr-2" />
@@ -338,30 +338,30 @@ export default function UserProfile() {
         </div>
       </div>
 
-      {/* Confirm Dialogs */}
+      {}
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
         onClose={() =>
-          setConfirmDialog({ isOpen: false, type: "", storeId: "" })
+        setConfirmDialog({ isOpen: false, type: "", storeId: "" })
         }
         onConfirm={
-          confirmDialog.type === "leave"
-            ? handleLeaveStore
-            : handleDeleteAccount
+        confirmDialog.type === "leave" ?
+        handleLeaveStore :
+        handleDeleteAccount
         }
         title={
-          confirmDialog.type === "leave" ? "Leave Store" : "Delete Account"
+        confirmDialog.type === "leave" ? "Leave Store" : "Delete Account"
         }
         message={
-          confirmDialog.type === "leave"
-            ? "Are you sure you want to leave this store? Your points and visit history will be preserved, but you won't earn new rewards."
-            : "Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed."
+        confirmDialog.type === "leave" ?
+        "Are you sure you want to leave this store? Your points and visit history will be preserved, but you won't earn new rewards." :
+        "Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed."
         }
         confirmLabel={
-          confirmDialog.type === "leave" ? "Leave Store" : "Delete Account"
+        confirmDialog.type === "leave" ? "Leave Store" : "Delete Account"
         }
-        variant="danger"
-      />
-    </div>
-  );
+        variant="danger" />
+      
+    </div>);
+
 }

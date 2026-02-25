@@ -14,9 +14,9 @@ export default async function handler(req, res) {
         const { storeId, method, spend } = visitRequestSchema.parse(req.body);
 
         const [user, store] = await Promise.all([
-          User.findById(req.user.id),
-          Store.findById(storeId),
-        ]);
+        User.findById(req.user.id),
+        Store.findById(storeId)]
+        );
 
         if (!user) {
           return res.status(404).json({ error: "User not found" });
@@ -26,27 +26,27 @@ export default async function handler(req, res) {
           return res.status(404).json({ error: "Store not found or inactive" });
         }
 
-        // Check if user is connected to this store
+
         if (!user.connectedStores.includes(storeId)) {
           return res.status(400).json({ error: "Not connected to this store" });
         }
 
-        // Check for recent pending visits (prevent spam)
+
         const recentPending = await Visit.findOne({
           userId: user._id,
           storeId: storeId,
           status: "pending",
-          createdAt: { $gte: new Date(Date.now() - 5 * 60 * 1000) }, // 5 minutes
+          createdAt: { $gte: new Date(Date.now() - 5 * 60 * 1000) }
         });
 
         if (recentPending) {
           return res.status(429).json({
             error: "Please wait before requesting another visit",
-            code: "RATE_LIMITED",
+            code: "RATE_LIMITED"
           });
         }
 
-        // Create visit request
+
         const visit = new Visit({
           userId: user._id,
           storeId: storeId,
@@ -55,9 +55,9 @@ export default async function handler(req, res) {
           status: "pending",
           metadata: {
             ipAddress:
-              req.headers["x-forwarded-for"] || req.connection.remoteAddress,
-            userAgent: req.headers["user-agent"],
-          },
+            req.headers["x-forwarded-for"] || req.connection.remoteAddress,
+            userAgent: req.headers["user-agent"]
+          }
         });
 
         await visit.save();
@@ -72,14 +72,14 @@ export default async function handler(req, res) {
             status: visit.status,
             method: visit.method,
             spend: visit.spend,
-            createdAt: visit.createdAt,
-          },
+            createdAt: visit.createdAt
+          }
         });
       } catch (error) {
         if (error.name === "ZodError") {
           return res.status(400).json({
             error: "Invalid request data",
-            details: error.errors,
+            details: error.errors
           });
         }
         console.error("Visit request error:", error);

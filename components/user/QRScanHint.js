@@ -54,6 +54,6 @@ export default function QRScanHint({ className = "" }) {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }

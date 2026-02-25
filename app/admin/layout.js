@@ -13,10 +13,10 @@ export default function AdminLayout({ children }) {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-zinc-900">
       <div className="flex h-screen">
-        {/* Sidebar */}
+        {}
         <SidebarAdmin isOpen={sidebarOpen} onToggle={toggleSidebar} />
 
-        {/* Main content */}
+        {}
         <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
           <TopbarAdmin onMenuToggle={toggleSidebar} />
 
@@ -25,6 +25,6 @@ export default function AdminLayout({ children }) {
           </main>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }

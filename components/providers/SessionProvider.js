@@ -5,6 +5,6 @@ export default function SessionProvider({ children, session }) {
   return (
     <NextAuthSessionProvider session={session}>
       {children}
-    </NextAuthSessionProvider>
-  );
+    </NextAuthSessionProvider>);
+
 }

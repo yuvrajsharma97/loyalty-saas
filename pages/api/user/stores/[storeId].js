@@ -16,12 +16,12 @@ export default async function handler(req, res) {
           return res.status(404).json({ error: "User not found" });
         }
 
-        // Remove from connected stores
+
         user.connectedStores = user.connectedStores.filter(
           (id) => id.toString() !== storeId
         );
 
-        // Keep points for historical purposes - don't remove from pointsByStore
+
 
         await user.save();
 

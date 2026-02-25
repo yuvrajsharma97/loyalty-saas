@@ -10,6 +10,9 @@ export const metadata = {
     "Create QR-based loyalty programs, approve visits in seconds, reward your best customers. Perfect for UK cafes, salons, barbers, and bakeries.",
   keywords:
     "loyalty program, QR code loyalty, customer retention, small business, UK",
+  icons: {
+    icon: "/loyaltyLogo.svg"
+  }
 };
 
 export default async function RootLayout({ children }) {
@@ -21,8 +24,8 @@ export default async function RootLayout({ children }) {
         <link
           href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css"
           rel="stylesheet"
-          type="text/css"
-        />
+          type="text/css" />
+
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -30,9 +33,8 @@ export default async function RootLayout({ children }) {
                 document.documentElement.classList.add('dark');
                 document.documentElement.setAttribute('data-theme', 'dark');
               })();
-            `,
-          }}
-        />
+            `
+          }} />
       </head>
       <body className="antialiased bg-zinc-900 text-white">
         <SessionProvider session={session}>
@@ -41,6 +43,5 @@ export default async function RootLayout({ children }) {
           </LoadingProvider>
         </SessionProvider>
       </body>
-    </html>
-  );
+    </html>);
 }

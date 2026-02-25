@@ -21,12 +21,12 @@ export default async function handler(req, res) {
           format = "json",
           dateFrom,
           dateTo,
-          status = "approved",
+          status = "approved"
         } = req.query;
 
         const storeId = new mongoose.Types.ObjectId(req.storeId);
 
-        // Build match conditions
+
         const matchConditions = { storeId, status };
 
         if (dateFrom || dateTo) {
@@ -35,27 +35,27 @@ export default async function handler(req, res) {
           if (dateTo) matchConditions.createdAt.$lte = new Date(dateTo);
         }
 
-        const visits = await Visit.find(matchConditions)
-          .populate("userId", "name email")
-          .populate("approvedBy", "name")
-          .sort({ createdAt: -1 })
-          .lean();
+        const visits = await Visit.find(matchConditions).
+        populate("userId", "name email").
+        populate("approvedBy", "name").
+        sort({ createdAt: -1 }).
+        lean();
 
         if (format === "csv") {
-          // Generate CSV
-          const csvHeaders =
-            "Date,User Name,Email,Method,Status,Spend,Points,Approved By,Notes";
-          const csvRows = visits
-            .map((visit) => {
-              const date = visit.createdAt.toISOString().split("T")[0];
-              const userName = visit.userId?.name || "Unknown";
-              const email = visit.userId?.email || "";
-              const approvedBy = visit.approvedBy?.name || "";
-              const notes = visit.metadata?.notes || "";
 
-              return `${date},"${userName}","${email}",${visit.method},${visit.status},${visit.spend},${visit.points},"${approvedBy}","${notes}"`;
-            })
-            .join("\n");
+          const csvHeaders =
+          "Date,User Name,Email,Method,Status,Spend,Points,Approved By,Notes";
+          const csvRows = visits.
+          map((visit) => {
+            const date = visit.createdAt.toISOString().split("T")[0];
+            const userName = visit.userId?.name || "Unknown";
+            const email = visit.userId?.email || "";
+            const approvedBy = visit.approvedBy?.name || "";
+            const notes = visit.metadata?.notes || "";
+
+            return `${date},"${userName}","${email}",${visit.method},${visit.status},${visit.spend},${visit.points},"${approvedBy}","${notes}"`;
+          }).
+          join("\n");
 
           const csvContent = `${csvHeaders}\n${csvRows}`;
 
@@ -67,13 +67,13 @@ export default async function handler(req, res) {
           return res.send(csvContent);
         }
 
-        // Return JSON format
+
         const formattedVisits = visits.map((visit) => ({
           id: visit._id,
           date: visit.createdAt,
           user: {
             name: visit.userId?.name || "Unknown",
-            email: visit.userId?.email,
+            email: visit.userId?.email
           },
           method: visit.method,
           status: visit.status,
@@ -81,7 +81,7 @@ export default async function handler(req, res) {
           points: visit.points,
           approvedBy: visit.approvedBy?.name,
           approvedAt: visit.approvedAt,
-          notes: visit.metadata?.notes,
+          notes: visit.metadata?.notes
         }));
 
         res.json({
@@ -89,8 +89,8 @@ export default async function handler(req, res) {
           summary: {
             totalVisits: visits.length,
             totalSpend: visits.reduce((sum, v) => sum + v.spend, 0),
-            totalPoints: visits.reduce((sum, v) => sum + v.points, 0),
-          },
+            totalPoints: visits.reduce((sum, v) => sum + v.points, 0)
+          }
         });
       } catch (error) {
         console.error("Visits report error:", error);

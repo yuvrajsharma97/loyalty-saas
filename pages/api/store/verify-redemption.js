@@ -1,4 +1,4 @@
-// /pages/api/store/verify-redemption.js
+
 import { connectDB } from "../../../lib/db";
 import { requireStoreAdmin } from "../../../middleware/auth";
 import Redemption from "../../../models/Redemption";
@@ -19,7 +19,7 @@ export default async function handler(req, res) {
 
       const { storeId, code } = req.body;
 
-      // Validate inputs
+
       if (!storeId || !code) {
         return res.status(400).json({
           ok: false,
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
 
       const validatedStoreId = mongoIdSchema.parse(storeId);
 
-      // Validate code format (8 digits)
+
       if (!/^\d{8}$/.test(code)) {
         return res.status(400).json({
           ok: false,
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
         });
       }
 
-      // Ensure the admin owns this store (tenancy check)
+
       const store = await Store.findById(validatedStoreId);
       if (!store) {
         return res.status(404).json({
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
         });
       }
 
-      // Find redemption by code and store
+
       const redemption = await Redemption.findOne({
         code,
         storeId: validatedStoreId
@@ -66,7 +66,7 @@ export default async function handler(req, res) {
         });
       }
 
-      // Return redemption details (verification only, no marking as used)
+
       return res.status(200).json({
         ok: true,
         data: {

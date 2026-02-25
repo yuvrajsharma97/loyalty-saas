@@ -18,18 +18,18 @@ export default async function handler(req, res) {
         const storeId = new mongoose.Types.ObjectId(req.storeId);
 
         if (req.method === "GET") {
-          // Get store profile with owner details
-          const store = await Store.findById(storeId)
-            .populate("ownerId", "name email")
-            .lean();
+
+          const store = await Store.findById(storeId).
+          populate("ownerId", "name email").
+          lean();
 
           if (!store) {
             return res.status(404).json({ error: "Store not found" });
           }
 
-          // Get user count for tier calculation
+
           const userCount = await User.countDocuments({
-            connectedStores: storeId,
+            connectedStores: storeId
           });
           const calculatedTier = calculateTierFromUserCount(userCount);
 
@@ -48,11 +48,11 @@ export default async function handler(req, res) {
               rewardQREmail: store.rewardQREmail,
               owner: store.ownerId,
               createdAt: store.createdAt,
-              updatedAt: store.updatedAt,
+              updatedAt: store.updatedAt
             }
           });
         } else if (req.method === "PUT") {
-          // Update store profile
+
           const validatedData = storeProfileUpdateSchema.parse(req.body);
 
           const updatedStore = await Store.findByIdAndUpdate(
@@ -65,9 +65,9 @@ export default async function handler(req, res) {
             return res.status(404).json({ error: "Store not found" });
           }
 
-          // Update tier if user count changed
+
           const userCount = await User.countDocuments({
-            connectedStores: storeId,
+            connectedStores: storeId
           });
           const newTier = calculateTierFromUserCount(userCount);
 
@@ -84,8 +84,8 @@ export default async function handler(req, res) {
               tier: newTier,
               rewardConfig: updatedStore.rewardConfig,
               isActive: updatedStore.isActive,
-              updatedAt: updatedStore.updatedAt,
-            },
+              updatedAt: updatedStore.updatedAt
+            }
           });
         } else {
           res.setHeader("Allow", ["GET", "PUT"]);
@@ -95,7 +95,7 @@ export default async function handler(req, res) {
         if (error.name === "ZodError") {
           return res.status(400).json({
             error: "Invalid request data",
-            details: error.errors,
+            details: error.errors
           });
         }
         console.error("Store profile error:", error);

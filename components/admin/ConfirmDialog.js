@@ -10,22 +10,22 @@ export default function ConfirmDialog({
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
   variant = "primary",
-  loading = false,
+  loading = false
 }) {
-  const actions = (
-    <>
+  const actions =
+  <>
       <Button variant="ghost" onClick={onClose} disabled={loading}>
         {cancelLabel}
       </Button>
       <Button
-        variant={variant === "danger" ? "primary" : variant}
-        onClick={onConfirm}
-        loading={loading}
-        className={variant === "danger" ? "bg-red-600 hover:bg-red-700" : ""}>
+      variant={variant === "danger" ? "primary" : variant}
+      onClick={onConfirm}
+      loading={loading}
+      className={variant === "danger" ? "bg-red-600 hover:bg-red-700" : ""}>
         {confirmLabel}
       </Button>
-    </>
-  );
+    </>;
+
 
   return (
     <Modal
@@ -35,6 +35,6 @@ export default function ConfirmDialog({
       actions={actions}
       size="sm">
       <p className="text-gray-600 dark:text-gray-400">{message}</p>
-    </Modal>
-  );
+    </Modal>);
+
 }

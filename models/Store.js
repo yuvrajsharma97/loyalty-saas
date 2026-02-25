@@ -5,64 +5,64 @@ const storeSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      trim: true,
+      trim: true
     },
     slug: {
       type: String,
       required: true,
       unique: true,
-      lowercase: true,
+      lowercase: true
     },
     tier: {
       type: String,
       enum: ["silver", "gold", "platinum"],
-      default: "silver",
+      default: "silver"
     },
     rewardConfig: {
       type: {
         type: String,
         enum: ["visit", "spend", "hybrid"],
-        required: true,
+        required: true
       },
       pointsPerPound: {
         type: Number,
         default: 0,
-        min: 0,
+        min: 0
       },
       pointsPerVisit: {
         type: Number,
         default: 0,
-        min: 0,
+        min: 0
       },
       conversionRate: {
         type: Number,
         required: true,
-        default: 100,
-      },
+        default: 100
+      }
     },
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: true
     },
     isActive: {
       type: Boolean,
-      default: true,
+      default: true
     },
     qrCode: {
       type: String,
-      unique: true,
+      unique: true
     },
     rewardQRCode: {
-      type: String, // URL or data URI of the generated QR code image
+      type: String
     },
     rewardQREmail: {
-      type: String, // Email used when generating reward QR
-      trim: true,
-    },
+      type: String,
+      trim: true
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 

@@ -1,4 +1,4 @@
-// /pages/api/auth/password/reset.js
+
 import bcrypt from "bcryptjs";
 import { connectDB } from "../../../../lib/db";
 import { withRateLimit } from "../../../../lib/rate-limit";
@@ -12,35 +12,35 @@ async function handler(req, res) {
   }
 
   try {
-    // Validate input
+
     const validatedData = resetPasswordSchema.parse(req.body);
     const { token, newPassword } = validatedData;
 
-    // Connect to database
+
     await connectDB();
 
-    // Find valid reset token
+
     const resetRecord = await PasswordReset.findOne({
       token,
-      expiresAt: { $gt: new Date() },
+      expiresAt: { $gt: new Date() }
     });
 
     if (!resetRecord) {
-      return res
-        .status(400)
-        .json({ ok: false, error: "Invalid or expired token" });
+      return res.
+      status(400).
+      json({ ok: false, error: "Invalid or expired token" });
     }
 
-    // Hash new password
+
     const saltRounds = 12;
     const passwordHash = await bcrypt.hash(newPassword, saltRounds);
 
-    // Update user password
+
     await User.findByIdAndUpdate(resetRecord.userId, {
-      passwordHash,
+      passwordHash
     });
 
-    // Delete the used token
+
     await PasswordReset.deleteOne({ _id: resetRecord._id });
 
     return res.status(200).json({ ok: true });
@@ -51,7 +51,7 @@ async function handler(req, res) {
       return res.status(400).json({
         ok: false,
         error: "Invalid input data",
-        details: error.errors,
+        details: error.errors
       });
     }
 

@@ -19,6 +19,6 @@ export default function CTA() {
           Get started free
         </Button>
       </Container>
-    </section>
-  );
+    </section>);
+
 }

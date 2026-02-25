@@ -3,14 +3,14 @@ export default function Badge({
   variant = "default",
   size = "md",
   outline = false,
-  className = "",
+  className = ""
 }) {
-  // Custom variant styling with our brand colors
+
   const getVariantClasses = (variant, outline) => {
     const baseBadgeStyles = "inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full transition-all duration-200";
 
     if (outline) {
-      switch(variant) {
+      switch (variant) {
         case "primary":
           return `${baseBadgeStyles} border border-[#014421] text-[#014421] bg-transparent hover:bg-[#014421] hover:text-white`;
         case "secondary":
@@ -27,7 +27,7 @@ export default function Badge({
           return `${baseBadgeStyles} border border-gray-400 text-gray-700 bg-transparent hover:bg-gray-400 hover:text-white`;
       }
     } else {
-      switch(variant) {
+      switch (variant) {
         case "primary":
           return `${baseBadgeStyles} bg-gradient-to-r from-[#014421] to-[#012f18] text-white shadow-md backdrop-blur-sm border border-white/20`;
         case "secondary":
@@ -40,7 +40,7 @@ export default function Badge({
           return `${baseBadgeStyles} bg-gradient-to-r from-red-500 to-red-600 text-white shadow-md backdrop-blur-sm border border-white/20`;
         case "info":
           return `${baseBadgeStyles} bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md backdrop-blur-sm border border-white/20`;
-        // Custom tier variants with theme colors
+
         case "silver":
           return `${baseBadgeStyles} bg-gradient-to-r from-gray-300 via-gray-200 to-gray-100 text-gray-800 shadow-md backdrop-blur-sm border border-gray-400/20`;
         case "gold":
@@ -53,9 +53,9 @@ export default function Badge({
     }
   };
 
-  // Custom size styling
+
   const getSizeClasses = (size) => {
-    switch(size) {
+    switch (size) {
       case "xs":
         return "px-1.5 py-0.5 text-xs";
       case "sm":
@@ -71,11 +71,11 @@ export default function Badge({
     }
   };
 
-  // Build custom classes
+
   const customClasses = [
-    getVariantClasses(variant, outline),
-    getSizeClasses(size),
-  ].filter(Boolean);
+  getVariantClasses(variant, outline),
+  getSizeClasses(size)].
+  filter(Boolean);
 
   const allClasses = [...customClasses, className].join(" ");
 

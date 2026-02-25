@@ -35,19 +35,19 @@ export default async function handler(req, res) {
 
         res.json({
           message: `Loyalty program ${
-            isActive ? "activated" : "paused"
-          } successfully`,
+          isActive ? "activated" : "paused"} successfully`,
+
           store: {
             id: store._id,
             name: store.name,
-            isActive: store.isActive,
-          },
+            isActive: store.isActive
+          }
         });
       } catch (error) {
         if (error.name === "ZodError") {
           return res.status(400).json({
             error: "Invalid request data",
-            details: error.errors,
+            details: error.errors
           });
         }
         console.error("Update store status error:", error);

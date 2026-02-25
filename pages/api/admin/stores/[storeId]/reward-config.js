@@ -6,9 +6,9 @@ import Store from "../../../../../models/Store";
 
 export default async function handler(req, res) {
   if (req.method !== "PUT") {
-    return res
-      .status(405)
-      .json({ success: false, error: "Method not allowed" });
+    return res.
+    status(405).
+    json({ success: false, error: "Method not allowed" });
   }
 
   return requireSuperAdmin(req, res, async (req, res) => {
@@ -16,7 +16,7 @@ export default async function handler(req, res) {
       const { storeId } = req.query;
       const validatedStoreId = mongoIdSchema.parse(storeId);
       const { type, pointsPerPound, pointsPerVisit, conversionRate, reason } =
-        rewardConfigOverrideSchema.parse(req.body);
+      rewardConfigOverrideSchema.parse(req.body);
 
       await connectDB();
 
@@ -24,7 +24,7 @@ export default async function handler(req, res) {
       if (!store) {
         return res.status(404).json({
           success: false,
-          error: "Store not found",
+          error: "Store not found"
         });
       }
 
@@ -34,15 +34,15 @@ export default async function handler(req, res) {
         type,
         pointsPerPound,
         pointsPerVisit,
-        conversionRate,
+        conversionRate
       };
 
       await store.save();
 
       console.log(
         `Reward config overridden for store ${store.name}. Reason: ${
-          reason || "Not provided"
-        }`
+        reason || "Not provided"}`
+
       );
 
       return res.status(200).json({
@@ -52,15 +52,15 @@ export default async function handler(req, res) {
           name: store.name,
           oldConfig,
           newConfig: store.rewardConfig,
-          updatedAt: new Date(),
+          updatedAt: new Date()
         },
-        message: "Reward configuration updated successfully",
+        message: "Reward configuration updated successfully"
       });
     } catch (error) {
       console.error("Reward config override error:", error);
       return res.status(500).json({
         success: false,
-        error: "Failed to override reward configuration",
+        error: "Failed to override reward configuration"
       });
     }
   });

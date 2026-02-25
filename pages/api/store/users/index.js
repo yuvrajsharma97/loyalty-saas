@@ -25,134 +25,134 @@ export default async function handler(req, res) {
           page = 1,
           limit = 10,
           sortBy = "createdAt",
-          sortOrder = "desc",
+          sortOrder = "desc"
         } = req.query;
 
         const storeId = new mongoose.Types.ObjectId(req.storeId);
 
-        // Build aggregation pipeline
+
         const pipeline = [
-          // Match users connected to this store
-          { $match: { connectedStores: storeId } },
 
-          // Add points for this store
-          {
-            $addFields: {
-              storePoints: {
-                $let: {
-                  vars: {
-                    storePointsObj: {
-                      $arrayElemAt: [
-                        {
-                          $filter: {
-                            input: "$pointsByStore",
-                            cond: { $eq: ["$$this.storeId", storeId] },
-                          },
-                        },
-                        0,
-                      ],
+        { $match: { connectedStores: storeId } },
+
+
+        {
+          $addFields: {
+            storePoints: {
+              $let: {
+                vars: {
+                  storePointsObj: {
+                    $arrayElemAt: [
+                    {
+                      $filter: {
+                        input: "$pointsByStore",
+                        cond: { $eq: ["$$this.storeId", storeId] }
+                      }
                     },
-                  },
-                  in: { $ifNull: ["$$storePointsObj.points", 0] },
+                    0]
+
+                  }
                 },
-              },
-            },
-          },
+                in: { $ifNull: ["$$storePointsObj.points", 0] }
+              }
+            }
+          }
+        },
 
-          // Add visit statistics
-          {
-            $lookup: {
-              from: "visits",
-              let: { userId: "$_id" },
-              pipeline: [
-                {
-                  $match: {
-                    $expr: {
-                      $and: [
-                        { $eq: ["$userId", "$$userId"] },
-                        { $eq: ["$storeId", storeId] },
-                      ],
-                    },
-                  },
+
+        {
+          $lookup: {
+            from: "visits",
+            let: { userId: "$_id" },
+            pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                  { $eq: ["$userId", "$$userId"] },
+                  { $eq: ["$storeId", storeId] }]
+
+                }
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                totalVisits: { $sum: 1 },
+                approvedVisits: {
+                  $sum: { $cond: [{ $eq: ["$status", "approved"] }, 1, 0] }
                 },
-                {
-                  $group: {
-                    _id: null,
-                    totalVisits: { $sum: 1 },
-                    approvedVisits: {
-                      $sum: { $cond: [{ $eq: ["$status", "approved"] }, 1, 0] },
-                    },
-                    lastVisit: {
-                      $max: {
-                        $cond: [
-                          { $eq: ["$status", "approved"] },
-                          "$approvedAt",
-                          "$createdAt",
-                        ],
-                      },
-                    },
-                    totalSpend: {
-                      $sum: {
-                        $cond: [{ $eq: ["$status", "approved"] }, "$spend", 0],
-                      },
-                    },
-                  },
+                lastVisit: {
+                  $max: {
+                    $cond: [
+                    { $eq: ["$status", "approved"] },
+                    "$approvedAt",
+                    "$createdAt"]
+
+                  }
                 },
-              ],
-              as: "visitStats",
-            },
-          },
+                totalSpend: {
+                  $sum: {
+                    $cond: [{ $eq: ["$status", "approved"] }, "$spend", 0]
+                  }
+                }
+              }
+            }],
 
-          // Flatten visit stats
-          {
-            $addFields: {
-              visitStats: { $arrayElemAt: ["$visitStats", 0] },
-              hasRewards: { $gt: ["$storePoints", 0] },
-            },
-          },
+            as: "visitStats"
+          }
+        },
 
-          // Apply filters
-          {
-            $match: {
-              ...(search && {
-                $or: [
-                  { name: { $regex: search, $options: "i" } },
-                  { email: { $regex: search, $options: "i" } },
-                ],
-              }),
-              ...(hasRewards && { hasRewards: hasRewards === "true" }),
-            },
-          },
 
-          // Project final fields
-          {
-            $project: {
-              name: 1,
-              email: 1,
-              createdAt: 1,
-              lastLogin: 1,
-              points: "$storePoints",
-              visits: { $ifNull: ["$visitStats.totalVisits", 0] },
-              approvedVisits: { $ifNull: ["$visitStats.approvedVisits", 0] },
-              lastVisit: "$visitStats.lastVisit",
-              totalSpend: { $ifNull: ["$visitStats.totalSpend", 0] },
-              hasRewards: 1,
-              status: { $literal: "active" }, // Default status since it's not in schema
-            },
-          },
-        ];
+        {
+          $addFields: {
+            visitStats: { $arrayElemAt: ["$visitStats", 0] },
+            hasRewards: { $gt: ["$storePoints", 0] }
+          }
+        },
 
-        // Add sorting
+
+        {
+          $match: {
+            ...(search && {
+              $or: [
+              { name: { $regex: search, $options: "i" } },
+              { email: { $regex: search, $options: "i" } }]
+
+            }),
+            ...(hasRewards && { hasRewards: hasRewards === "true" })
+          }
+        },
+
+
+        {
+          $project: {
+            name: 1,
+            email: 1,
+            createdAt: 1,
+            lastLogin: 1,
+            points: "$storePoints",
+            visits: { $ifNull: ["$visitStats.totalVisits", 0] },
+            approvedVisits: { $ifNull: ["$visitStats.approvedVisits", 0] },
+            lastVisit: "$visitStats.lastVisit",
+            totalSpend: { $ifNull: ["$visitStats.totalSpend", 0] },
+            hasRewards: 1,
+            status: { $literal: "active" }
+          }
+        }];
+
+
+
         const sortStage = {};
         sortStage[sortBy] = sortOrder === "asc" ? 1 : -1;
         pipeline.push({ $sort: sortStage });
 
-        // Get total count
+
         const countPipeline = [...pipeline, { $count: "total" }];
         const countResult = await User.aggregate(countPipeline);
         const totalCount = countResult[0]?.total || 0;
 
-        // Add pagination
+
         pipeline.push(
           { $skip: (parseInt(page) - 1) * parseInt(limit) },
           { $limit: parseInt(limit) }
@@ -169,8 +169,8 @@ export default async function handler(req, res) {
             totalCount,
             totalPages,
             hasNext: parseInt(page) < totalPages,
-            hasPrev: parseInt(page) > 1,
-          },
+            hasPrev: parseInt(page) > 1
+          }
         });
       } catch (error) {
         console.error("Get store users error:", error);

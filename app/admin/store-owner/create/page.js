@@ -14,7 +14,7 @@ export default function CreateStoreOwner() {
     ownerEmail: "",
     storeName: "",
     storeSlug: "",
-    storeLocation: "",
+    storeLocation: ""
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -42,7 +42,7 @@ export default function CreateStoreOwner() {
       newErrors.storeSlug = "Store slug is required";
     } else if (!/^[a-z0-9-]+$/.test(formData.storeSlug)) {
       newErrors.storeSlug =
-        "Slug must contain only lowercase letters, numbers, and hyphens";
+      "Slug must contain only lowercase letters, numbers, and hyphens";
     }
 
     return newErrors;
@@ -61,31 +61,31 @@ export default function CreateStoreOwner() {
         const response = await fetch("/api/admin/store-owner/create", {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(formData)
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-          // Handle error response
+
           setLoading(false);
           if (data.details) {
-            // Zod validation errors
+
             const zodErrors = {};
             data.details.forEach((err) => {
               zodErrors[err.path[0]] = err.message;
             });
             setErrors(zodErrors);
           } else {
-            // Generic error
+
             setErrors({ general: data.error || "Failed to create store owner" });
           }
           return;
         }
 
-        // Success
+
         setNewStoreId(data.data.store.id);
         setSuccess(true);
         setLoading(false);
@@ -101,26 +101,26 @@ export default function CreateStoreOwner() {
     const value = e.target.value;
     setFormData((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: value
     }));
 
-    // Auto-generate slug from store name
+
     if (field === "storeName" && !formData.storeSlug) {
       setFormData((prev) => ({
         ...prev,
-        storeSlug: value
-          .toLowerCase()
-          .replace(/[^a-z0-9]/g, "-")
-          .replace(/-+/g, "-")
-          .trim("-"),
+        storeSlug: value.
+        toLowerCase().
+        replace(/[^a-z0-9]/g, "-").
+        replace(/-+/g, "-").
+        trim("-")
       }));
     }
 
-    // Clear error when user starts typing
+
     if (errors[field]) {
       setErrors((prev) => ({
         ...prev,
-        [field]: "",
+        [field]: ""
       }));
     }
   };
@@ -132,8 +132,8 @@ export default function CreateStoreOwner() {
           type="success"
           title="Store Owner Created Successfully"
           message={`${formData.storeName} has been created with owner ${formData.ownerName}.`}
-          dismissible={false}
-        />
+          dismissible={false} />
+        
 
         <div className="mt-6 flex gap-4 justify-center">
           <Link href={`/admin/store/${newStoreId}`}>
@@ -143,13 +143,13 @@ export default function CreateStoreOwner() {
             <Button variant="secondary">Back to Stores</Button>
           </Link>
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Header */}
+      {}
       <div className="mb-8">
         <Link
           href="/admin/stores"
@@ -165,21 +165,21 @@ export default function CreateStoreOwner() {
         </p>
       </div>
 
-      {/* Form Card */}
+      {}
       <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-md p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* General Error Banner */}
-          {errors.general && (
-            <Banner
-              type="error"
-              title="Error"
-              message={errors.general}
-              dismissible={true}
-              onDismiss={() => setErrors((prev) => ({ ...prev, general: "" }))}
-            />
-          )}
+          {}
+          {errors.general &&
+          <Banner
+            type="error"
+            title="Error"
+            message={errors.general}
+            dismissible={true}
+            onDismiss={() => setErrors((prev) => ({ ...prev, general: "" }))} />
 
-          {/* Owner Information */}
+          }
+
+          {}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Owner Information
@@ -193,8 +193,8 @@ export default function CreateStoreOwner() {
                 value={formData.ownerName}
                 onChange={handleChange("ownerName")}
                 placeholder="Enter owner's full name"
-                error={errors.ownerName}
-              />
+                error={errors.ownerName} />
+              
             </div>
 
             <div>
@@ -206,12 +206,12 @@ export default function CreateStoreOwner() {
                 value={formData.ownerEmail}
                 onChange={handleChange("ownerEmail")}
                 placeholder="Enter owner's email address"
-                error={errors.ownerEmail}
-              />
+                error={errors.ownerEmail} />
+              
             </div>
           </div>
 
-          {/* Store Information */}
+          {}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Store Information
@@ -225,8 +225,8 @@ export default function CreateStoreOwner() {
                 value={formData.storeName}
                 onChange={handleChange("storeName")}
                 placeholder="Enter store name"
-                error={errors.storeName}
-              />
+                error={errors.storeName} />
+              
             </div>
 
             <div>
@@ -237,8 +237,8 @@ export default function CreateStoreOwner() {
                 value={formData.storeSlug}
                 onChange={handleChange("storeSlug")}
                 placeholder="store-slug-example"
-                error={errors.storeSlug}
-              />
+                error={errors.storeSlug} />
+              
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Used for URLs. Only lowercase letters, numbers, and hyphens
                 allowed.
@@ -252,12 +252,12 @@ export default function CreateStoreOwner() {
               <Input
                 value={formData.storeLocation}
                 onChange={handleChange("storeLocation")}
-                placeholder="City, Country (optional)"
-              />
+                placeholder="City, Country (optional)" />
+              
             </div>
           </div>
 
-          {/* Actions */}
+          {}
           <div className="flex gap-4 pt-6">
             <Button type="submit" loading={loading} fullWidth>
               Create Owner & Store
@@ -270,6 +270,6 @@ export default function CreateStoreOwner() {
           </div>
         </form>
       </div>
-    </div>
-  );
+    </div>);
+
 }

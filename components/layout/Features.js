@@ -4,50 +4,50 @@ import {
   Mail,
   Users,
   FileText,
-  Shield,
-} from "lucide-react";
+  Shield } from
+"lucide-react";
 import Container from "@/components/layout/Container";
 import Section from "@/components/layout/Section";
 import FeatureCard from "@/components/data/FeatureCard";
 
 export default function Features() {
   const features = [
-    {
-      icon: QrCode,
-      title: "QR Visit Requests",
-      description:
-        "Customers scan QR codes to request visit approval. No apps required.",
-    },
-    {
-      icon: CheckCircle,
-      title: "Smart Approval System",
-      description:
-        "Store owners approve visits in seconds with automated reward calculations.",
-    },
-    {
-      icon: Mail,
-      title: "Automated Notifications",
-      description:
-        "Email customers when rewards are earned or ready to redeem.",
-    },
-    {
-      icon: Users,
-      title: "Multi-Store Dashboards",
-      description:
-        "Customers can join multiple loyalty programs from a single account.",
-    },
-    {
-      icon: FileText,
-      title: "Export Everything",
-      description: "Download visit logs and reward data as CSV or PDF reports.",
-    },
-    {
-      icon: Shield,
-      title: "Role-Based Access",
-      description:
-        "Multi-tenant architecture with admin, store owner, and customer roles.",
-    },
-  ];
+  {
+    icon: QrCode,
+    title: "QR Visit Requests",
+    description:
+    "Customers scan QR codes to request visit approval. No apps required."
+  },
+  {
+    icon: CheckCircle,
+    title: "Smart Approval System",
+    description:
+    "Store owners approve visits in seconds with automated reward calculations."
+  },
+  {
+    icon: Mail,
+    title: "Automated Notifications",
+    description:
+    "Email customers when rewards are earned or ready to redeem."
+  },
+  {
+    icon: Users,
+    title: "Multi-Store Dashboards",
+    description:
+    "Customers can join multiple loyalty programs from a single account."
+  },
+  {
+    icon: FileText,
+    title: "Export Everything",
+    description: "Download visit logs and reward data as CSV or PDF reports."
+  },
+  {
+    icon: Shield,
+    title: "Role-Based Access",
+    description:
+    "Multi-tenant architecture with admin, store owner, and customer roles."
+  }];
+
 
   return (
     <Section
@@ -66,16 +66,16 @@ export default function Features() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <FeatureCard
-              key={index}
-              icon={feature.icon}
-              title={feature.title}
-              description={feature.description}
-            />
-          ))}
+          {features.map((feature, index) =>
+          <FeatureCard
+            key={index}
+            icon={feature.icon}
+            title={feature.title}
+            description={feature.description} />
+
+          )}
         </div>
       </Container>
-    </Section>
-  );
+    </Section>);
+
 }

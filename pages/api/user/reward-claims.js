@@ -31,20 +31,20 @@ async function handleCreateClaim(req, res, session) {
       return res.status(400).json({ error: "Store ID is required" });
     }
 
-    // Get user details
+
     const user = await User.findById(session.user.id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Check if user is connected to store
+
     if (!user.connectedStores.includes(storeId)) {
-      return res
-        .status(400)
-        .json({ error: "You must be connected to this store first" });
+      return res.
+      status(400).
+      json({ error: "You must be connected to this store first" });
     }
 
-    // Verify store exists and is active
+
     const store = await Store.findById(storeId);
     if (!store) {
       return res.status(404).json({ error: "Store not found" });
@@ -54,14 +54,14 @@ async function handleCreateClaim(req, res, session) {
       return res.status(400).json({ error: "Store is currently inactive" });
     }
 
-    // Create reward claim
+
     const claim = await RewardClaim.create({
       userId: user._id,
       storeId: store._id,
       userName: user.name,
       userEmail: user.email,
       message: message || "",
-      status: "pending",
+      status: "pending"
     });
 
     return res.status(201).json({
@@ -70,8 +70,8 @@ async function handleCreateClaim(req, res, session) {
       claim: {
         id: claim._id,
         status: claim.status,
-        createdAt: claim.createdAt,
-      },
+        createdAt: claim.createdAt
+      }
     });
   } catch (error) {
     console.error("Error creating reward claim:", error);
@@ -93,10 +93,10 @@ async function handleGetClaims(req, res, session) {
       filter.storeId = storeId;
     }
 
-    const claims = await RewardClaim.find(filter)
-      .populate("storeId", "name slug")
-      .sort({ createdAt: -1 })
-      .limit(100);
+    const claims = await RewardClaim.find(filter).
+    populate("storeId", "name slug").
+    sort({ createdAt: -1 }).
+    limit(100);
 
     return res.status(200).json({
       claims: claims.map((claim) => ({
@@ -107,8 +107,8 @@ async function handleGetClaims(req, res, session) {
         status: claim.status,
         createdAt: claim.createdAt,
         reviewedAt: claim.reviewedAt,
-        rejectionReason: claim.rejectionReason,
-      })),
+        rejectionReason: claim.rejectionReason
+      }))
     });
   } catch (error) {
     console.error("Error fetching reward claims:", error);

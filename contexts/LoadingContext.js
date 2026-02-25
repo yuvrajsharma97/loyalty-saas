@@ -21,20 +21,20 @@ export function LoadingProvider({ children }) {
   const searchParams = useSearchParams();
   const { status } = useSession();
 
-  // Show loading on route changes and session changes
+
   useEffect(() => {
-    // Skip loader for login, register, auth, and home pages
+
     if (
-      pathname.includes("/auth/login") ||
-      pathname.includes("/auth/register") ||
-      pathname === "/"
-    ) {
+    pathname.includes("/auth/login") ||
+    pathname.includes("/auth/register") ||
+    pathname === "/")
+    {
       return;
     }
 
     setIsLoading(true);
 
-    // Set specific loading messages based on route
+
     if (pathname.includes('/dashboard')) {
       setLoadingMessage("Loading dashboard...");
     } else {
@@ -43,18 +43,18 @@ export function LoadingProvider({ children }) {
 
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1000); // 1 second for better visibility
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [pathname, searchParams]);
 
-  // Show loading during authentication state changes
+
   useEffect(() => {
     if (status === "loading") {
       setIsLoading(true);
       setLoadingMessage("Checking authentication...");
     } else {
-      // Small delay to prevent flashing
+
       const timer = setTimeout(() => {
         setIsLoading(false);
       }, 200);
@@ -77,22 +77,22 @@ export function LoadingProvider({ children }) {
         isLoading,
         showLoading,
         hideLoading,
-        setLoadingMessage,
-      }}
-    >
+        setLoadingMessage
+      }}>
+      
       {children}
 
-      {/* Global Loading Overlay */}
-      {isLoading && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center">
-          <div className="flex flex-col items-center gap-4 p-8 bg-white rounded-xl shadow-lg border" style={{borderColor: 'var(--brand-secondary)'}}>
+      {}
+      {isLoading &&
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4 p-8 bg-white rounded-xl shadow-lg border" style={{ borderColor: 'var(--brand-secondary)' }}>
             <Loader />
-            <p className="text-sm font-medium" style={{color: 'var(--text-primary)'}}>
+            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
               {loadingMessage}
             </p>
           </div>
         </div>
-      )}
-    </LoadingContext.Provider>
-  );
+      }
+    </LoadingContext.Provider>);
+
 }

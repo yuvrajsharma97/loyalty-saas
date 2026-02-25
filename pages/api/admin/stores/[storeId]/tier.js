@@ -6,9 +6,9 @@ import Store from "../../../../../models/Store";
 
 export default async function handler(req, res) {
   if (req.method !== "PUT") {
-    return res
-      .status(405)
-      .json({ success: false, error: "Method not allowed" });
+    return res.
+    status(405).
+    json({ success: false, error: "Method not allowed" });
   }
 
   return requireSuperAdmin(req, res, async (req, res) => {
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
       if (!store) {
         return res.status(404).json({
           success: false,
-          error: "Store not found",
+          error: "Store not found"
         });
       }
 
@@ -33,8 +33,8 @@ export default async function handler(req, res) {
 
       console.log(
         `Tier changed for store ${
-          store.name
-        }: ${oldTier} -> ${newTier}. Reason: ${reason || "Not provided"}`
+        store.name}: ${
+        oldTier} -> ${newTier}. Reason: ${reason || "Not provided"}`
       );
 
       return res.status(200).json({
@@ -44,9 +44,9 @@ export default async function handler(req, res) {
           name: store.name,
           oldTier,
           newTier,
-          updatedAt: new Date(),
+          updatedAt: new Date()
         },
-        message: `Store tier updated to ${newTier}`,
+        message: `Store tier updated to ${newTier}`
       });
     } catch (error) {
       console.error("Tier change error:", error);
@@ -55,13 +55,13 @@ export default async function handler(req, res) {
         return res.status(400).json({
           success: false,
           error: "Validation failed",
-          details: error.errors,
+          details: error.errors
         });
       }
 
       return res.status(500).json({
         success: false,
-        error: "Failed to change store tier",
+        error: "Failed to change store tier"
       });
     }
   });

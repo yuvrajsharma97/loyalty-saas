@@ -4,25 +4,25 @@ import Section from "@/components/layout/Section";
 
 export default function ProcessSteps() {
   const steps = [
-    {
-      icon: Settings,
-      title: "Set Up Rewards",
-      description:
-        "Configure your loyalty program with visit-based or spending-based rewards.",
-    },
-    {
-      icon: QrCode,
-      title: "Customer Scans QR",
-      description:
-        "Customers scan your unique QR code to request visit confirmation.",
-    },
-    {
-      icon: CheckCircle,
-      title: "Approve & Reward",
-      description:
-        "You approve the visit and points are automatically earned and redeemed.",
-    },
-  ];
+  {
+    icon: Settings,
+    title: "Set Up Rewards",
+    description:
+    "Configure your loyalty program with visit-based or spending-based rewards."
+  },
+  {
+    icon: QrCode,
+    title: "Customer Scans QR",
+    description:
+    "Customers scan your unique QR code to request visit confirmation."
+  },
+  {
+    icon: CheckCircle,
+    title: "Approve & Reward",
+    description:
+    "You approve the visit and points are automatically earned and redeemed."
+  }];
+
 
   return (
     <Section
@@ -40,8 +40,8 @@ export default function ProcessSteps() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {steps.map((step, index) => (
-            <div key={index} className="text-center">
+          {steps.map((step, index) =>
+          <div key={index} className="text-center">
               <div className="w-20 h-20 bg-[#014421] rounded-full flex items-center justify-center mx-auto mb-6">
                 <step.icon className="h-10 w-10 text-white" />
               </div>
@@ -55,9 +55,9 @@ export default function ProcessSteps() {
                 {step.description}
               </p>
             </div>
-          ))}
+          )}
         </div>
       </Container>
-    </Section>
-  );
+    </Section>);
+
 }

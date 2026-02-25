@@ -4,12 +4,12 @@ export default function StatCard({
   change,
   icon: Icon,
   trend = "neutral",
-  className = "",
+  className = ""
 }) {
   const trendColors = {
     up: "text-green-600 dark:text-green-400",
     down: "text-red-600 dark:text-red-400",
-    neutral: "text-gray-600 dark:text-gray-400",
+    neutral: "text-gray-600 dark:text-gray-400"
   };
 
   return (
@@ -23,16 +23,16 @@ export default function StatCard({
           <p className="text-2xl font-bold text-[#014421] dark:text-white mt-1 drop-shadow-sm">
             {value}
           </p>
-          {change && (
-            <p className={`text-sm mt-1 ${trendColors[trend]} drop-shadow-sm`}>{change}</p>
-          )}
+          {change &&
+          <p className={`text-sm mt-1 ${trendColors[trend]} drop-shadow-sm`}>{change}</p>
+          }
         </div>
-        {Icon && (
-          <div className="w-12 h-12 bg-[#D0D8C3] dark:bg-[#014421] rounded-lg flex items-center justify-center shadow-md border border-[#014421]/20 dark:border-[#D0D8C3]/30">
+        {Icon &&
+        <div className="w-12 h-12 bg-[#D0D8C3] dark:bg-[#014421] rounded-lg flex items-center justify-center shadow-md border border-[#014421]/20 dark:border-[#D0D8C3]/30">
             <Icon className="w-6 h-6 text-[#014421] dark:text-[#D0D8C3] drop-shadow-sm" />
           </div>
-        )}
+        }
       </div>
-    </div>
-  );
+    </div>);
+
 }

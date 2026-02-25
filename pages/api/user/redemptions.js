@@ -1,4 +1,4 @@
-// /pages/api/user/redemptions.js
+
 import { connectDB } from "../../../lib/db";
 import { requireUser } from "../../../middleware/auth";
 import Redemption from "../../../models/Redemption";
@@ -18,22 +18,27 @@ export default async function handler(req, res) {
 
       const filters = paginationSchema.parse(req.query);
       const { page, limit } = filters;
+      const { storeId } = req.query;
 
       const skip = (page - 1) * limit;
+      const query = { userId: req.user.id };
+      if (storeId) {
+        query.storeId = storeId;
+      }
 
       const [redemptions, total] = await Promise.all([
-        Redemption.find({ userId: req.user.id })
-          .populate('storeId', 'name tier')
-          .sort({ redemptionDate: -1 })
-          .skip(skip)
-          .limit(limit)
-          .lean(),
-        Redemption.countDocuments({ userId: req.user.id })
-      ]);
+      Redemption.find(query).
+      populate('storeId', 'name tier').
+      sort({ redemptionDate: -1 }).
+      skip(skip).
+      limit(limit).
+      lean(),
+      Redemption.countDocuments(query)]
+      );
 
-      const formattedRedemptions = redemptions.map(redemption => ({
+      const formattedRedemptions = redemptions.map((redemption) => ({
         id: redemption._id,
-        storeId: redemption.storeId._id,
+        storeId: redemption.storeId?._id?.toString?.() || null,
         storeName: redemption.storeId.name,
         storeTier: redemption.storeId.tier,
         pointsUsed: redemption.pointsUsed,
@@ -54,8 +59,8 @@ export default async function handler(req, res) {
           page,
           limit,
           totalPages: Math.ceil(total / limit),
-          hasMore: total > skip + limit,
-        },
+          hasMore: total > skip + limit
+        }
       });
 
     } catch (error) {
@@ -65,7 +70,7 @@ export default async function handler(req, res) {
         return res.status(400).json({
           success: false,
           error: "Invalid pagination parameters",
-          details: error.errors,
+          details: error.errors
         });
       }
 

@@ -6,7 +6,7 @@ export default function TopbarStore({ title, onMenuToggle }) {
   return (
     <header className="bg-white/20 dark:bg-zinc-900/20 backdrop-filter backdrop-blur-lg shadow-sm border-b border-gray-200/50 dark:border-zinc-700/50 h-16">
       <div className="flex items-center justify-between h-full px-6">
-        {/* Left side */}
+        {}
         <div className="flex items-center">
           <button
             onClick={onMenuToggle}
@@ -19,7 +19,7 @@ export default function TopbarStore({ title, onMenuToggle }) {
           </h1>
         </div>
 
-        {/* Right side */}
+        {}
         <div className="flex items-center space-x-4">
           <button
             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
@@ -35,6 +35,6 @@ export default function TopbarStore({ title, onMenuToggle }) {
           </button>
         </div>
       </div>
-    </header>
-  );
+    </header>);
+
 }

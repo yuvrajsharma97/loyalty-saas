@@ -10,6 +10,6 @@ export default function FeatureCard({ icon: Icon, title, description }) {
         {title}
       </h3>
       <p className="text-[#2D5A3D] dark:text-[#9CA3AF]">{description}</p>
-    </Card>
-  );
+    </Card>);
+
 }

@@ -12,9 +12,9 @@ export default async function handler(req, res) {
       try {
         const { storeId } = req.query;
 
-        const user = await User.findById(req.user.id)
-          .populate("connectedStores")
-          .lean();
+        const user = await User.findById(req.user.id).
+        populate("connectedStores").
+        lean();
 
         if (!user) {
           return res.status(404).json({ error: "User not found" });
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
         let visitsLifetime = 0;
 
         if (storeId) {
-          // Single store metrics
+
           const storePoints = user.pointsByStore.find(
             (p) => p.storeId.toString() === storeId
           );
@@ -43,59 +43,59 @@ export default async function handler(req, res) {
           }
 
           [visitsMTD, visitsLifetime] = await Promise.all([
-            Visit.countDocuments({
-              userId: user._id,
-              storeId: storeId,
-              status: "approved",
-              createdAt: { $gte: startOfMonth },
-            }),
-            Visit.countDocuments({
-              userId: user._id,
-              storeId: storeId,
-              status: "approved",
-            }),
-          ]);
+          Visit.countDocuments({
+            userId: user._id,
+            storeId: storeId,
+            status: "approved",
+            createdAt: { $gte: startOfMonth }
+          }),
+          Visit.countDocuments({
+            userId: user._id,
+            storeId: storeId,
+            status: "approved"
+          })]
+          );
         } else {
-          // All stores combined
+
           currentPoints = user.pointsByStore.reduce(
             (sum, store) => sum + store.points,
             0
           );
 
-          // Calculate average conversion rate across all stores
+
           const avgConversionRate =
-            user.connectedStores.length > 0
-              ? user.connectedStores.reduce(
-                  (sum, store) => sum + store.rewardConfig.conversionRate,
-                  0
-                ) / user.connectedStores.length
-              : 100;
+          user.connectedStores.length > 0 ?
+          user.connectedStores.reduce(
+            (sum, store) => sum + store.rewardConfig.conversionRate,
+            0
+          ) / user.connectedStores.length :
+          100;
 
           redeemableValue = currentPoints / avgConversionRate;
 
           [visitsMTD, visitsLifetime] = await Promise.all([
-            Visit.countDocuments({
-              userId: user._id,
-              status: "approved",
-              createdAt: { $gte: startOfMonth },
-            }),
-            Visit.countDocuments({
-              userId: user._id,
-              status: "approved",
-            }),
-          ]);
+          Visit.countDocuments({
+            userId: user._id,
+            status: "approved",
+            createdAt: { $gte: startOfMonth }
+          }),
+          Visit.countDocuments({
+            userId: user._id,
+            status: "approved"
+          })]
+          );
         }
 
-        // Get recent visits
+
         const recentVisits = await Visit.find({
           userId: user._id,
           ...(storeId && { storeId }),
-          status: "approved",
-        })
-          .populate("storeId", "name")
-          .sort({ createdAt: -1 })
-          .limit(5)
-          .lean();
+          status: "approved"
+        }).
+        populate("storeId", "name").
+        sort({ createdAt: -1 }).
+        limit(5).
+        lean();
 
         const formattedRecentVisits = recentVisits.map((visit) => ({
           id: visit._id,
@@ -103,36 +103,36 @@ export default async function handler(req, res) {
           storeName: visit.storeId.name,
           date: visit.createdAt.toISOString().split("T")[0],
           points: visit.points,
-          spend: visit.spend,
+          spend: visit.spend
         }));
 
-        // Get store breakdown
-        const storeBreakdown = await Promise.all(
-          user.pointsByStore
-            .filter((storePoints) => {
-              if (storeId) return storePoints.storeId.toString() === storeId;
-              return user.connectedStores.some(
-                (store) =>
-                  store._id.toString() === storePoints.storeId.toString()
-              );
-            })
-            .map(async (storePoints) => {
-              const store = user.connectedStores.find(
-                (s) => s._id.toString() === storePoints.storeId.toString()
-              );
-              const visits = await Visit.countDocuments({
-                userId: user._id,
-                storeId: storePoints.storeId,
-                status: "approved",
-              });
 
-              return {
-                storeId: storePoints.storeId,
-                storeName: store?.name || "Unknown Store",
-                points: storePoints.points,
-                visits,
-              };
-            })
+        const storeBreakdown = await Promise.all(
+          user.pointsByStore.
+          filter((storePoints) => {
+            if (storeId) return storePoints.storeId.toString() === storeId;
+            return user.connectedStores.some(
+              (store) =>
+              store._id.toString() === storePoints.storeId.toString()
+            );
+          }).
+          map(async (storePoints) => {
+            const store = user.connectedStores.find(
+              (s) => s._id.toString() === storePoints.storeId.toString()
+            );
+            const visits = await Visit.countDocuments({
+              userId: user._id,
+              storeId: storePoints.storeId,
+              status: "approved"
+            });
+
+            return {
+              storeId: storePoints.storeId,
+              storeName: store?.name || "Unknown Store",
+              points: storePoints.points,
+              visits
+            };
+          })
         );
 
         res.json({
@@ -141,7 +141,7 @@ export default async function handler(req, res) {
           visitsMTD,
           visitsLifetime,
           recentVisits: formattedRecentVisits,
-          storeBreakdown,
+          storeBreakdown
         });
       } catch (error) {
         console.error("Get dashboard metrics error:", error);

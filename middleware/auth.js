@@ -17,7 +17,7 @@ const requireAuth = async (req, res, handler) => {
   if (!user) {
     return res.status(401).json({
       error: "Authentication required",
-      code: "UNAUTHORIZED",
+      code: "UNAUTHORIZED"
     });
   }
 
@@ -32,22 +32,22 @@ const requireRole = (allowedRoles) => async (req, res, handler) => {
         error: "Insufficient permissions",
         code: "FORBIDDEN",
         required: allowedRoles,
-        current: req.user.role,
+        current: req.user.role
       });
     }
     return handler(req, res);
   });
 };
 
-// Convenience functions for common role checks
+
 const requireUser = (req, res, handler) =>
-  requireRole(["User", "StoreAdmin", "SuperAdmin"])(req, res, handler);
+requireRole(["User", "StoreAdmin", "SuperAdmin"])(req, res, handler);
 
 const requireStoreAdmin = (req, res, handler) =>
-  requireRole(["StoreAdmin", "SuperAdmin"])(req, res, handler);
+requireRole(["StoreAdmin", "SuperAdmin"])(req, res, handler);
 
 const requireSuperAdmin = (req, res, handler) =>
-  requireRole(["SuperAdmin"])(req, res, handler);
+requireRole(["SuperAdmin"])(req, res, handler);
 
 export {
   requireAuth,
@@ -55,5 +55,4 @@ export {
   requireUser,
   requireStoreAdmin,
   requireSuperAdmin,
-  getAuthenticatedUser,
-};
+  getAuthenticatedUser };

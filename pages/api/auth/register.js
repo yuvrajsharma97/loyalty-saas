@@ -1,4 +1,4 @@
-// /pages/api/auth/register.js
+
 import bcrypt from "bcryptjs";
 import { connectDB } from "../../../lib/db";
 import { withRateLimit } from "../../../lib/rate-limit";
@@ -11,24 +11,24 @@ async function handler(req, res) {
   }
 
   try {
-    // Validate input
+
     const validatedData = registerUserSchema.parse(req.body);
     const { name, email, password, role } = validatedData;
 
-    // Connect to database
+
     await connectDB();
 
-    // Check if user already exists
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ ok: false, error: "User already exists" });
     }
 
-    // Hash password
+
     const saltRounds = 12;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    // Create user
+
     const user = await User.create({
       name,
       email,
@@ -41,8 +41,8 @@ async function handler(req, res) {
       data: {
         id: user._id.toString(),
         email: user.email,
-        name: user.name,
-      },
+        name: user.name
+      }
     });
   } catch (error) {
     console.error("Registration error:", error);
@@ -51,7 +51,7 @@ async function handler(req, res) {
       return res.status(400).json({
         ok: false,
         error: "Invalid input data",
-        details: error.errors,
+        details: error.errors
       });
     }
 

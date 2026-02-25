@@ -13,9 +13,9 @@ export default async function handler(req, res) {
         const { storeId } = joinStoreSchema.parse(req.body);
 
         const [user, store] = await Promise.all([
-          User.findById(req.user.id),
-          Store.findById(storeId),
-        ]);
+        User.findById(req.user.id),
+        Store.findById(storeId)]
+        );
 
         if (!user) {
           return res.status(404).json({ error: "User not found" });
@@ -25,20 +25,20 @@ export default async function handler(req, res) {
           return res.status(404).json({ error: "Store not found or inactive" });
         }
 
-        // Check if already connected
+
         if (user.connectedStores.includes(storeId)) {
-          return res
-            .status(400)
-            .json({ error: "Already connected to this store" });
+          return res.
+          status(400).
+          json({ error: "Already connected to this store" });
         }
 
-        // Add store to connected stores
+
         user.connectedStores.push(storeId);
 
-        // Initialize points for this store
+
         user.pointsByStore.push({
           storeId: storeId,
-          points: 0,
+          points: 0
         });
 
         await user.save();
@@ -48,14 +48,14 @@ export default async function handler(req, res) {
           store: {
             id: store._id,
             name: store.name,
-            slug: store.slug,
-          },
+            slug: store.slug
+          }
         });
       } catch (error) {
         if (error.name === "ZodError") {
           return res.status(400).json({
             error: "Invalid request data",
-            details: error.errors,
+            details: error.errors
           });
         }
         console.error("Join store error:", error);

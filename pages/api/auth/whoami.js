@@ -1,4 +1,4 @@
-// /pages/api/auth/whoami.js
+
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "./[...nextauth]";
 
@@ -22,8 +22,8 @@ export default async function handler(req, res) {
         name: session.user.name,
         role: session.user.role,
         storeId: session.user.storeId,
-        storeIdsOwned: session.user.storeIdsOwned,
-      },
+        storeIdsOwned: session.user.storeIdsOwned
+      }
     });
   } catch (error) {
     console.error("Whoami error:", error);

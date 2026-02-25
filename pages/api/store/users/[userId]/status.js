@@ -18,25 +18,25 @@ export default async function handler(req, res) {
     requireStoreOwnership(req, res, async (req, res) => {
       try {
         const { userId } = req.query;
-        const { action } = req.body; // "suspend" or "activate"
+        const { action } = req.body;
 
         if (!["suspend", "activate"].includes(action)) {
           return res.status(400).json({
-            error: "Invalid action. Use 'suspend' or 'activate'",
+            error: "Invalid action. Use 'suspend' or 'activate'"
           });
         }
 
         const storeId = new mongoose.Types.ObjectId(req.storeId);
 
-        // For suspension, remove user from connected stores
-        // For activation, add user back to connected stores
+
+
         const updateOperation =
-          action === "suspend"
-            ? { $pull: { connectedStores: storeId } }
-            : { $addToSet: { connectedStores: storeId } };
+        action === "suspend" ?
+        { $pull: { connectedStores: storeId } } :
+        { $addToSet: { connectedStores: storeId } };
 
         const user = await User.findByIdAndUpdate(userId, updateOperation, {
-          new: true,
+          new: true
         }).select("name email connectedStores");
 
         if (!user) {
@@ -49,8 +49,8 @@ export default async function handler(req, res) {
             id: user._id,
             name: user.name,
             email: user.email,
-            status: action === "suspend" ? "suspended" : "active",
-          },
+            status: action === "suspend" ? "suspended" : "active"
+          }
         });
       } catch (error) {
         console.error("Update user status error:", error);

@@ -2,21 +2,23 @@ import { forwardRef } from "react";
 
 const Input = forwardRef(
   (
-    {
-      variant = "default",
-      size = "md",
-      bordered = true,
-      ghost = false,
-      error,
-      success,
-      className = "",
-      ...props
-    },
-    ref
-  ) => {
-    // Custom variant styling with our brand colors
+  {
+    type = "text",
+    variant = "default",
+    size = "md",
+    bordered = true,
+    ghost = false,
+    error,
+    success,
+    className = "",
+    ...props
+  },
+  ref) =>
+  {
+
     const getVariantClasses = (variant) => {
-      const baseInputStyles = "w-full px-3 py-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2";
+      const baseInputStyles =
+      "w-full h-10 px-3 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2";
 
       switch (variant) {
         case "primary":
@@ -36,37 +38,34 @@ const Input = forwardRef(
       }
     };
 
-    // Custom size styling
-    const getSizeClasses = (size) => {
-      switch (size) {
-        case "xs":
-          return "px-2 py-1 text-xs";
-        case "sm":
-          return "px-2.5 py-1.5 text-sm";
-        case "md":
-          return "px-3 py-2 text-sm";
-        case "lg":
-          return "px-4 py-3 text-base";
-        case "xl":
-          return "px-5 py-4 text-lg";
-        default:
-          return "px-3 py-2 text-sm";
-      }
-    };
 
-    // Build custom classes
+    const getSizeClasses = () => "h-10 text-sm";
+
+
     const customClasses = [
-      getVariantClasses(variant),
-      getSizeClasses(size),
-      !bordered && "border-0",
-      ghost && "bg-transparent border-transparent focus:bg-white",
-      error && "border-red-500 focus:border-red-500 focus:ring-red-500/20",
-      success && "border-green-500 focus:border-green-500 focus:ring-green-500/20",
-    ].filter(Boolean);
+    getVariantClasses(variant),
+    getSizeClasses(size),
+    !bordered && "border-0",
+    ghost && "bg-transparent border-transparent focus:bg-white",
+    error && "border-red-500 focus:border-red-500 focus:ring-red-500/20",
+    success && "border-green-500 focus:border-green-500 focus:ring-green-500/20"].
+    filter(Boolean);
 
     const allClasses = [...customClasses, className].join(" ");
 
-    return <input ref={ref} className={allClasses} {...props} />;
+    const dateClasses =
+    type === "date" ?
+    "input input-bordered h-10 px-3 text-sm border-[#D0D8C3] bg-white text-[#014421] focus:border-[#014421] focus:ring-2 focus:ring-[#014421]/20" :
+    "";
+
+    return (
+      <input
+        ref={ref}
+        type={type}
+        className={[allClasses, dateClasses].filter(Boolean).join(" ")}
+        {...props} />);
+
+
   }
 );
 

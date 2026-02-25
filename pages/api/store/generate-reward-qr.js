@@ -24,20 +24,20 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Store name and email are required" });
     }
 
-    // Get store from database
+
     const store = await Store.findOne({ ownerId: session.user.id });
 
     if (!store) {
       return res.status(404).json({ error: "Store not found" });
     }
 
-    // Generate QR code URL - use current request host for dynamic URL
+
     const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
     const host = req.headers['x-forwarded-host'] || req.headers.host;
     const baseUrl = process.env.NEXTAUTH_URL || `${protocol}://${host}`;
     const qrCodeUrl = `${baseUrl}/store/${store._id}/claim-reward`;
 
-    // Generate QR code as data URL (base64 image)
+
     const qrCodeDataUrl = await QRCode.toDataURL(qrCodeUrl, {
       errorCorrectionLevel: "H",
       type: "image/png",
@@ -45,12 +45,12 @@ export default async function handler(req, res) {
       margin: 2,
       width: 400,
       color: {
-        dark: "#014421", // QR code color (brand green)
-        light: "#FFFFFF", // Background color
-      },
+        dark: "#014421",
+        light: "#FFFFFF"
+      }
     });
 
-    // Save QR code to store
+
     store.rewardQRCode = qrCodeDataUrl;
     store.rewardQREmail = storeEmail;
     await store.save();
@@ -59,7 +59,7 @@ export default async function handler(req, res) {
       success: true,
       qrCode: qrCodeDataUrl,
       qrUrl: qrCodeUrl,
-      message: "Reward QR code generated successfully",
+      message: "Reward QR code generated successfully"
     });
   } catch (error) {
     console.error("Error generating reward QR code:", error);

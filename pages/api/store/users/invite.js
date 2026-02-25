@@ -24,23 +24,23 @@ export default async function handler(req, res) {
 
         const storeId = new mongoose.Types.ObjectId(req.storeId);
 
-        // Check if user already exists
+
         const existingUser = await User.findOne({ email }).lean();
         if (existingUser) {
-          // Check if already connected to this store
+
           if (
-            existingUser.connectedStores.some(
-              (id) => id.toString() === storeId.toString()
-            )
-          ) {
+          existingUser.connectedStores.some(
+            (id) => id.toString() === storeId.toString()
+          ))
+          {
             return res.status(400).json({
-              error: "User is already connected to this store",
+              error: "User is already connected to this store"
             });
           }
 
-          // Connect existing user to store
+
           await User.findByIdAndUpdate(existingUser._id, {
-            $addToSet: { connectedStores: storeId },
+            $addToSet: { connectedStores: storeId }
           });
 
           return res.json({
@@ -49,19 +49,19 @@ export default async function handler(req, res) {
               id: existingUser._id,
               name: existingUser.name,
               email: existingUser.email,
-              isNewUser: false,
-            },
+              isNewUser: false
+            }
           });
         }
 
-        // Get store details for the invitation
+
         const store = await Store.findById(storeId).lean();
         if (!store) {
           return res.status(404).json({ error: "Store not found" });
         }
 
-        // For now, create the user directly (in production, you'd send an email)
-        // You can modify this to send an invitation email instead
+
+
         const tempPassword = Math.random().toString(36).slice(-8);
         const bcrypt = require("bcryptjs");
         const passwordHash = await bcrypt.hash(tempPassword, 12);
@@ -73,11 +73,11 @@ export default async function handler(req, res) {
           role: "User",
           connectedStores: [storeId],
           pointsByStore: [
-            {
-              storeId,
-              points: 0,
-            },
-          ],
+          {
+            storeId,
+            points: 0
+          }]
+
         });
 
         res.status(201).json({
@@ -86,17 +86,17 @@ export default async function handler(req, res) {
             id: newUser._id,
             name: newUser.name,
             email: newUser.email,
-            isNewUser: true,
+            isNewUser: true
           },
-          // In production, don't return the temp password
-          // This is just for demo purposes
-          tempPassword,
+
+
+          tempPassword
         });
       } catch (error) {
         if (error.name === "ZodError") {
           return res.status(400).json({
             error: "Invalid request data",
-            details: error.errors,
+            details: error.errors
           });
         }
         if (error.code === 11000) {

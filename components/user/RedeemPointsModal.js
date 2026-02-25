@@ -36,11 +36,11 @@ export default function RedeemPointsModal({
       const response = await fetch('/api/user/redeem', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          storeId: store.id,
-        }),
+          storeId: store.id
+        })
       });
 
       const data = await response.json();
@@ -69,9 +69,9 @@ export default function RedeemPointsModal({
   return (
     <Modal isOpen={isOpen} onClose={handleClose} className="max-w-md">
       <div className="p-6">
-        {redemptionResult ? (
-          // Success State
-          <div className="text-center">
+        {redemptionResult ?
+
+        <div className="text-center">
             <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
@@ -107,18 +107,18 @@ export default function RedeemPointsModal({
             <Button onClick={handleClose} className="w-full">
               Done
             </Button>
-          </div>
-        ) : (
-          // Redemption Form
-          <div>
+          </div> :
+
+
+        <div>
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                 Redeem Points
               </h3>
               <button
-                onClick={handleClose}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              >
+              onClick={handleClose}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+              
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -150,39 +150,39 @@ export default function RedeemPointsModal({
               </div>
             </div>
 
-            {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            {error &&
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-sm text-red-600">{error}</p>
               </div>
-            )}
+          }
 
             <div className="flex gap-3">
               <Button
-                variant="secondary"
-                onClick={handleClose}
-                className="flex-1"
-                disabled={isLoading}
-              >
+              variant="secondary"
+              onClick={handleClose}
+              className="flex-1"
+              disabled={isLoading}>
+              
                 Cancel
               </Button>
               <Button
-                onClick={handleRedeem}
-                className="flex-1"
-                disabled={isLoading || availableRewardValue <= 0}
-                isLoading={isLoading}
-              >
+              onClick={handleRedeem}
+              className="flex-1"
+              disabled={isLoading || availableRewardValue <= 0}
+              isLoading={isLoading}>
+              
                 {availableRewardValue <= 0 ? 'Insufficient Points' : `Redeem £${availableRewardValue}`}
               </Button>
             </div>
 
-            {availableRewardValue <= 0 && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-3">
+            {availableRewardValue <= 0 &&
+          <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-3">
                 You need at least {conversionRate} points to redeem £1
               </p>
-            )}
+          }
           </div>
-        )}
+        }
       </div>
-    </Modal>
-  );
+    </Modal>);
+
 }

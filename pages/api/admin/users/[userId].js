@@ -10,10 +10,10 @@ export default async function handler(req, res) {
   return requireSuperAdmin(req, res, async (req, res) => {
     try {
       const { userId } = req.query;
-      
-      // Validate userId
+
+
       const validatedUserId = mongoIdSchema.parse(userId);
-      
+
       await connectDB();
 
       if (req.method === "GET") {
@@ -23,9 +23,9 @@ export default async function handler(req, res) {
       } else if (req.method === "DELETE") {
         return await deleteUser(req, res, validatedUserId);
       } else {
-        return res.status(405).json({ 
-          success: false, 
-          error: "Method not allowed" 
+        return res.status(405).json({
+          success: false,
+          error: "Method not allowed"
         });
       }
     } catch (error) {
@@ -40,9 +40,9 @@ export default async function handler(req, res) {
 
 async function getUserDetails(req, res, userId) {
   try {
-    const user = await User.findById(userId, "-passwordHash")
-      .populate("connectedStores", "name tier slug")
-      .lean();
+    const user = await User.findById(userId, "-passwordHash").
+    populate("connectedStores", "name tier slug").
+    lean();
 
     if (!user) {
       return res.status(404).json({
@@ -51,22 +51,22 @@ async function getUserDetails(req, res, userId) {
       });
     }
 
-    // Get owned stores
-    const ownedStores = await Store.find({ ownerId: userId })
-      .populate("ownerId", "name email")
-      .lean();
 
-    // Get visit history
-    const visitHistory = await Visit.find({ userId })
-      .populate("storeId", "name tier")
-      .sort({ createdAt: -1 })
-      .limit(20)
-      .lean();
+    const ownedStores = await Store.find({ ownerId: userId }).
+    populate("ownerId", "name email").
+    lean();
 
-    // Calculate totals
+
+    const visitHistory = await Visit.find({ userId }).
+    populate("storeId", "name tier").
+    sort({ createdAt: -1 }).
+    limit(20).
+    lean();
+
+
     const totalPoints = user.pointsByStore?.reduce((sum, ps) => sum + ps.points, 0) || 0;
     const totalVisits = visitHistory.length;
-    const approvedVisits = visitHistory.filter(v => v.status === "approved").length;
+    const approvedVisits = visitHistory.filter((v) => v.status === "approved").length;
 
     return res.status(200).json({
       success: true,
@@ -102,30 +102,30 @@ async function updateUser(req, res, userId) {
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: "User not found",
+        error: "User not found"
       });
     }
 
-    // Check if email is being changed and if it's unique
+
     if (updateData.email && updateData.email !== user.email) {
       const existingUser = await User.findOne({ email: updateData.email });
       if (existingUser) {
         return res.status(400).json({
           success: false,
-          error: "Email already in use",
+          error: "Email already in use"
         });
       }
     }
 
-    // Update user
+
     const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
       new: true,
-      select: "-passwordHash",
+      select: "-passwordHash"
     }).populate("connectedStores", "name tier");
 
     return res.status(200).json({
       success: true,
-      data: updatedUser,
+      data: updatedUser
     });
   } catch (error) {
     throw error;
@@ -138,34 +138,34 @@ async function deleteUser(req, res, userId) {
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: "User not found",
+        error: "User not found"
       });
     }
 
-    // Check if user owns any stores
+
     const ownedStores = await Store.find({ ownerId: userId });
     if (ownedStores.length > 0) {
       return res.status(400).json({
         success: false,
         error: "Cannot delete user who owns stores. Transfer ownership first.",
-        details: { ownedStores: ownedStores.length },
+        details: { ownedStores: ownedStores.length }
       });
     }
 
-    // Delete user and related data
+
     await Promise.all([
-      User.findByIdAndDelete(userId),
-      Visit.deleteMany({ userId }),
-      // Remove user from store connections
-      Store.updateMany(
-        { connectedStores: userId },
-        { $pull: { connectedStores: userId } }
-      ),
-    ]);
+    User.findByIdAndDelete(userId),
+    Visit.deleteMany({ userId }),
+
+    Store.updateMany(
+      { connectedStores: userId },
+      { $pull: { connectedStores: userId } }
+    )]
+    );
 
     return res.status(200).json({
       success: true,
-      message: "User deleted successfully",
+      message: "User deleted successfully"
     });
   } catch (error) {
     throw error;

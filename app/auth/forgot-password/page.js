@@ -22,17 +22,17 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const emailError = validateEmail(email);
     setError(emailError);
 
     if (!emailError) {
       setLoading(true);
-      
-      // Simulate API call
+
+
       console.log('Forgot password for email:', email);
-      
-      // Simulate delay
+
+
       setTimeout(() => {
         setLoading(false);
         setSubmitted(true);
@@ -43,7 +43,7 @@ export default function ForgotPasswordPage() {
 
   const handleResend = () => {
     if (resendCountdown > 0) return;
-    
+
     console.log('Resend reset link for email:', email);
     setResendCountdown(30);
   };
@@ -53,12 +53,12 @@ export default function ForgotPasswordPage() {
     if (error) setError('');
   };
 
-  // Countdown timer effect
+
   useEffect(() => {
     let timer;
     if (resendCountdown > 0) {
       timer = setInterval(() => {
-        setResendCountdown(prev => prev - 1);
+        setResendCountdown((prev) => prev - 1);
       }, 1000);
     }
     return () => clearInterval(timer);
@@ -66,13 +66,13 @@ export default function ForgotPasswordPage() {
 
   return (
     <main>
-      <AuthCard 
-        title="Forgot your password?" 
-        subtitle="We'll send you a reset link."
-      >
-        {/* Success State */}
-        {submitted && (
-          <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl" role="alert" aria-live="polite">
+      <AuthCard
+        title="Forgot your password?"
+        subtitle="We'll send you a reset link.">
+        
+        {}
+        {submitted &&
+        <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl" role="alert" aria-live="polite">
             <div className="flex items-center">
               <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mr-3" />
               <div>
@@ -85,10 +85,10 @@ export default function ForgotPasswordPage() {
               </div>
             </div>
           </div>
-        )}
+        }
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email Field */}
+          {}
           <div>
             <Label htmlFor="email" required>
               Email address
@@ -102,66 +102,66 @@ export default function ForgotPasswordPage() {
               error={error}
               disabled={submitted}
               autoComplete="email"
-              autoFocus
-            />
-            {!error && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              autoFocus />
+            
+            {!error &&
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 We'll never share your email.
               </p>
-            )}
+            }
           </div>
 
-          {/* Submit Button */}
+          {}
           <Button
             type="submit"
             loading={loading}
             fullWidth
             disabled={submitted}
-            className="mb-4"
-          >
+            className="mb-4">
+            
             <Mail className="w-4 h-4 mr-2" />
             Send reset link
           </Button>
         </form>
 
-        {/* Resend Section */}
-        {submitted && (
-          <div className="mt-6 text-center">
+        {}
+        {submitted &&
+        <div className="mt-6 text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
               Didn't receive the email? Check your spam folder.
             </p>
             <Button
-              type="button"
-              variant="ghost"
-              onClick={handleResend}
-              disabled={resendCountdown > 0}
-              className="text-sm"
-            >
+            type="button"
+            variant="ghost"
+            onClick={handleResend}
+            disabled={resendCountdown > 0}
+            className="text-sm">
+            
               {resendCountdown > 0 ? `Resend link (${resendCountdown}s)` : 'Resend link'}
             </Button>
           </div>
-        )}
+        }
 
-        {/* Navigation Links */}
+        {}
         <div className="mt-8 pt-6 border-t border-[#D0D8C3]/30 dark:border-zinc-600">
           <div className="flex flex-col sm:flex-row gap-4 text-center">
-            <Link 
+            <Link
               href="/auth/login"
-              className="inline-flex items-center justify-center text-sm text-[#014421] dark:text-[#D0D8C3] hover:underline"
-            >
+              className="inline-flex items-center justify-center text-sm text-[#014421] dark:text-[#D0D8C3] hover:underline">
+              
               <ArrowLeft className="w-4 h-4 mr-1" />
               Back to login
             </Link>
             <span className="hidden sm:block text-gray-300 dark:text-gray-600">•</span>
-            <Link 
+            <Link
               href="/auth/register"
-              className="text-sm text-[#014421] dark:text-[#D0D8C3] hover:underline"
-            >
+              className="text-sm text-[#014421] dark:text-[#D0D8C3] hover:underline">
+              
               Create an account
             </Link>
           </div>
         </div>
       </AuthCard>
-    </main>
-  );
+    </main>);
+
 }

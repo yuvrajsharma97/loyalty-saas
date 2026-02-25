@@ -11,9 +11,9 @@ export default async function handler(req, res) {
       try {
         const validatedQuery = visitFilterSchema.parse(req.query);
         const { page, limit, storeId, method, status, dateFrom, dateTo } =
-          validatedQuery;
+        validatedQuery;
 
-        // Build filter
+
         const filter = { userId: req.user.id };
 
         if (storeId) filter.storeId = storeId;
@@ -29,14 +29,14 @@ export default async function handler(req, res) {
         const skip = (page - 1) * limit;
 
         const [visits, total] = await Promise.all([
-          Visit.find(filter)
-            .populate("storeId", "name")
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit)
-            .lean(),
-          Visit.countDocuments(filter),
-        ]);
+        Visit.find(filter).
+        populate("storeId", "name").
+        sort({ createdAt: -1 }).
+        skip(skip).
+        limit(limit).
+        lean(),
+        Visit.countDocuments(filter)]
+        );
 
         const formattedVisits = visits.map((visit) => ({
           id: visit._id,
@@ -46,7 +46,7 @@ export default async function handler(req, res) {
           method: visit.method,
           status: visit.status,
           points: visit.points,
-          spend: visit.spend,
+          spend: visit.spend
         }));
 
         res.json({
@@ -55,14 +55,14 @@ export default async function handler(req, res) {
             page,
             limit,
             total,
-            pages: Math.ceil(total / limit),
-          },
+            pages: Math.ceil(total / limit)
+          }
         });
       } catch (error) {
         if (error.name === "ZodError") {
           return res.status(400).json({
             error: "Invalid query parameters",
-            details: error.errors,
+            details: error.errors
           });
         }
         console.error("Get visits error:", error);

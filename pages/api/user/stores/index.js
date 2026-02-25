@@ -10,15 +10,15 @@ export default async function handler(req, res) {
   return requireUser(req, res, async (req, res) => {
     if (req.method === "GET") {
       try {
-        const user = await User.findById(req.user.id)
-          .populate("connectedStores")
-          .lean();
+        const user = await User.findById(req.user.id).
+        populate("connectedStores").
+        lean();
 
         if (!user) {
           return res.status(404).json({ error: "User not found" });
         }
 
-        // Get visit stats for each store
+
         const storesWithStats = await Promise.all(
           user.connectedStores.map(async (store) => {
             const userStorePoints = user.pointsByStore.find(
@@ -29,23 +29,23 @@ export default async function handler(req, res) {
             const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
             const [visitsMTD, visitsLifetime] = await Promise.all([
-              Visit.countDocuments({
-                userId: user._id,
-                storeId: store._id,
-                status: "approved",
-                createdAt: { $gte: startOfMonth },
-              }),
-              Visit.countDocuments({
-                userId: user._id,
-                storeId: store._id,
-                status: "approved",
-              }),
-            ]);
-
-            // Find when user joined this store
-            const firstVisit = await Visit.findOne({
+            Visit.countDocuments({
               userId: user._id,
               storeId: store._id,
+              status: "approved",
+              createdAt: { $gte: startOfMonth }
+            }),
+            Visit.countDocuments({
+              userId: user._id,
+              storeId: store._id,
+              status: "approved"
+            })]
+            );
+
+
+            const firstVisit = await Visit.findOne({
+              userId: user._id,
+              storeId: store._id
             }).sort({ createdAt: 1 });
 
             return {
@@ -58,7 +58,7 @@ export default async function handler(req, res) {
               visitsLifetime,
               joinedAt: firstVisit?.createdAt || user.createdAt,
               conversionRate: store.rewardConfig.conversionRate,
-              rewardConfig: store.rewardConfig,
+              rewardConfig: store.rewardConfig
             };
           })
         );

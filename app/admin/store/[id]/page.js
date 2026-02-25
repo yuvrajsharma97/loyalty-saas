@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Settings, Users, Activity, Gift } from "lucide-react";
 import StatCard from "@/components/admin/StatCard";
@@ -12,265 +13,297 @@ import Select from "@/components/admin/Select";
 import Input from "@/components/admin/Input";
 import Banner from "@/components/admin/Banner";
 
-const MOCK_STORES = [
-  {
-    id: "1",
-    name: "Café Central",
-    slug: "cafe-central",
-    location: "London, UK",
-    tier: "gold",
-    usersCount: 342,
-    owner: {
-      id: "owner1",
-      name: "Emma Thompson",
-      email: "emma@cafecentral.com",
-      role: "StoreAdmin"
-    },
-    rewardConfig: {
-      type: "hybrid",
-      pointsPerPound: 1,
-      pointsPerVisit: 10,
-      conversionRate: 100
-    },
-    paused: false,
-    createdAt: "2024-01-15",
-    lastActivity: "2024-03-15"
-  },
-  {
-    id: "2", 
-    name: "The Coffee Bean",
-    slug: "the-coffee-bean",
-    location: "Manchester, UK",
-    tier: "silver",
-    usersCount: 156,
-    owner: {
-      id: "owner2",
-      name: "James Wilson",
-      email: "james@thecoffeebean.com",
-      role: "StoreAdmin"
-    },
-    rewardConfig: {
-      type: "spend",
-      pointsPerPound: 1.5,
-      pointsPerVisit: 0,
-      conversionRate: 150
-    },
-    paused: false,
-    createdAt: "2024-02-01",
-    lastActivity: "2024-03-14"
-  },
-  {
-    id: "3",
-    name: "Green Leaf Bistro",
-    slug: "green-leaf-bistro", 
-    location: "Birmingham, UK",
-    tier: "platinum",
-    usersCount: 523,
-    owner: {
-      id: "owner3",
-      name: "Sarah Chen",
-      email: "sarah@greenleafbistro.com",
-      role: "StoreAdmin"
-    },
-    rewardConfig: {
-      type: "visit",
-      pointsPerPound: 0,
-      pointsPerVisit: 15,
-      conversionRate: 80
-    },
-    paused: false,
-    createdAt: "2023-11-10",
-    lastActivity: "2024-03-15"
-  }
-];
+function formatDate(value) {
+  if (!value) return "-";
+  return new Date(value).toISOString().split("T")[0];
+}
 
-const MOCK_STORE_USERS = [
-  {
-    id: "1",
-    name: "John Smith",
-    email: "john@example.com",
-    points: 245,
-    joined: "2024-01-20",
-    status: "active",
-  },
-  {
-    id: "2",
-    name: "Alice Johnson",
-    email: "alice@example.com",
-    points: 156,
-    joined: "2024-02-03",
-    status: "active",
-  },
-  {
-    id: "3",
-    name: "Bob Wilson",
-    email: "bob@example.com",
-    points: 89,
-    joined: "2024-02-15",
-    status: "suspended",
-  },
-];
-
-const MOCK_VISITS = [
-  {
-    id: "1",
-    userName: "John Smith",
-    date: "2024-03-15",
-    method: "qr",
-    status: "approved",
-    pointsEarned: 10,
-    spendAmount: "£12.50",
-  },
-  {
-    id: "2",
-    userName: "Alice Johnson",
-    date: "2024-03-15",
-    method: "manual",
-    status: "pending",
-    pointsEarned: 0,
-    spendAmount: "£8.00",
-  },
-  {
-    id: "3",
-    userName: "Bob Wilson",
-    date: "2024-03-14",
-    method: "qr",
-    status: "approved",
-    pointsEarned: 15,
-    spendAmount: "£18.75",
-  },
-];
-
-const MOCK_REWARDS = [
-  {
-    id: "1",
-    userName: "John Smith",
-    date: "2024-03-10",
-    pointsUsed: 100,
-    value: "£10.00",
-    autoTriggered: "Yes",
-  },
-  {
-    id: "2",
-    userName: "Alice Johnson",
-    date: "2024-03-08",
-    pointsUsed: 50,
-    value: "£5.00",
-    autoTriggered: "No",
-  },
-];
+function formatCurrency(value) {
+  const num = Number(value || 0);
+  return `GBP ${num.toFixed(2)}`;
+}
 
 export default function StoreDetail() {
   const params = useParams();
   const storeId = params?.id;
 
-  const [store, setStore] = useState(
-    MOCK_STORES.find((s) => s.id === storeId) || MOCK_STORES[0]
-  );
+  const [store, setStore] = useState(null);
+  const [stats, setStats] = useState({
+    userCount: 0,
+    approvedVisits: 0,
+    totalPointsDistributed: 0,
+    totalPointsRedeemed: 0
+  });
+  const [users, setUsers] = useState([]);
+  const [visits, setVisits] = useState([]);
+  const [rewards, setRewards] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const [showTierModal, setShowTierModal] = useState(false);
   const [showRewardModal, setShowRewardModal] = useState(false);
-  const [newTier, setNewTier] = useState(store.tier);
+  const [newTier, setNewTier] = useState("silver");
   const [rewardConfig, setRewardConfig] = useState({
     type: "hybrid",
-    pointsPerPound: "1",
-    pointsPerVisit: "10",
-    conversionRate: "0.10",
+    pointsPerPound: "0",
+    pointsPerVisit: "0",
+    conversionRate: "100"
   });
   const [successBanner, setSuccessBanner] = useState("");
 
-  const handleTierChange = () => {
-    setStore((prev) => ({ ...prev, tier: newTier }));
-    setSuccessBanner(
-      `Store tier updated to ${
-        newTier.charAt(0).toUpperCase() + newTier.slice(1)
-      }.`
-    );
-    setShowTierModal(false);
+  const fetchStoreData = useCallback(async () => {
+    if (!storeId) return;
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const [storeRes, usersRes, rewardsRes] = await Promise.all([
+      fetch(`/api/admin/stores/${storeId}`),
+      fetch(`/api/admin/store/${storeId}/users?page=1&limit=100`),
+      fetch(`/api/admin/store/${storeId}/rewards?page=1&limit=100`)]
+      );
+
+      const [storeJson, usersJson, rewardsJson] = await Promise.all([
+      storeRes.json(),
+      usersRes.json(),
+      rewardsRes.json()]
+      );
+
+      if (!storeRes.ok || !storeJson?.success) {
+        throw new Error(storeJson?.error || "Failed to load store details");
+      }
+
+      const storeData = storeJson.data?.store;
+      const statsData = storeJson.data?.stats || {};
+      const recentVisits = storeJson.data?.recentVisits || [];
+
+      const normalizedStore = {
+        id: storeData?._id,
+        name: storeData?.name || "Unknown Store",
+        tier: storeData?.tier || "silver",
+        rewardConfig: storeData?.rewardConfig || {
+          type: "hybrid",
+          pointsPerPound: 0,
+          pointsPerVisit: 0,
+          conversionRate: 100
+        }
+      };
+
+      const usersData =
+      usersRes.ok && usersJson?.success ?
+      usersJson.data :
+      (storeJson.data?.connectedUsers || []).map((u) => ({
+        id: u._id,
+        name: u.name,
+        email: u.email,
+        points: u.points || 0,
+        joined: formatDate(u.createdAt),
+        status: u.isActive === false ? "suspended" : "active"
+      }));
+
+      const rewardsData =
+      rewardsRes.ok && rewardsJson?.success ?
+      rewardsJson.data :
+      (storeJson.data?.recentRedemptions || []).map((r) => ({
+        id: r._id,
+        userName: r.userId?.name || "Unknown User",
+        date: formatDate(r.createdAt),
+        pointsUsed: r.pointsUsed || 0,
+        value: formatCurrency(r.rewardValueGBP ?? r.value),
+        autoTriggered: r.autoTriggered ? "Yes" : "No"
+      }));
+
+      const visitsData = recentVisits.map((visit) => ({
+        id: visit._id,
+        userName: visit.userId?.name || "Unknown User",
+        date: formatDate(visit.createdAt),
+        method: visit.method || "manual",
+        status: visit.status || "pending",
+        pointsEarned: visit.points || 0,
+        spendAmount: formatCurrency(visit.spend)
+      }));
+
+      const totalRedeemed = rewardsData.reduce((sum, reward) => {
+        return sum + Number(reward.pointsUsed || 0);
+      }, 0);
+
+      setStore(normalizedStore);
+      setNewTier(normalizedStore.tier);
+      setRewardConfig({
+        type: normalizedStore.rewardConfig.type || "hybrid",
+        pointsPerPound: String(normalizedStore.rewardConfig.pointsPerPound ?? 0),
+        pointsPerVisit: String(normalizedStore.rewardConfig.pointsPerVisit ?? 0),
+        conversionRate: String(normalizedStore.rewardConfig.conversionRate ?? 100)
+      });
+
+      setStats({
+        userCount: statsData.userCount || usersData.length || 0,
+        approvedVisits: statsData.visitStats?.approved?.count || 0,
+        totalPointsDistributed: statsData.totalPointsDistributed || 0,
+        totalPointsRedeemed: totalRedeemed
+      });
+      setUsers(usersData || []);
+      setVisits(visitsData || []);
+      setRewards(rewardsData || []);
+    } catch (err) {
+      setError(err.message || "Failed to load store data");
+    } finally {
+      setLoading(false);
+    }
+  }, [storeId]);
+
+  useEffect(() => {
+    fetchStoreData();
+  }, [fetchStoreData]);
+
+  const handleTierChange = async () => {
+    try {
+      const res = await fetch(`/api/admin/stores/${storeId}/tier`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newTier })
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json?.success) {
+        throw new Error(json?.error || "Failed to update tier");
+      }
+
+      setStore((prev) => ({ ...prev, tier: newTier }));
+      setSuccessBanner(
+        `Store tier updated to ${newTier.charAt(0).toUpperCase() + newTier.slice(1)}.`
+      );
+      setShowTierModal(false);
+    } catch (err) {
+      setError(err.message || "Failed to update tier");
+    }
   };
 
-  const handleRewardUpdate = () => {
-    console.log("Reward config updated:", rewardConfig);
-    setSuccessBanner("Reward configuration updated successfully.");
-    setShowRewardModal(false);
+  const handleRewardUpdate = async () => {
+    try {
+      const payload = {
+        type: rewardConfig.type,
+        pointsPerPound: Number(rewardConfig.pointsPerPound),
+        pointsPerVisit: Number(rewardConfig.pointsPerVisit),
+        conversionRate: Number(rewardConfig.conversionRate)
+      };
+
+      const res = await fetch(`/api/admin/stores/${storeId}/reward-config`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json?.success) {
+        throw new Error(json?.error || "Failed to update reward configuration");
+      }
+
+      setStore((prev) => ({
+        ...prev,
+        rewardConfig: {
+          type: payload.type,
+          pointsPerPound: payload.pointsPerPound,
+          pointsPerVisit: payload.pointsPerVisit,
+          conversionRate: payload.conversionRate
+        }
+      }));
+
+      setSuccessBanner("Reward configuration updated successfully.");
+      setShowRewardModal(false);
+    } catch (err) {
+      setError(err.message || "Failed to update reward configuration");
+    }
   };
 
   const userColumns = [
-    { key: "name", label: "Name", sortable: true },
-    { key: "email", label: "Email", sortable: true },
-    { key: "points", label: "Points", sortable: true },
-    { key: "joined", label: "Joined", sortable: true },
-    {
-      key: "status",
-      label: "Status",
-      render: (status) => (
-        <Badge variant={status === "active" ? "success" : "danger"}>
+  { key: "name", label: "Name", sortable: true },
+  { key: "email", label: "Email", sortable: true },
+  { key: "points", label: "Points", sortable: true },
+  { key: "joined", label: "Joined", sortable: true },
+  {
+    key: "status",
+    label: "Status",
+    render: (status) =>
+    <Badge variant={status === "active" ? "success" : "danger"}>
           {status}
         </Badge>
-      ),
-    },
-  ];
+
+  }];
+
 
   const visitColumns = [
-    { key: "userName", label: "User", sortable: true },
-    { key: "date", label: "Date", sortable: true },
-    {
-      key: "method",
-      label: "Method",
-      render: (method) => (
-        <Badge variant={method === "qr" ? "primary" : "default"}>
-          {method.toUpperCase()}
+  { key: "userName", label: "User", sortable: true },
+  { key: "date", label: "Date", sortable: true },
+  {
+    key: "method",
+    label: "Method",
+    render: (method) =>
+    <Badge variant={method === "qr" ? "primary" : "default"}>
+          {(method || "manual").toUpperCase()}
         </Badge>
-      ),
-    },
-    {
-      key: "status",
-      label: "Status",
-      render: (status) => (
-        <Badge variant={status === "approved" ? "success" : "warning"}>
+
+  },
+  {
+    key: "status",
+    label: "Status",
+    render: (status) =>
+    <Badge variant={status === "approved" ? "success" : "warning"}>
           {status}
         </Badge>
-      ),
-    },
-    { key: "pointsEarned", label: "Points Earned", sortable: true },
-    { key: "spendAmount", label: "Spend Amount", sortable: true },
-  ];
+
+  },
+  { key: "pointsEarned", label: "Points Earned", sortable: true },
+  { key: "spendAmount", label: "Spend Amount", sortable: true }];
+
 
   const rewardColumns = [
-    { key: "userName", label: "User", sortable: true },
-    { key: "date", label: "Date", sortable: true },
-    { key: "pointsUsed", label: "Points Used", sortable: true },
-    { key: "value", label: "Value", sortable: true },
-    {
-      key: "autoTriggered",
-      label: "Auto Triggered",
-      render: (auto) => (
-        <Badge variant={auto === "Yes" ? "success" : "default"}>{auto}</Badge>
-      ),
-    },
-  ];
+  { key: "userName", label: "User", sortable: true },
+  { key: "date", label: "Date", sortable: true },
+  { key: "pointsUsed", label: "Points Used", sortable: true },
+  { key: "value", label: "Value", sortable: true },
+  {
+    key: "autoTriggered",
+    label: "Auto Triggered",
+    render: (auto) =>
+    <Badge variant={auto === "Yes" ? "success" : "default"}>{auto}</Badge>
+
+  }];
+
+
+  if (loading && !store) {
+    return <div className="text-sm text-gray-500 dark:text-gray-400">Loading store data...</div>;
+  }
+
+  if (!store) {
+    return (
+      <div className="space-y-4">
+        {error && <Banner type="error" message={error} onDismiss={() => setError("")} />}
+        <p className="text-sm text-gray-500 dark:text-gray-400">Store not found.</p>
+      </div>);
+
+  }
 
   const tabs = [
-    {
-      label: "Overview",
-      content: (
-        <div className="space-y-6">
-          {/* Stats */}
+  {
+    label: "Overview",
+    content:
+    <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <StatCard title="Users" value={store.usersCount} icon={Users} />
-            <StatCard title="Approved Visits" value="1,247" icon={Activity} />
-            <StatCard title="Points Distributed" value="12,450" icon={Gift} />
-            <StatCard title="Points Redeemed" value="3,210" icon={Gift} />
+            <StatCard title="Users" value={stats.userCount} icon={Users} />
+            <StatCard title="Approved Visits" value={stats.approvedVisits} icon={Activity} />
+            <StatCard title="Points Distributed" value={stats.totalPointsDistributed} icon={Gift} />
+            <StatCard title="Points Redeemed" value={stats.totalPointsRedeemed} icon={Gift} />
           </div>
 
-          {/* Reward Config */}
           <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Reward Configuration
               </h3>
-              <Button
-                variant="secondary"
-                onClick={() => setShowRewardModal(true)}>
+              <Button variant="secondary" onClick={() => setShowRewardModal(true)}>
                 <Settings className="w-4 h-4 mr-2" />
                 Override Config
               </Button>
@@ -278,72 +311,63 @@ export default function StoreDetail() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Type
-                </label>
+                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Type</label>
                 <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {rewardConfig.type}
+                  {store.rewardConfig?.type}
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Points per £
-                </label>
+                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Points per GBP</label>
                 <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {rewardConfig.pointsPerPound}
+                  {store.rewardConfig?.pointsPerPound}
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Points per Visit
-                </label>
+                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Points per Visit</label>
                 <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {rewardConfig.pointsPerVisit}
+                  {store.rewardConfig?.pointsPerVisit}
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Conversion Rate
-                </label>
+                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Conversion Rate</label>
                 <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                  £{rewardConfig.conversionRate}
+                  {store.rewardConfig?.conversionRate} points = GBP 1
                 </p>
               </div>
             </div>
           </div>
         </div>
-      ),
-    },
-    {
-      label: "Users",
-      content: <DataTable columns={userColumns} data={MOCK_STORE_USERS} />,
-    },
-    {
-      label: "Visits",
-      content: <DataTable columns={visitColumns} data={MOCK_VISITS} />,
-    },
-    {
-      label: "Rewards",
-      content: <DataTable columns={rewardColumns} data={MOCK_REWARDS} />,
-    },
-  ];
+
+  },
+  {
+    label: "Users",
+    content: <DataTable columns={userColumns} data={users} />
+  },
+  {
+    label: "Visits",
+    content: <DataTable columns={visitColumns} data={visits} />
+  },
+  {
+    label: "Rewards",
+    content: <DataTable columns={rewardColumns} data={rewards} />
+  }];
+
 
   return (
     <div className="space-y-6">
-      {successBanner && (
-        <Banner
-          type="success"
-          message={successBanner}
-          onDismiss={() => setSuccessBanner("")}
-        />
-      )}
+      {successBanner &&
+      <Banner
+        type="success"
+        message={successBanner}
+        onDismiss={() => setSuccessBanner("")} />
 
-      {/* Header */}
+      }
+
+      {error && <Banner type="error" message={error} onDismiss={() => setError("")} />}
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {store.name}
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{store.name}</h1>
           <Badge variant={store.tier}>
             {store.tier.charAt(0).toUpperCase() + store.tier.slice(1)}
           </Badge>
@@ -351,55 +375,52 @@ export default function StoreDetail() {
         <Button onClick={() => setShowTierModal(true)}>Change Tier</Button>
       </div>
 
-      {/* Tabs */}
       <Tabs tabs={tabs} />
 
-      {/* Tier Change Modal */}
       <Modal
         isOpen={showTierModal}
         onClose={() => setShowTierModal(false)}
         title="Change Store Tier"
         actions={
-          <>
+        <>
             <Button variant="ghost" onClick={() => setShowTierModal(false)}>
               Cancel
             </Button>
             <Button onClick={handleTierChange}>Update Tier</Button>
           </>
         }>
+
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Select New Tier
             </label>
-            <Select
-              value={newTier}
-              onChange={(e) => setNewTier(e.target.value)}>
+            <Select value={newTier} onChange={(e) => setNewTier(e.target.value)}>
               <option value="silver">Silver</option>
               <option value="gold">Gold</option>
               <option value="platinum">Platinum</option>
             </Select>
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Changing the tier will affect the store's feature access and limits.
+            Changing the tier will affect the store access and limits.
           </p>
         </div>
       </Modal>
 
-      {/* Reward Config Modal */}
       <Modal
         isOpen={showRewardModal}
         onClose={() => setShowRewardModal(false)}
         title="Override Reward Configuration"
         size="lg"
         actions={
-          <>
+        <>
             <Button variant="ghost" onClick={() => setShowRewardModal(false)}>
               Cancel
             </Button>
             <Button onClick={handleRewardUpdate}>Save Changes</Button>
           </>
         }>
+
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -408,9 +429,8 @@ export default function StoreDetail() {
               </label>
               <Select
                 value={rewardConfig.type}
-                onChange={(e) =>
-                  setRewardConfig((prev) => ({ ...prev, type: e.target.value }))
-                }>
+                onChange={(e) => setRewardConfig((prev) => ({ ...prev, type: e.target.value }))}>
+
                 <option value="spend">Spend-based</option>
                 <option value="visit">Visit-based</option>
                 <option value="hybrid">Hybrid</option>
@@ -419,18 +439,15 @@ export default function StoreDetail() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Points per £
+                Points per GBP
               </label>
               <Input
                 type="number"
                 value={rewardConfig.pointsPerPound}
                 onChange={(e) =>
-                  setRewardConfig((prev) => ({
-                    ...prev,
-                    pointsPerPound: e.target.value,
-                  }))
-                }
-              />
+                setRewardConfig((prev) => ({ ...prev, pointsPerPound: e.target.value }))
+                } />
+
             </div>
 
             <div>
@@ -441,33 +458,27 @@ export default function StoreDetail() {
                 type="number"
                 value={rewardConfig.pointsPerVisit}
                 onChange={(e) =>
-                  setRewardConfig((prev) => ({
-                    ...prev,
-                    pointsPerVisit: e.target.value,
-                  }))
-                }
-              />
+                setRewardConfig((prev) => ({ ...prev, pointsPerVisit: e.target.value }))
+                } />
+
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Conversion Rate (£ per point)
+                Conversion Rate (points per GBP 1)
               </label>
               <Input
                 type="number"
                 step="0.01"
                 value={rewardConfig.conversionRate}
                 onChange={(e) =>
-                  setRewardConfig((prev) => ({
-                    ...prev,
-                    conversionRate: e.target.value,
-                  }))
-                }
-              />
+                setRewardConfig((prev) => ({ ...prev, conversionRate: e.target.value }))
+                } />
+
             </div>
           </div>
         </div>
       </Modal>
-    </div>
-  );
+    </div>);
+
 }

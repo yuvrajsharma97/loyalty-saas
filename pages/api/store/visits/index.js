@@ -27,12 +27,12 @@ export default async function handler(req, res) {
           page,
           limit,
           sortBy,
-          sortOrder,
+          sortOrder
         } = validatedQuery;
 
         const storeId = new mongoose.Types.ObjectId(req.storeId);
 
-        // Build match conditions
+
         const matchConditions = { storeId };
 
         if (status) matchConditions.status = status;
@@ -44,31 +44,31 @@ export default async function handler(req, res) {
           if (dateTo) matchConditions.createdAt.$lte = new Date(dateTo);
         }
 
-        // Build sort conditions
+
         const sortConditions = {};
         sortConditions[sortBy] = sortOrder === "asc" ? 1 : -1;
 
-        // Get total count for pagination
+
         const totalCount = await Visit.countDocuments(matchConditions);
 
-        // Get paginated results with user details
-        const visits = await Visit.find(matchConditions)
-          .populate("userId", "name email")
-          .populate("approvedBy", "name")
-          .sort(sortConditions)
-          .skip((page - 1) * limit)
-          .limit(limit)
-          .lean();
+
+        const visits = await Visit.find(matchConditions).
+        populate("userId", "name email").
+        populate("approvedBy", "name").
+        sort(sortConditions).
+        skip((page - 1) * limit).
+        limit(limit).
+        lean();
 
         const totalPages = Math.ceil(totalCount / limit);
 
-        // Format response
+
         const formattedVisits = visits.map((visit) => ({
           id: visit._id,
           user: {
             id: visit.userId?._id,
             name: visit.userId?.name || "Unknown User",
-            email: visit.userId?.email,
+            email: visit.userId?.email
           },
           method: visit.method,
           status: visit.status,
@@ -77,7 +77,7 @@ export default async function handler(req, res) {
           createdAt: visit.createdAt,
           approvedAt: visit.approvedAt,
           approvedBy: visit.approvedBy?.name,
-          metadata: visit.metadata,
+          metadata: visit.metadata
         }));
 
         res.json({
@@ -88,14 +88,14 @@ export default async function handler(req, res) {
             totalCount,
             totalPages,
             hasNext: page < totalPages,
-            hasPrev: page > 1,
-          },
+            hasPrev: page > 1
+          }
         });
       } catch (error) {
         if (error.name === "ZodError") {
           return res.status(400).json({
             error: "Invalid query parameters",
-            details: error.errors,
+            details: error.errors
           });
         }
         console.error("Get visits error:", error);

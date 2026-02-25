@@ -4,48 +4,48 @@
 
 @layer base {
   :root {
-    /* Brand colors from tailwind config */
-    --brand-primary: #014421;     /* Dark green */
-    --brand-secondary: #D0D8C3;   /* Light sage */
+    
+    --brand-primary: #014421;     
+    --brand-secondary: #D0D8C3;   
 
-    /* Text color palette from tailwind config */
-    --text-primary: #014421;      /* Main brand text */
-    --text-secondary: #D0D8C3;    /* Lighter brand text */
-    --text-muted: #6B7280;        /* Muted text */
-    --text-light: #9CA3AF;        /* Light text */
-    --text-inverse: #FFFFFF;      /* White text for dark backgrounds */
+    
+    --text-primary: #014421;      
+    --text-secondary: #D0D8C3;    
+    --text-muted: #6B7280;        
+    --text-light: #9CA3AF;        
+    --text-inverse: #FFFFFF;      
 
-    /* Glass effect colors from tailwind config */
+    
     --glass-primary: rgba(1, 68, 33, 0.15);
     --glass-secondary: rgba(208, 216, 195, 0.25);
     --glass-white: rgba(255, 255, 255, 0.25);
     --glass-dark: rgba(0, 0, 0, 0.15);
 
-    /* DaisyUI color variables mapped to brand colors */
-    --p: 156 100% 12%;    /* Primary = #014421 */
-    --s: 86 15% 75%;      /* Secondary = #D0D8C3 */
-    --a: 156 100% 12%;    /* Accent = #014421 */
-    --n: 220 13% 69%;     /* Neutral = gray */
-    --b1: 0 0% 100%;      /* Base-100 = white */
-    --b2: 210 20% 98%;    /* Base-200 = light gray */
-    --b3: 220 14% 96%;    /* Base-300 = medium gray */
-    --bc: 156 100% 12%;   /* Base content = #014421 */
+    
+    --p: 156 100% 12%;    
+    --s: 86 15% 75%;      
+    --a: 156 100% 12%;    
+    --n: 220 13% 69%;     
+    --b1: 0 0% 100%;      
+    --b2: 210 20% 98%;    
+    --b3: 220 14% 96%;    
+    --bc: 156 100% 12%;   
 
-    /* Semantic colors */
-    --su: 142 76% 36%;    /* Success = green */
-    --wa: 43 96% 56%;     /* Warning = yellow */
-    --er: 0 84% 60%;      /* Error = red */
-    --in: 212 100% 48%;   /* Info = blue */
+    
+    --su: 142 76% 36%;    
+    --wa: 43 96% 56%;     
+    --er: 0 84% 60%;      
+    --in: 212 100% 48%;   
 
-    /* Content colors */
-    --pc: 0 0% 100%;      /* Primary content = white */
-    --sc: 156 100% 12%;   /* Secondary content = #014421 */
-    --ac: 0 0% 100%;      /* Accent content = white */
-    --nc: 0 0% 100%;      /* Neutral content = white */
-    --suc: 0 0% 100%;     /* Success content = white */
-    --wac: 0 0% 0%;       /* Warning content = black */
-    --erc: 0 0% 100%;     /* Error content = white */
-    --inc: 0 0% 100%;     /* Info content = white */
+    
+    --pc: 0 0% 100%;      
+    --sc: 156 100% 12%;   
+    --ac: 0 0% 100%;      
+    --nc: 0 0% 100%;      
+    --suc: 0 0% 100%;     
+    --wac: 0 0% 0%;       
+    --erc: 0 0% 100%;     
+    --inc: 0 0% 100%;     
   }
 
   html {
@@ -57,13 +57,13 @@
     line-height: 1.6;
   }
 
-  /* Force dark mode styles */
+  
   .dark body {
     background-color: #18181b;
     color: #e4e4e7;
   }
 
-  /* Typography using text color system */
+  
   h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
     line-height: 1.3;
@@ -78,7 +78,7 @@
     line-height: 1.6;
   }
 
-  /* Text utility classes matching tailwind config */
+  
   .text-text-primary {
     color: var(--text-primary);
   }
@@ -99,7 +99,7 @@
     color: var(--text-inverse);
   }
 
-  /* Glass effect utilities */
+  
   .bg-glass-primary {
     background-color: var(--glass-primary);
   }
@@ -118,7 +118,7 @@
 }
 
 @layer components {
-  /* Brand gradients using CSS variables */
+  
   .brand-gradient {
     background: linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-primary) 100%);
   }
@@ -127,7 +127,7 @@
     background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
   }
 
-  /* Glassmorphism gradients */
+  
   .glass-gradient-primary {
     background: linear-gradient(135deg, var(--glass-primary) 0%, var(--glass-white) 100%);
   }
@@ -136,7 +136,7 @@
     background: linear-gradient(135deg, var(--glass-secondary) 0%, var(--glass-white) 100%);
   }
 
-  /* Enhanced button styles with new color system */
+  
   .btn-brand-primary {
     background-color: var(--brand-primary);
     color: var(--text-inverse);
@@ -192,7 +192,7 @@
     background-color: var(--glass-primary);
   }
 
-  /* Enhanced card styles with glassmorphism */
+  
   .card-brand {
     background-color: white;
     border: 1px solid var(--brand-secondary);
@@ -221,7 +221,7 @@
     box-shadow: 0 8px 32px 0 rgba(1, 68, 33, 0.1);
   }
 
-  /* Enhanced form elements */
+  
   .input-brand {
     background-color: white;
     border: 1px solid var(--brand-secondary);
@@ -252,7 +252,7 @@
     color: #71717a;
   }
 
-  /* Enhanced alert styles */
+  
   .alert-brand-info {
     background-color: var(--glass-secondary);
     color: var(--text-primary);
@@ -285,7 +285,7 @@
     backdrop-filter: blur(8px);
   }
 
-  /* Utility classes for consistent spacing and typography */
+  
   .text-brand-muted {
     color: var(--text-muted);
   }
@@ -310,13 +310,13 @@
     border-color: var(--brand-secondary);
   }
 
-  /* Focus states for better accessibility */
+  
   .focus-brand:focus {
     outline: none;
     box-shadow: 0 0 0 3px var(--glass-primary);
   }
 
-  /* Smooth transitions for interactive elements */
+  
   .transition-brand {
     transition: all 0.2s ease-in-out;
   }

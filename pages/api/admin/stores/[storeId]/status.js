@@ -6,9 +6,9 @@ import Store from "../../../../../models/Store";
 
 export default async function handler(req, res) {
   if (req.method !== "PUT") {
-    return res
-      .status(405)
-      .json({ success: false, error: "Method not allowed" });
+    return res.
+    status(405).
+    json({ success: false, error: "Method not allowed" });
   }
 
   return requireSuperAdmin(req, res, async (req, res) => {
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
       if (!store) {
         return res.status(404).json({
           success: false,
-          error: "Store not found",
+          error: "Store not found"
         });
       }
 
@@ -35,8 +35,8 @@ export default async function handler(req, res) {
 
       console.log(
         `Status changed for store ${
-          store.name
-        }: ${oldStatus} -> ${newStatus}. Reason: ${reason || "Not provided"}`
+        store.name}: ${
+        oldStatus} -> ${newStatus}. Reason: ${reason || "Not provided"}`
       );
 
       return res.status(200).json({
@@ -46,17 +46,17 @@ export default async function handler(req, res) {
           name: store.name,
           oldStatus,
           newStatus,
-          updatedAt: new Date(),
+          updatedAt: new Date()
         },
         message: `Store ${
-          newStatus === "active" ? "activated" : "suspended"
-        } successfully`,
+        newStatus === "active" ? "activated" : "suspended"} successfully`
+
       });
     } catch (error) {
       console.error("Store status change error:", error);
       return res.status(500).json({
         success: false,
-        error: "Failed to change store status",
+        error: "Failed to change store status"
       });
     }
   });

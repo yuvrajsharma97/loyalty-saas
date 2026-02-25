@@ -5,7 +5,7 @@ export default function PointsSummary({
   points,
   conversionRate = 100,
   storeName,
-  className = "",
+  className = ""
 }) {
   const redeemableValue = points / conversionRate;
 
@@ -44,6 +44,6 @@ export default function PointsSummary({
           </p>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }

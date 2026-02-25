@@ -24,7 +24,7 @@ export default async function handler(req, res) {
 
         const storeId = new mongoose.Types.ObjectId(req.storeId);
 
-        // Calculate date range
+
         const now = new Date();
         let matchDate;
 
@@ -45,80 +45,80 @@ export default async function handler(req, res) {
             matchDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
         }
 
-        // User growth over time
+
         const userGrowth = await User.aggregate([
-          {
-            $match: {
-              connectedStores: storeId,
-              createdAt: { $gte: matchDate },
+        {
+          $match: {
+            connectedStores: storeId,
+            createdAt: { $gte: matchDate }
+          }
+        },
+        {
+          $group: {
+            _id: {
+              $dateToString: {
+                format:
+                groupBy === "day" ?
+                "%Y-%m-%d" :
+                groupBy === "week" ?
+                "%Y-%U" :
+                "%Y-%m",
+                date: "$createdAt"
+              }
             },
-          },
-          {
-            $group: {
-              _id: {
-                $dateToString: {
-                  format:
-                    groupBy === "day"
-                      ? "%Y-%m-%d"
-                      : groupBy === "week"
-                      ? "%Y-%U"
-                      : "%Y-%m",
-                  date: "$createdAt",
-                },
-              },
-              newUsers: { $sum: 1 },
-            },
-          },
-          { $sort: { _id: 1 } },
-        ]);
+            newUsers: { $sum: 1 }
+          }
+        },
+        { $sort: { _id: 1 } }]
+        );
 
-        // User engagement metrics
+
         const engagementMetrics = await Visit.aggregate([
-          {
-            $match: {
-              storeId,
-              status: "approved",
-              createdAt: { $gte: matchDate },
-            },
-          },
-          {
-            $group: {
-              _id: "$userId",
-              visitCount: { $sum: 1 },
-              totalSpend: { $sum: "$spend" },
-              totalPoints: { $sum: "$points" },
-              firstVisit: { $min: "$createdAt" },
-              lastVisit: { $max: "$createdAt" },
-            },
-          },
-          {
-            $group: {
-              _id: null,
-              activeUsers: { $sum: 1 },
-              avgVisitsPerUser: { $avg: "$visitCount" },
-              avgSpendPerUser: { $avg: "$totalSpend" },
-              avgPointsPerUser: { $avg: "$totalPoints" },
-            },
-          },
-        ]);
+        {
+          $match: {
+            storeId,
+            status: "approved",
+            createdAt: { $gte: matchDate }
+          }
+        },
+        {
+          $group: {
+            _id: "$userId",
+            visitCount: { $sum: 1 },
+            totalSpend: { $sum: "$spend" },
+            totalPoints: { $sum: "$points" },
+            firstVisit: { $min: "$createdAt" },
+            lastVisit: { $max: "$createdAt" }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            activeUsers: { $sum: 1 },
+            avgVisitsPerUser: { $avg: "$visitCount" },
+            avgSpendPerUser: { $avg: "$totalSpend" },
+            avgPointsPerUser: { $avg: "$totalPoints" }
+          }
+        }]
+        );
 
-        // Points distribution
+
         const pointsDistribution = await User.aggregate([
-          { $match: { connectedStores: storeId } },
-          { $unwind: "$pointsByStore" },
-          { $match: { "pointsByStore.storeId": storeId } },
-          {
-            $bucket: {
-              groupBy: "$pointsByStore.points",
-              boundaries: [0, 50, 100, 250, 500, 1000, Infinity],
-              default: "1000+",
-              output: {
-                count: { $sum: 1 },
-                users: { $push: "$name" },
-              },
-            },
-          },
-        ]);
+        { $match: { connectedStores: storeId } },
+        { $unwind: "$pointsByStore" },
+        { $match: { "pointsByStore.storeId": storeId } },
+        {
+          $bucket: {
+            groupBy: "$pointsByStore.points",
+            boundaries: [0, 50, 100, 250, 500, 1000, Infinity],
+            default: "1000+",
+            output: {
+              count: { $sum: 1 },
+              users: { $push: "$name" }
+            }
+          }
+        }]
+        );
 
         res.json({
           userGrowth,
@@ -126,17 +126,17 @@ export default async function handler(req, res) {
             activeUsers: 0,
             avgVisitsPerUser: 0,
             avgSpendPerUser: 0,
-            avgPointsPerUser: 0,
+            avgPointsPerUser: 0
           },
           pointsDistribution,
           period,
-          groupBy,
+          groupBy
         });
       } catch (error) {
         if (error.name === "ZodError") {
           return res.status(400).json({
             error: "Invalid query parameters",
-            details: error.errors,
+            details: error.errors
           });
         }
         console.error("User analytics error:", error);

@@ -10,41 +10,41 @@ import {
   Settings,
   X,
   ChevronLeft,
-  Award,
-} from "lucide-react";
+  Award } from
+"lucide-react";
 
 export default function SidebarStore({ isOpen, onToggle }) {
   const pathname = usePathname();
 
   const navigation = [
-    { name: "Dashboard", href: "/store/dashboard", icon: LayoutDashboard },
-    { name: "Users", href: "/store/users", icon: Users },
-    { name: "Visits", href: "/store/visits", icon: CheckSquare },
-    { name: "Rewards", href: "/store/rewards", icon: Gift },
-    { name: "Reward Claims", href: "/store/reward-claims", icon: Award },
-    { name: "Reports", href: "/store/reports", icon: FileText },
-    { name: "Settings", href: "/store/settings", icon: Settings },
-  ];
+  { name: "Dashboard", href: "/store/dashboard", icon: LayoutDashboard },
+  { name: "Users", href: "/store/users", icon: Users },
+  { name: "Visits", href: "/store/visits", icon: CheckSquare },
+  { name: "Rewards", href: "/store/rewards", icon: Gift },
+  { name: "Reward Claims", href: "/store/reward-claims", icon: Award },
+  { name: "Reports", href: "/store/reports", icon: FileText },
+  { name: "Settings", href: "/store/settings", icon: Settings }];
+
 
   const isActive = (href) =>
-    pathname === href || pathname.startsWith(href + "/");
+  pathname === href || pathname.startsWith(href + "/");
 
   return (
     <>
-      {/* Mobile backdrop */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={onToggle}
-        />
-      )}
+      {}
+      {isOpen &&
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+        onClick={onToggle} />
 
-      {/* Sidebar */}
+      }
+
+      {}
       <div
         className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-zinc-900 shadow-lg transform transition-transform lg:translate-x-0 lg:static lg:inset-0 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}>
-        {/* Header */}
+        isOpen ? "translate-x-0" : "-translate-x-full"}`
+        }>
+        {}
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-zinc-700">
           <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
             <div className="w-8 h-8 bg-[#014421] rounded-lg flex items-center justify-center">
@@ -61,7 +61,7 @@ export default function SidebarStore({ isOpen, onToggle }) {
           </button>
         </div>
 
-        {/* Navigation */}
+        {}
         <nav className="mt-6 px-3">
           <div className="space-y-1">
             {navigation.map((item) => {
@@ -71,10 +71,10 @@ export default function SidebarStore({ isOpen, onToggle }) {
                   key={item.name}
                   href={item.href}
                   className={`group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                    active
-                      ? "bg-[#014421] text-white"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800"
-                  }`}
+                  active ?
+                  "bg-[#014421] text-white" :
+                  "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800"}`
+                  }
                   onClick={() => {
                     if (window.innerWidth < 1024) {
                       onToggle();
@@ -82,13 +82,13 @@ export default function SidebarStore({ isOpen, onToggle }) {
                   }}>
                   <item.icon className="w-5 h-5 mr-3" />
                   {item.name}
-                </Link>
-              );
+                </Link>);
+
             })}
           </div>
         </nav>
 
-        {/* Footer */}
+        {}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-zinc-700">
           <Link
             href="/"
@@ -98,6 +98,6 @@ export default function SidebarStore({ isOpen, onToggle }) {
           </Link>
         </div>
       </div>
-    </>
-  );
+    </>);
+
 }

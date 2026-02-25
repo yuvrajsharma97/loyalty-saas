@@ -5,7 +5,7 @@ export default function Pagination({
   currentPage,
   totalPages,
   onPageChange,
-  className = "",
+  className = ""
 }) {
   if (totalPages <= 1) return null;
 
@@ -27,40 +27,40 @@ export default function Pagination({
           Previous
         </Button>
 
-        {showPages[0] > 1 && (
-          <>
+        {showPages[0] > 1 &&
+        <>
             <Button variant="ghost" size="sm" onClick={() => onPageChange(1)}>
               1
             </Button>
-            {showPages[0] > 2 && (
-              <span className="px-2 text-[#6B7280]">...</span>
-            )}
+            {showPages[0] > 2 &&
+          <span className="px-2 text-[#6B7280]">...</span>
+          }
           </>
-        )}
+        }
 
-        {showPages.map((page) => (
-          <Button
-            key={page}
-            variant={page === currentPage ? "primary" : "ghost"}
-            size="sm"
-            onClick={() => onPageChange(page)}>
+        {showPages.map((page) =>
+        <Button
+          key={page}
+          variant={page === currentPage ? "primary" : "ghost"}
+          size="sm"
+          onClick={() => onPageChange(page)}>
             {page}
           </Button>
-        ))}
+        )}
 
-        {showPages[showPages.length - 1] < totalPages && (
-          <>
-            {showPages[showPages.length - 1] < totalPages - 1 && (
-              <span className="px-2 text-[#6B7280]">...</span>
-            )}
+        {showPages[showPages.length - 1] < totalPages &&
+        <>
+            {showPages[showPages.length - 1] < totalPages - 1 &&
+          <span className="px-2 text-[#6B7280]">...</span>
+          }
             <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onPageChange(totalPages)}>
+            variant="ghost"
+            size="sm"
+            onClick={() => onPageChange(totalPages)}>
               {totalPages}
             </Button>
           </>
-        )}
+        }
 
         <Button
           variant="ghost"
@@ -75,6 +75,6 @@ export default function Pagination({
       <p className="text-sm text-[#6B7280] dark:text-gray-400">
         Page {currentPage} of {totalPages}
       </p>
-    </div>
-  );
+    </div>);
+
 }

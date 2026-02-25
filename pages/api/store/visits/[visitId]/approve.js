@@ -30,57 +30,57 @@ export default async function handler(req, res) {
 
           const storeId = new mongoose.Types.ObjectId(req.storeId);
 
-          // Find the visit
+
           const visit = await Visit.findOne({
             _id: visitId,
             storeId,
-            status: "pending",
+            status: "pending"
           }).session(session);
 
           if (!visit) {
             throw new Error("Visit not found or already processed");
           }
 
-          // Get store configuration
+
           const store = await Store.findById(storeId).session(session);
           if (!store) {
             throw new Error("Store not found");
           }
 
-          // Calculate points (use manual override if provided)
-          const calculatedPoints =
-            manualPoints !== undefined
-              ? manualPoints
-              : calculatePoints(visit, store);
 
-          // Update visit
+          const calculatedPoints =
+          manualPoints !== undefined ?
+          manualPoints :
+          calculatePoints(visit, store);
+
+
           const updatedVisit = await Visit.findByIdAndUpdate(
             visitId,
             {
               status: "approved",
               points: calculatedPoints,
               approvedBy: req.user.id,
-              approvedAt: new Date(),
+              approvedAt: new Date()
             },
             { new: true, session }
           ).populate("userId", "name email");
 
-          // Update user points
+
           await User.findOneAndUpdate(
             {
               _id: visit.userId,
-              "pointsByStore.storeId": storeId,
+              "pointsByStore.storeId": storeId
             },
             {
-              $inc: { "pointsByStore.$.points": calculatedPoints },
+              $inc: { "pointsByStore.$.points": calculatedPoints }
             },
             { session }
           );
 
-          // If user doesn't have points entry for this store, create it
+
           const userPointsCheck = await User.findOne({
             _id: visit.userId,
-            "pointsByStore.storeId": storeId,
+            "pointsByStore.storeId": storeId
           }).session(session);
 
           if (!userPointsCheck) {
@@ -90,9 +90,9 @@ export default async function handler(req, res) {
                 $push: {
                   pointsByStore: {
                     storeId: storeId,
-                    points: calculatedPoints,
-                  },
-                },
+                    points: calculatedPoints
+                  }
+                }
               },
               { session }
             );
@@ -107,20 +107,20 @@ export default async function handler(req, res) {
             id: visit._id,
             status: "approved",
             points: visit.points,
-            approvedAt: visit.approvedAt,
-          },
+            approvedAt: visit.approvedAt
+          }
         });
       } catch (error) {
         if (error.name === "ZodError") {
           return res.status(400).json({
             error: "Invalid request data",
-            details: error.errors,
+            details: error.errors
           });
         }
         console.error("Approve visit error:", error);
-        res
-          .status(500)
-          .json({ error: error.message || "Internal server error" });
+        res.
+        status(500).
+        json({ error: error.message || "Internal server error" });
       } finally {
         await session.endSession();
       }

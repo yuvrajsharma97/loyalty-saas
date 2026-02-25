@@ -6,7 +6,7 @@ export default function StoreSwitcher({
   stores,
   currentStore,
   onStoreChange,
-  className = "",
+  className = ""
 }) {
   return (
     <div className={`relative ${className}`}>
@@ -18,12 +18,12 @@ export default function StoreSwitcher({
         onChange={(e) => onStoreChange(e.target.value)}
         className="min-w-48">
         <option value="">All Stores</option>
-        {stores?.map((store) => (
-          <option key={store.id} value={store.id}>
+        {stores?.map((store) =>
+        <option key={store.id} value={store.id}>
             {store.name}
           </option>
-        ))}
+        )}
       </Select>
-    </div>
-  );
+    </div>);
+
 }

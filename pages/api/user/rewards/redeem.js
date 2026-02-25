@@ -15,9 +15,9 @@ export default async function handler(req, res) {
         const { storeId, points } = redeemPointsSchema.parse(req.body);
 
         const [user, store] = await Promise.all([
-          User.findById(req.user.id),
-          Store.findById(storeId),
-        ]);
+        User.findById(req.user.id),
+        Store.findById(storeId)]
+        );
 
         if (!user) {
           return res.status(404).json({ error: "User not found" });
@@ -27,12 +27,12 @@ export default async function handler(req, res) {
           return res.status(404).json({ error: "Store not found or inactive" });
         }
 
-        // Check if user is connected to this store
+
         if (!user.connectedStores.includes(storeId)) {
           return res.status(400).json({ error: "Not connected to this store" });
         }
 
-        // Check if user has enough points
+
         const userStorePoints = user.pointsByStore.find(
           (p) => p.storeId.toString() === storeId
         );
@@ -41,29 +41,29 @@ export default async function handler(req, res) {
           return res.status(400).json({ error: "Insufficient points" });
         }
 
-        // Validate points are multiple of conversion rate
+
         if (points % store.rewardConfig.conversionRate !== 0) {
           return res.status(400).json({
-            error: `Points must be multiple of ${store.rewardConfig.conversionRate}`,
+            error: `Points must be multiple of ${store.rewardConfig.conversionRate}`
           });
         }
 
         const value = points / store.rewardConfig.conversionRate;
 
-        // Create redemption record
+
         const redemption = new Redemption({
           userId: user._id,
           storeId: storeId,
           pointsUsed: points,
           value: value,
           autoTriggered: false,
-          appliedBy: user._id,
+          appliedBy: user._id
         });
 
-        // Deduct points from user
+
         userStorePoints.points -= points;
 
-        // Save both documents
+
         await Promise.all([redemption.save(), user.save()]);
 
         await redemption.populate("storeId", "name");
@@ -76,15 +76,15 @@ export default async function handler(req, res) {
             storeName: redemption.storeId.name,
             pointsUsed: redemption.pointsUsed,
             value: redemption.value,
-            date: redemption.createdAt,
+            date: redemption.createdAt
           },
-          remainingPoints: userStorePoints.points,
+          remainingPoints: userStorePoints.points
         });
       } catch (error) {
         if (error.name === "ZodError") {
           return res.status(400).json({
             error: "Invalid request data",
-            details: error.errors,
+            details: error.errors
           });
         }
         console.error("Redemption error:", error);

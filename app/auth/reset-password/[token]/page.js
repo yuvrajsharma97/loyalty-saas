@@ -13,27 +13,27 @@ export default function ResetPasswordPage() {
 
   const [formData, setFormData] = useState({
     password: "",
-    confirmPassword: "",
+    confirmPassword: ""
   });
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Validate token
+
   const isValidToken = token && typeof token === "string" && token.length >= 8;
 
   const validateForm = () => {
     const newErrors = {};
 
-    // Password validation
+
     if (!formData.password) {
       newErrors.password = "Password is required";
     } else if (formData.password.length < 8) {
       newErrors.password = "Password must be at least 8 characters";
     }
 
-    // Confirm password validation
+
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = "Please confirm your password";
     } else if (formData.password !== formData.confirmPassword) {
@@ -54,13 +54,13 @@ export default function ResetPasswordPage() {
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
 
-      // Simulate API call
+
       console.log("Reset password with token:", {
         token: token,
-        newPassword: "***hidden***",
+        newPassword: "***hidden***"
       });
 
-      // Simulate delay
+
       setTimeout(() => {
         setLoading(false);
         setSuccess(true);
@@ -71,14 +71,14 @@ export default function ResetPasswordPage() {
   const handleChange = (field) => (e) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: e.target.value,
+      [field]: e.target.value
     }));
 
-    // Clear error when user starts typing
+
     if (errors[field]) {
       setErrors((prev) => ({
         ...prev,
-        [field]: "",
+        [field]: ""
       }));
     }
   };
@@ -88,11 +88,11 @@ export default function ResetPasswordPage() {
       <AuthCard
         title="Reset your password"
         subtitle="Choose a new password to secure your account.">
-        {/* Invalid Token Error */}
-        {!isValidToken && (
-          <div
-            className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl"
-            role="alert">
+        {}
+        {!isValidToken &&
+        <div
+          className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl"
+          role="alert">
             <div className="flex items-center">
               <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 mr-3" />
               <div>
@@ -113,14 +113,14 @@ export default function ResetPasswordPage() {
               </Link>
             </div>
           </div>
-        )}
+        }
 
-        {/* Success State */}
-        {success && (
-          <div
-            className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl"
-            role="alert"
-            aria-live="polite">
+        {}
+        {success &&
+        <div
+          className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl"
+          role="alert"
+          aria-live="polite">
             <div className="flex items-center">
               <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mr-3" />
               <div>
@@ -142,60 +142,60 @@ export default function ResetPasswordPage() {
               </Link>
             </div>
           </div>
-        )}
+        }
 
-        {/* Form */}
-        {isValidToken && !success && (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Token Info */}
+        {}
+        {isValidToken && !success &&
+        <form onSubmit={handleSubmit} className="space-y-6">
+            {}
             <div className="text-center mb-6">
               <p className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-zinc-800 px-3 py-2 rounded-lg inline-block">
                 Reset token: {token.substring(0, 8)}...
               </p>
             </div>
 
-            {/* New Password Field */}
+            {}
             <PasswordField
-              id="password"
-              label="New password"
-              placeholder="Enter your new password"
-              value={formData.password}
-              onChange={handleChange("password")}
-              error={errors.password}
-              required
-              showHint={true}
-            />
+            id="password"
+            label="New password"
+            placeholder="Enter your new password"
+            value={formData.password}
+            onChange={handleChange("password")}
+            error={errors.password}
+            required
+            showHint={true} />
+          
 
-            {/* Confirm Password Field */}
+            {}
             <PasswordField
-              id="confirmPassword"
-              label="Confirm new password"
-              placeholder="Confirm your new password"
-              value={formData.confirmPassword}
-              onChange={handleChange("confirmPassword")}
-              error={errors.confirmPassword}
-              required
-            />
+            id="confirmPassword"
+            label="Confirm new password"
+            placeholder="Confirm your new password"
+            value={formData.confirmPassword}
+            onChange={handleChange("confirmPassword")}
+            error={errors.confirmPassword}
+            required />
+          
 
-            {/* Submit Button */}
+            {}
             <Button type="submit" loading={loading} fullWidth className="mb-4">
               Update password
             </Button>
           </form>
-        )}
+        }
 
-        {/* Back to Login Link */}
-        {!success && (
-          <div className="mt-8 pt-6 border-t border-[#D0D8C3]/30 dark:border-zinc-600 text-center">
+        {}
+        {!success &&
+        <div className="mt-8 pt-6 border-t border-[#D0D8C3]/30 dark:border-zinc-600 text-center">
             <Link
-              href="/auth/login"
-              className="inline-flex items-center text-sm text-[#014421] dark:text-[#D0D8C3] hover:underline">
+            href="/auth/login"
+            className="inline-flex items-center text-sm text-[#014421] dark:text-[#D0D8C3] hover:underline">
               <ArrowLeft className="w-4 h-4 mr-1" />
               Back to login
             </Link>
           </div>
-        )}
+        }
       </AuthCard>
-    </main>
-  );
+    </main>);
+
 }

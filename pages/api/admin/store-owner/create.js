@@ -8,9 +8,9 @@ import { nanoid } from "nanoid";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res
-      .status(405)
-      .json({ success: false, error: "Method not allowed" });
+    return res.
+    status(405).
+    json({ success: false, error: "Method not allowed" });
   }
 
   return requireSuperAdmin(req, res, async (req, res) => {
@@ -19,47 +19,47 @@ export default async function handler(req, res) {
     try {
       const validatedData = storeOwnerCreateSchema.parse(req.body);
       const { ownerName, ownerEmail, storeName, storeSlug, storeLocation } =
-        validatedData;
+      validatedData;
 
       await connectDB();
 
-      // Check if email already exists
+
       const existingUser = await User.findOne({ email: ownerEmail });
       if (existingUser) {
         return res.status(400).json({
           success: false,
-          error: "User with this email already exists",
+          error: "User with this email already exists"
         });
       }
 
-      // Check if slug already exists
+
       const existingStore = await Store.findOne({ slug: storeSlug });
       if (existingStore) {
         return res.status(400).json({
           success: false,
-          error: "Store slug already exists",
+          error: "Store slug already exists"
         });
       }
 
-      // Generate temporary password
+
       const tempPassword = nanoid(12);
       const passwordHash = await bcrypt.hash(tempPassword, 12);
 
-      // Create the store owner user
+
       const user = new User({
         name: ownerName,
         email: ownerEmail,
         passwordHash,
         role: "StoreAdmin",
-        isActive: true,
+        isActive: true
       });
 
       createdUser = await user.save();
 
-      // Generate QR code
+
       const qrCode = `QR_${Date.now()}_${nanoid(8)}`;
 
-      // Create the store
+
       const store = new Store({
         name: storeName,
         slug: storeSlug,
@@ -70,15 +70,15 @@ export default async function handler(req, res) {
           type: "hybrid",
           pointsPerPound: 1,
           pointsPerVisit: 10,
-          conversionRate: 100,
+          conversionRate: 100
         },
         qrCode,
-        isActive: true,
+        isActive: true
       });
 
       await store.save();
 
-      // TODO: Implement proper email service
+
       console.log(
         `Store owner created: ${ownerEmail} with temp password: ${tempPassword}`
       );
@@ -90,7 +90,7 @@ export default async function handler(req, res) {
             id: createdUser._id,
             name: createdUser.name,
             email: createdUser.email,
-            role: createdUser.role,
+            role: createdUser.role
           },
           store: {
             id: store._id,
@@ -98,16 +98,16 @@ export default async function handler(req, res) {
             slug: store.slug,
             tier: store.tier,
             location: store.location,
-            qrCode: store.qrCode,
+            qrCode: store.qrCode
           },
-          tempPassword,
+          tempPassword
         },
-        message: "Store owner and store created successfully",
+        message: "Store owner and store created successfully"
       });
     } catch (error) {
       console.error("Store owner creation error:", error);
 
-      // Clean up created user if store creation failed
+
       if (createdUser && error.message.includes("Store")) {
         try {
           await User.findByIdAndDelete(createdUser._id);
@@ -121,20 +121,20 @@ export default async function handler(req, res) {
         return res.status(400).json({
           success: false,
           error: "Validation failed",
-          details: error.errors,
+          details: error.errors
         });
       }
 
       if (error.code === 11000) {
         return res.status(400).json({
           success: false,
-          error: "Duplicate key error - user or store already exists",
+          error: "Duplicate key error - user or store already exists"
         });
       }
 
       return res.status(500).json({
         success: false,
-        error: "Failed to create store owner and store",
+        error: "Failed to create store owner and store"
       });
     }
   });

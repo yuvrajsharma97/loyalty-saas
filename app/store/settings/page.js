@@ -13,13 +13,13 @@ export default function StoreSettings() {
   const [storeProfile, setStoreProfile] = useState({
     name: "",
     slug: "",
-    location: "",
+    location: ""
   });
   const [logo, setLogo] = useState(null);
   const [notifications, setNotifications] = useState({
     visitPending: true,
     rewardEarned: true,
-    tierWarnings: false,
+    tierWarnings: false
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,7 +46,7 @@ export default function StoreSettings() {
       setStoreProfile({
         name: store.name || "",
         slug: store.slug || "",
-        location: store.location || "",
+        location: store.location || ""
       });
     } catch (err) {
       setError(err.message);
@@ -57,10 +57,10 @@ export default function StoreSettings() {
   };
 
   const handleSaveSettings = () => {
-    // Update store meta with new profile data
+
     setStoreMeta((prev) => ({
       ...prev,
-      ...storeProfile,
+      ...storeProfile
     }));
 
     setSuccessBanner("Store settings updated successfully.");
@@ -73,7 +73,7 @@ export default function StoreSettings() {
   const handleNotificationChange = (key) => (value) => {
     setNotifications((prev) => ({
       ...prev,
-      [key]: value,
+      [key]: value
     }));
   };
 
@@ -83,27 +83,27 @@ export default function StoreSettings() {
         <div className="flex items-center justify-center p-12">
           <Loader2 className="w-8 h-8 text-[#014421] animate-spin" />
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   if (error) {
     return (
       <div className="space-y-6">
         <Banner type="error" message={error} dismissible={false} />
-      </div>
-    );
+      </div>);
+
   }
 
   return (
     <div className="space-y-6">
-      {successBanner && (
-        <Banner
-          type="success"
-          message={successBanner}
-          onDismiss={() => setSuccessBanner("")}
-        />
-      )}
+      {successBanner &&
+      <Banner
+        type="success"
+        message={successBanner}
+        onDismiss={() => setSuccessBanner("")} />
+
+      }
 
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
@@ -112,7 +112,7 @@ export default function StoreSettings() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Store Profile */}
+        {}
         <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Store Profile
@@ -126,10 +126,10 @@ export default function StoreSettings() {
               <Input
                 value={storeProfile.name}
                 onChange={(e) =>
-                  setStoreProfile((prev) => ({ ...prev, name: e.target.value }))
+                setStoreProfile((prev) => ({ ...prev, name: e.target.value }))
                 }
-                placeholder="Enter store name"
-              />
+                placeholder="Enter store name" />
+              
             </div>
 
             <div>
@@ -139,10 +139,10 @@ export default function StoreSettings() {
               <Input
                 value={storeProfile.slug}
                 onChange={(e) =>
-                  setStoreProfile((prev) => ({ ...prev, slug: e.target.value }))
+                setStoreProfile((prev) => ({ ...prev, slug: e.target.value }))
                 }
-                placeholder="store-slug"
-              />
+                placeholder="store-slug" />
+              
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Used in URLs. Use lowercase letters, numbers, and hyphens only.
               </p>
@@ -155,18 +155,18 @@ export default function StoreSettings() {
               <Input
                 value={storeProfile.location}
                 onChange={(e) =>
-                  setStoreProfile((prev) => ({
-                    ...prev,
-                    location: e.target.value,
-                  }))
+                setStoreProfile((prev) => ({
+                  ...prev,
+                  location: e.target.value
+                }))
                 }
-                placeholder="City, Country"
-              />
+                placeholder="City, Country" />
+              
             </div>
           </div>
         </div>
 
-        {/* Logo Upload */}
+        {}
         <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Store Logo
@@ -176,7 +176,7 @@ export default function StoreSettings() {
         </div>
       </div>
 
-      {/* Store QR Code */}
+      {}
       <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Store QR Code
@@ -205,7 +205,7 @@ export default function StoreSettings() {
         </div>
       </div>
 
-      {/* Notifications */}
+      {}
       <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Email Notifications
@@ -216,26 +216,26 @@ export default function StoreSettings() {
             checked={notifications.visitPending}
             onChange={handleNotificationChange("visitPending")}
             label="Visit Request Pending"
-            description="Get notified when a customer requests visit approval"
-          />
+            description="Get notified when a customer requests visit approval" />
+          
 
           <Toggle
             checked={notifications.rewardEarned}
             onChange={handleNotificationChange("rewardEarned")}
             label="Reward Earned"
-            description="Get notified when customers earn rewards"
-          />
+            description="Get notified when customers earn rewards" />
+          
 
           <Toggle
             checked={notifications.tierWarnings}
             onChange={handleNotificationChange("tierWarnings")}
             label="Tier Warnings"
-            description="Get notified about tier limits and upgrade opportunities"
-          />
+            description="Get notified about tier limits and upgrade opportunities" />
+          
         </div>
       </div>
 
-      {/* Loyalty Program Control */}
+      {}
       <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Loyalty Program
@@ -244,33 +244,33 @@ export default function StoreSettings() {
         <Toggle
           checked={!storeMeta.paused}
           onChange={(value) =>
-            setStoreMeta((prev) => ({ ...prev, paused: !value }))
+          setStoreMeta((prev) => ({ ...prev, paused: !value }))
           }
           label="Program Active"
           description={
-            storeMeta.paused
-              ? "Loyalty program is paused"
-              : "Loyalty program is active"
-          }
-        />
+          storeMeta.paused ?
+          "Loyalty program is paused" :
+          "Loyalty program is active"
+          } />
+        
 
-        {storeMeta.paused && (
-          <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+        {storeMeta.paused &&
+        <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
             <p className="text-sm text-yellow-800 dark:text-yellow-200">
               When paused, customers cannot earn or redeem points, but existing
               data is preserved.
             </p>
           </div>
-        )}
+        }
       </div>
 
-      {/* Save Button */}
+      {}
       <div className="flex justify-end">
         <Button onClick={handleSaveSettings}>
           <Save className="w-4 h-4 mr-2" />
           Save Changes
         </Button>
       </div>
-    </div>
-  );
+    </div>);
+
 }

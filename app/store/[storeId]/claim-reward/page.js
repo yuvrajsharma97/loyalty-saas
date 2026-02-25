@@ -19,7 +19,7 @@ export default function ClaimRewardPage() {
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [joiningStore, setJoiningStore] = useState(false);
   const [claimForm, setClaimForm] = useState({
-    message: "",
+    message: ""
   });
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -27,7 +27,7 @@ export default function ClaimRewardPage() {
   const storeId = params.storeId;
 
   useEffect(() => {
-    // Redirect to login if not authenticated
+
     if (status === "unauthenticated") {
       router.push(`/auth/login?callbackUrl=/store/${storeId}/claim-reward`);
       return;
@@ -49,7 +49,7 @@ export default function ClaimRewardPage() {
       setLoading(true);
       setError(null);
 
-      // Fetch store details
+
       const storeResponse = await fetch(`/api/stores/${storeId}`);
       if (!storeResponse.ok) {
         throw new Error("Store not found");
@@ -57,7 +57,7 @@ export default function ClaimRewardPage() {
       const storeData = await storeResponse.json();
       setStore(storeData.store);
 
-      // Check if user is connected to this store
+
       const connectedResponse = await fetch("/api/user/stores");
       if (connectedResponse.ok) {
         const connectedData = await connectedResponse.json();
@@ -66,7 +66,7 @@ export default function ClaimRewardPage() {
         );
         setIsConnected(connected);
 
-        // Show join modal if not connected
+
         if (!connected) {
           setShowJoinModal(true);
         }
@@ -84,9 +84,9 @@ export default function ClaimRewardPage() {
       const response = await fetch("/api/user/stores/join", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ storeId }),
+        body: JSON.stringify({ storeId })
       });
 
       if (!response.ok) {
@@ -117,12 +117,12 @@ export default function ClaimRewardPage() {
       const response = await fetch("/api/user/reward-claims", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           storeId,
-          message: claimForm.message,
-        }),
+          message: claimForm.message
+        })
       });
 
       if (!response.ok) {
@@ -146,8 +146,8 @@ export default function ClaimRewardPage() {
           <Loader2 className="w-12 h-12 text-[#014421] animate-spin mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-400">Loading store...</p>
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   if (error && !store) {
@@ -158,16 +158,16 @@ export default function ClaimRewardPage() {
             type="error"
             title="Error"
             message={error}
-            dismissible={false}
-          />
+            dismissible={false} />
+          
           <Button
             onClick={() => router.push("/user/dashboard")}
             className="mt-4 w-full">
             Go to Dashboard
           </Button>
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   if (submitSuccess) {
@@ -202,20 +202,20 @@ export default function ClaimRewardPage() {
             </Button>
           </div>
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
       <div className="max-w-2xl mx-auto">
-        {error && (
-          <div className="mb-6">
+        {error &&
+        <div className="mb-6">
             <Banner type="error" message={error} onDismiss={() => setError(null)} />
           </div>
-        )}
+        }
 
-        {/* Store Header */}
+        {}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-16 h-16 bg-[#014421] rounded-lg flex items-center justify-center">
@@ -231,8 +231,8 @@ export default function ClaimRewardPage() {
             </div>
           </div>
 
-          {isConnected && (
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 flex items-start gap-2">
+          {isConnected &&
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 flex items-start gap-2">
               <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-sm font-medium text-green-900 dark:text-green-100">
@@ -243,12 +243,12 @@ export default function ClaimRewardPage() {
                 </p>
               </div>
             </div>
-          )}
+          }
         </div>
 
-        {/* Claim Form */}
-        {isConnected && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+        {}
+        {isConnected &&
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
             <div className="flex items-center gap-3 mb-6">
               <Gift className="w-6 h-6 text-[#014421]" />
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -262,15 +262,15 @@ export default function ClaimRewardPage() {
                   Message (Optional)
                 </label>
                 <textarea
-                  value={claimForm.message}
-                  onChange={(e) =>
-                    setClaimForm((prev) => ({ ...prev, message: e.target.value }))
-                  }
-                  placeholder="Add a note about your reward claim..."
-                  rows={4}
-                  maxLength={500}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#014421] focus:border-transparent"
-                />
+                value={claimForm.message}
+                onChange={(e) =>
+                setClaimForm((prev) => ({ ...prev, message: e.target.value }))
+                }
+                placeholder="Add a note about your reward claim..."
+                rows={4}
+                maxLength={500}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#014421] focus:border-transparent" />
+              
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   {claimForm.message.length}/500 characters
                 </p>
@@ -291,27 +291,27 @@ export default function ClaimRewardPage() {
               </div>
 
               <Button
-                type="submit"
-                disabled={submitting}
-                className="w-full"
-                icon={submitting ? Loader2 : Gift}>
+              type="submit"
+              disabled={submitting}
+              className="w-full"
+              icon={submitting ? Loader2 : Gift}>
                 {submitting ? "Submitting..." : "Submit Claim Request"}
               </Button>
             </form>
           </div>
-        )}
+        }
 
-        {/* Join Store Modal */}
+        {}
         <Modal
           isOpen={showJoinModal}
           onClose={() => !joiningStore && setShowJoinModal(false)}
           title={`Join ${store?.name || "Store"}?`}
           actions={
-            <>
+          <>
               <Button
-                variant="ghost"
-                onClick={() => router.push("/user/dashboard")}
-                disabled={joiningStore}>
+              variant="ghost"
+              onClick={() => router.push("/user/dashboard")}
+              disabled={joiningStore}>
                 Cancel
               </Button>
               <Button onClick={handleJoinStore} disabled={joiningStore}>
@@ -337,6 +337,6 @@ export default function ClaimRewardPage() {
           </div>
         </Modal>
       </div>
-    </div>
-  );
+    </div>);
+
 }

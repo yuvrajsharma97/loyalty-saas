@@ -6,7 +6,7 @@ export default function Alert({
   variant = "info",
   dismissible = false,
   onDismiss,
-  className = "",
+  className = ""
 }) {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -17,11 +17,11 @@ export default function Alert({
 
   if (!isVisible) return null;
 
-  // Custom alert styling with glassmorphism and improved text colors
+
   const getAlertClasses = (variant) => {
     const baseAlertStyles = "flex items-center gap-3 p-4 rounded-xl border backdrop-blur-sm transition-all duration-200";
 
-    switch(variant) {
+    switch (variant) {
       case "info":
         return `${baseAlertStyles} bg-glass-secondary border-[#D0D8C3]/50 text-text-primary shadow-lg`;
       case "success":
@@ -39,13 +39,13 @@ export default function Alert({
     info: Info,
     success: CheckCircle,
     warning: AlertTriangle,
-    error: AlertCircle,
+    error: AlertCircle
   };
 
   const Icon = icons[variant];
 
   const getIconColorClass = (variant) => {
-    switch(variant) {
+    switch (variant) {
       case "info":
         return "text-text-primary";
       case "success":
@@ -62,7 +62,7 @@ export default function Alert({
   const getDismissButtonClasses = (variant) => {
     const baseClasses = "inline-flex items-center justify-center p-1 rounded-full transition-colors duration-200 hover:bg-opacity-20";
 
-    switch(variant) {
+    switch (variant) {
       case "info":
         return `${baseClasses} text-[#014421] hover:bg-[#014421]`;
       case "success":
@@ -80,13 +80,13 @@ export default function Alert({
     <div className={`${getAlertClasses(variant)} ${className}`} role="alert">
       <Icon className={`w-6 h-6 ${getIconColorClass(variant)}`} />
       <div className="flex-1">{children}</div>
-      {dismissible && (
-        <button
-          onClick={handleDismiss}
-          className={getDismissButtonClasses(variant)}>
+      {dismissible &&
+      <button
+        onClick={handleDismiss}
+        className={getDismissButtonClasses(variant)}>
           <X className="w-4 h-4" />
         </button>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 }

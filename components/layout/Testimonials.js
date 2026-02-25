@@ -5,25 +5,25 @@ import Avatar from "@/components/ui/Avatar";
 
 export default function Testimonials() {
   const testimonials = [
-    {
-      quote:
-        "LoyaltyOS transformed how we connect with customers. The QR system is so simple that even our oldest customers love it.",
-      author: "Sarah Chen",
-      business: "Bloom Coffee Co.",
-    },
-    {
-      quote:
-        "We saw a 40% increase in repeat visits within the first month. The automated rewards keep customers coming back.",
-      author: "Marcus Rodriguez",
-      business: "The Grooming Lounge",
-    },
-    {
-      quote:
-        "Finally, a loyalty program that doesn't require customers to download another app. Our retention has never been better.",
-      author: "Emma Thompson",
-      business: "Fresh Bakes Bakery",
-    },
-  ];
+  {
+    quote:
+    "LoyaltyOS transformed how we connect with customers. The QR system is so simple that even our oldest customers love it.",
+    author: "Sarah Chen",
+    business: "Bloom Coffee Co."
+  },
+  {
+    quote:
+    "We saw a 40% increase in repeat visits within the first month. The automated rewards keep customers coming back.",
+    author: "Marcus Rodriguez",
+    business: "The Grooming Lounge"
+  },
+  {
+    quote:
+    "Finally, a loyalty program that doesn't require customers to download another app. Our retention has never been better.",
+    author: "Emma Thompson",
+    business: "Fresh Bakes Bakery"
+  }];
+
 
   return (
     <Section
@@ -40,8 +40,8 @@ export default function Testimonials() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
-            <Card key={index} className="p-6">
+          {testimonials.map((testimonial, index) =>
+          <Card key={index} className="p-6">
               <p className="text-gray-700 dark:text-gray-300 mb-6 italic">
                 &ldquo;{testimonial.quote}&rdquo;
               </p>
@@ -57,9 +57,9 @@ export default function Testimonials() {
                 </div>
               </div>
             </Card>
-          ))}
+          )}
         </div>
       </Container>
-    </Section>
-  );
+    </Section>);
+
 }

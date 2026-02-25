@@ -29,13 +29,13 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Valid status is required (approved/rejected)" });
     }
 
-    // Get store
+
     const store = await Store.findOne({ ownerId: session.user.id });
     if (!store) {
       return res.status(404).json({ error: "Store not found" });
     }
 
-    // Find claim and verify it belongs to this store
+
     const claim = await RewardClaim.findById(claimId);
     if (!claim) {
       return res.status(404).json({ error: "Claim not found" });
@@ -49,7 +49,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "This claim has already been reviewed" });
     }
 
-    // Update claim
+
     claim.status = status;
     claim.reviewedBy = session.user.id;
     claim.reviewedAt = new Date();
@@ -66,8 +66,8 @@ export default async function handler(req, res) {
       claim: {
         id: claim._id,
         status: claim.status,
-        reviewedAt: claim.reviewedAt,
-      },
+        reviewedAt: claim.reviewedAt
+      }
     });
   } catch (error) {
     console.error("Error updating reward claim:", error);

@@ -8,7 +8,7 @@ import Banner from "@/components/ui/Banner";
 export default function RewardQRGenerator({ storeId, storeName: initialStoreName }) {
   const [formData, setFormData] = useState({
     storeName: initialStoreName || "",
-    storeEmail: "",
+    storeEmail: ""
   });
   const [qrCode, setQrCode] = useState(null);
   const [qrUrl, setQrUrl] = useState(null);
@@ -17,7 +17,7 @@ export default function RewardQRGenerator({ storeId, storeName: initialStoreName
   const [success, setSuccess] = useState(false);
   const [existingQR, setExistingQR] = useState(null);
 
-  // Fetch existing QR code on component mount
+
   useEffect(() => {
     fetchExistingQR();
   }, []);
@@ -33,7 +33,7 @@ export default function RewardQRGenerator({ storeId, storeName: initialStoreName
           setFormData((prev) => ({
             ...prev,
             storeName: data.store.name || prev.storeName,
-            storeEmail: data.store.rewardQREmail || prev.storeEmail,
+            storeEmail: data.store.rewardQREmail || prev.storeEmail
           }));
           const baseUrl = window.location.origin;
           setQrUrl(`${baseUrl}/store/${data.store._id}/claim-reward`);
@@ -54,9 +54,9 @@ export default function RewardQRGenerator({ storeId, storeName: initialStoreName
       const response = await fetch("/api/store/generate-reward-qr", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData)
       });
 
       if (!response.ok) {
@@ -96,20 +96,20 @@ export default function RewardQRGenerator({ storeId, storeName: initialStoreName
         </h2>
       </div>
 
-      {error && (
-        <Banner type="error" message={error} onDismiss={() => setError(null)} />
-      )}
+      {error &&
+      <Banner type="error" message={error} onDismiss={() => setError(null)} />
+      }
 
-      {success && (
-        <Banner
-          type="success"
-          message="QR code generated successfully!"
-          onDismiss={() => setSuccess(false)}
-        />
-      )}
+      {success &&
+      <Banner
+        type="success"
+        message="QR code generated successfully!"
+        onDismiss={() => setSuccess(false)} />
+
+      }
 
       <div className="grid md:grid-cols-2 gap-6">
-        {/* Form Section */}
+        {}
         <div>
           <form onSubmit={handleGenerateQR} className="space-y-4">
             <div>
@@ -120,10 +120,10 @@ export default function RewardQRGenerator({ storeId, storeName: initialStoreName
                 required
                 value={formData.storeName}
                 onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, storeName: e.target.value }))
+                setFormData((prev) => ({ ...prev, storeName: e.target.value }))
                 }
-                placeholder="Enter your store name"
-              />
+                placeholder="Enter your store name" />
+              
             </div>
 
             <div>
@@ -135,13 +135,13 @@ export default function RewardQRGenerator({ storeId, storeName: initialStoreName
                 required
                 value={formData.storeEmail}
                 onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    storeEmail: e.target.value,
-                  }))
+                setFormData((prev) => ({
+                  ...prev,
+                  storeEmail: e.target.value
+                }))
                 }
-                placeholder="store@example.com"
-              />
+                placeholder="store@example.com" />
+              
             </div>
 
             <div className="text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-zinc-900 p-3 rounded-lg">
@@ -159,29 +159,29 @@ export default function RewardQRGenerator({ storeId, storeName: initialStoreName
               disabled={loading}
               className="w-full"
               icon={existingQR ? RefreshCw : QrCode}>
-              {loading
-                ? "Generating..."
-                : existingQR
-                ? "Regenerate QR Code"
-                : "Generate QR Code"}
+              {loading ?
+              "Generating..." :
+              existingQR ?
+              "Regenerate QR Code" :
+              "Generate QR Code"}
             </Button>
           </form>
         </div>
 
-        {/* QR Code Display Section */}
+        {}
         <div>
-          {qrCode ? (
-            <div className="space-y-4">
+          {qrCode ?
+          <div className="space-y-4">
               <div className="bg-gray-50 dark:bg-zinc-900 rounded-lg p-6 flex items-center justify-center">
                 <img
-                  src={qrCode}
-                  alt="Reward Claim QR Code"
-                  className="w-64 h-64 rounded-lg"
-                />
+                src={qrCode}
+                alt="Reward Claim QR Code"
+                className="w-64 h-64 rounded-lg" />
+              
               </div>
 
-              {qrUrl && (
-                <div className="text-center">
+              {qrUrl &&
+            <div className="text-center">
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                     QR Code URL:
                   </p>
@@ -189,13 +189,13 @@ export default function RewardQRGenerator({ storeId, storeName: initialStoreName
                     {qrUrl}
                   </p>
                 </div>
-              )}
+            }
 
               <Button
-                onClick={handleDownloadQR}
-                variant="secondary"
-                icon={Download}
-                className="w-full">
+              onClick={handleDownloadQR}
+              variant="secondary"
+              icon={Download}
+              className="w-full">
                 Download QR Code
               </Button>
 
@@ -203,18 +203,18 @@ export default function RewardQRGenerator({ storeId, storeName: initialStoreName
                 Print this QR code and display it at your store for customers to
                 scan and request rewards.
               </p>
-            </div>
-          ) : (
-            <div className="bg-gray-50 dark:bg-zinc-900 rounded-lg p-6 h-full flex flex-col items-center justify-center text-center">
+            </div> :
+
+          <div className="bg-gray-50 dark:bg-zinc-900 rounded-lg p-6 h-full flex flex-col items-center justify-center text-center">
               <QrCode className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" />
               <p className="text-gray-500 dark:text-gray-400 text-sm">
                 Fill in the form and click generate to create your reward claim QR
                 code.
               </p>
             </div>
-          )}
+          }
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }

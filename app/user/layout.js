@@ -4,7 +4,7 @@ import SidebarUser from "@/components/user/SidebarUser";
 import TopbarUser from "@/components/user/TopbarUser";
 import StoreSwitcher from "@/components/user/StoreSwitcher";
 
-// Create context for store selection
+
 const UserStoreContext = createContext();
 
 export const useUserStore = () => {
@@ -17,11 +17,11 @@ export const useUserStore = () => {
 
 export default function UserLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [currentStore, setCurrentStore] = useState(""); // Empty = all stores
+  const [currentStore, setCurrentStore] = useState("");
   const [connectedStores, setConnectedStores] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch connected stores from API
+
   const fetchConnectedStores = async () => {
     try {
       setLoading(true);
@@ -63,17 +63,17 @@ export default function UserLayout({ children }) {
     connectedStores,
     getCurrentStoreData,
     loading,
-    refreshStores,
+    refreshStores
   };
 
   return (
     <UserStoreContext.Provider value={contextValue}>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="flex h-screen">
-          {/* Sidebar */}
+          {}
           <SidebarUser isOpen={sidebarOpen} onToggle={toggleSidebar} />
 
-          {/* Main content */}
+          {}
           <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
             <TopbarUser onMenuToggle={toggleSidebar} />
 
@@ -83,6 +83,6 @@ export default function UserLayout({ children }) {
           </div>
         </div>
       </div>
-    </UserStoreContext.Provider>
-  );
+    </UserStoreContext.Provider>);
+
 }

@@ -1,4 +1,4 @@
-// /pages/api/user/redeem.js
+
 import { connectDB } from "../../../lib/db";
 import { requireUser } from "../../../middleware/auth";
 import { redeemPoints } from "../../../lib/points";
@@ -20,10 +20,10 @@ export default async function handler(req, res) {
 
       const { storeId } = req.body;
 
-      // Validate storeId
+
       const validatedStoreId = mongoIdSchema.parse(storeId);
 
-      // Check if user is connected to this store
+
       const user = await User.findById(req.user.id);
       if (!user) {
         return res.status(404).json({
@@ -32,9 +32,9 @@ export default async function handler(req, res) {
         });
       }
 
-      // Check if user is connected to the store
+
       const isConnected = user.connectedStores?.some(
-        storeObjId => storeObjId.toString() === validatedStoreId
+        (storeObjId) => storeObjId.toString() === validatedStoreId
       );
 
       if (!isConnected) {
@@ -44,9 +44,9 @@ export default async function handler(req, res) {
         });
       }
 
-      // Check if user has points for this store
+
       const storePoints = user.pointsByStore?.find(
-        ps => ps.storeId.toString() === validatedStoreId
+        (ps) => ps.storeId.toString() === validatedStoreId
       );
 
       if (!storePoints || storePoints.points <= 0) {
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
         });
       }
 
-      // Load store to get conversion rate
+
       const store = await Store.findById(validatedStoreId);
       if (!store) {
         return res.status(404).json({
@@ -67,7 +67,7 @@ export default async function handler(req, res) {
 
       const conversionRate = store.rewardConfig?.conversionRate || 100;
 
-      // Perform redemption
+
       const redemptionResult = await redeemPoints({
         userId: req.user.id,
         storeId: validatedStoreId,
@@ -96,9 +96,9 @@ export default async function handler(req, res) {
       }
 
       if (error.message.includes("not found") ||
-          error.message.includes("No points") ||
-          error.message.includes("Insufficient points") ||
-          error.message.includes("invalid")) {
+      error.message.includes("No points") ||
+      error.message.includes("Insufficient points") ||
+      error.message.includes("invalid")) {
         return res.status(400).json({
           ok: false,
           error: error.message

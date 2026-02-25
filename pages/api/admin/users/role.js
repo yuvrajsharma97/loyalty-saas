@@ -7,9 +7,9 @@ import Store from "../../../../models/Store";
 
 export default async function handler(req, res) {
   if (req.method !== "PUT") {
-    return res
-      .status(405)
-      .json({ success: false, error: "Method not allowed" });
+    return res.
+    status(405).
+    json({ success: false, error: "Method not allowed" });
   }
 
   return requireSuperAdmin(req, res, async (req, res) => {
@@ -24,34 +24,34 @@ export default async function handler(req, res) {
       if (!user) {
         return res.status(404).json({
           success: false,
-          error: "User not found",
+          error: "User not found"
         });
       }
 
-      // Handle role change logic
+
       if (newRole === "StoreAdmin" && user.role !== "StoreAdmin") {
-        // User becoming StoreAdmin - they might need a store assigned
-        // This could be handled by creating a store or assigning ownership
+
+
       } else if (user.role === "StoreAdmin" && newRole !== "StoreAdmin") {
-        // StoreAdmin losing role - check if they own stores
+
         const ownedStores = await Store.find({ ownerId: validatedUserId });
         if (ownedStores.length > 0) {
           return res.status(400).json({
             success: false,
             error:
-              "Cannot change role while user owns stores. Transfer ownership first.",
-            details: { ownedStores: ownedStores.length },
+            "Cannot change role while user owns stores. Transfer ownership first.",
+            details: { ownedStores: ownedStores.length }
           });
         }
       }
 
       const oldRole = user.role;
 
-      // Update role
+
       user.role = newRole;
       await user.save();
 
-      // Log the role change (you could add to an audit log collection)
+
       console.log(
         `Role changed for user ${user.email}: ${oldRole} -> ${newRole}. Reason: ${reason || "Not provided"}`
       );
@@ -63,10 +63,10 @@ export default async function handler(req, res) {
             id: user._id,
             name: user.name,
             email: user.email,
-            role: user.role,
-          },
+            role: user.role
+          }
         },
-        message: `Role changed to ${newRole}`,
+        message: `Role changed to ${newRole}`
       });
     } catch (error) {
       console.error("Role change error:", error);
@@ -75,13 +75,13 @@ export default async function handler(req, res) {
         return res.status(400).json({
           success: false,
           error: "Validation failed",
-          details: error.errors,
+          details: error.errors
         });
       }
 
       return res.status(500).json({
         success: false,
-        error: "Failed to change user role",
+        error: "Failed to change user role"
       });
     }
   });

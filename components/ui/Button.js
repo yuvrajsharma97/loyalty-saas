@@ -4,32 +4,32 @@ import Link from "next/link";
 
 const Button = forwardRef(
   (
-    {
-      children,
-      variant = "primary",
-      size = "md",
-      outline = false,
-      ghost = false,
-      glass = false,
-      wide = false,
-      block = false,
-      square = false,
-      circle = false,
-      loading = false,
-      disabled = false,
-      active = false,
-      className = "",
-      onClick,
-      type = "button",
-      href,
-      ...props
-    },
-    ref
-  ) => {
-    // Base DaisyUI button class
+  {
+    children,
+    variant = "primary",
+    size = "md",
+    outline = false,
+    ghost = false,
+    glass = false,
+    wide = false,
+    block = false,
+    square = false,
+    circle = false,
+    loading = false,
+    disabled = false,
+    active = false,
+    className = "",
+    onClick,
+    type = "button",
+    href,
+    ...props
+  },
+  ref) =>
+  {
+
     const baseClasses = "btn";
 
-    // Custom variant styling with our brand colors
+
     const getVariantClasses = (variant) => {
       const baseButtonStyles = "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 border";
 
@@ -55,7 +55,7 @@ const Button = forwardRef(
       }
     };
 
-    // Custom size styling
+
     const getSizeClasses = (size) => {
       switch (size) {
         case "xs":
@@ -73,28 +73,28 @@ const Button = forwardRef(
       }
     };
 
-    // Build custom classes
+
     const customClasses = [
-      getVariantClasses(variant),
-      getSizeClasses(size),
-      wide && "w-full",
-      block && "w-full",
-      square && "aspect-square p-0",
-      circle && "rounded-full aspect-square p-0",
-      glass && "backdrop-blur-sm bg-opacity-80",
-      loading && "opacity-75 cursor-not-allowed",
-      disabled && "opacity-50 cursor-not-allowed",
-      active && "scale-95",
-    ].filter(Boolean);
+    getVariantClasses(variant),
+    getSizeClasses(size),
+    wide && "w-full",
+    block && "w-full",
+    square && "aspect-square p-0",
+    circle && "rounded-full aspect-square p-0",
+    glass && "backdrop-blur-sm bg-opacity-80",
+    loading && "opacity-75 cursor-not-allowed",
+    disabled && "opacity-50 cursor-not-allowed",
+    active && "scale-95"].
+    filter(Boolean);
 
     const allClasses = [...customClasses, className].join(" ");
 
-    const content = (
-      <>
+    const content =
+    <>
         {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
         {children}
-      </>
-    );
+      </>;
+
 
     if (href) {
       return (
@@ -105,8 +105,8 @@ const Button = forwardRef(
           onClick={onClick}
           {...props}>
           {content}
-        </Link>
-      );
+        </Link>);
+
     }
 
     return (
@@ -118,8 +118,8 @@ const Button = forwardRef(
         className={allClasses}
         {...props}>
         {content}
-      </button>
-    );
+      </button>);
+
   }
 );
 

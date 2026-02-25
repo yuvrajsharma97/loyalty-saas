@@ -1,4 +1,4 @@
-// /models/PasswordReset.js
+
 import mongoose from "mongoose";
 
 const passwordResetSchema = new mongoose.Schema(
@@ -6,24 +6,24 @@ const passwordResetSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: true
     },
     token: {
       type: String,
       required: true,
       unique: true,
-      index: true,
+      index: true
     },
     expiresAt: {
       type: Date,
       required: true,
-      index: { expireAfterSeconds: 0 },
-    },
+      index: { expireAfterSeconds: 0 }
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 
 export default mongoose.models.PasswordReset ||
-  mongoose.model("PasswordReset", passwordResetSchema);
+mongoose.model("PasswordReset", passwordResetSchema);

@@ -24,12 +24,12 @@ export default async function handler(req, res) {
 
         const storeId = new mongoose.Types.ObjectId(req.storeId);
 
-        // Find and update the visit
+
         const visit = await Visit.findOneAndUpdate(
           {
             _id: visitId,
             storeId,
-            status: "pending",
+            status: "pending"
           },
           {
             status: "rejected",
@@ -37,15 +37,15 @@ export default async function handler(req, res) {
             approvedAt: new Date(),
             metadata: {
               ...visit.metadata,
-              rejectionReason: reason,
-            },
+              rejectionReason: reason
+            }
           },
           { new: true }
         ).populate("userId", "name email");
 
         if (!visit) {
           return res.status(404).json({
-            error: "Visit not found or already processed",
+            error: "Visit not found or already processed"
           });
         }
 
@@ -55,14 +55,14 @@ export default async function handler(req, res) {
             id: visit._id,
             status: "rejected",
             rejectedAt: visit.approvedAt,
-            reason,
-          },
+            reason
+          }
         });
       } catch (error) {
         if (error.name === "ZodError") {
           return res.status(400).json({
             error: "Invalid request data",
-            details: error.errors,
+            details: error.errors
           });
         }
         console.error("Reject visit error:", error);

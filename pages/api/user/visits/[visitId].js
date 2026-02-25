@@ -12,10 +12,10 @@ export default async function handler(req, res) {
       try {
         const visit = await Visit.findOne({
           _id: visitId,
-          userId: req.user.id,
-        })
-          .populate("storeId", "name")
-          .lean();
+          userId: req.user.id
+        }).
+        populate("storeId", "name").
+        lean();
 
         if (!visit) {
           return res.status(404).json({ error: "Visit not found" });
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
           points: visit.points,
           spend: visit.spend,
           createdAt: visit.createdAt,
-          approvedAt: visit.approvedAt,
+          approvedAt: visit.approvedAt
         });
       } catch (error) {
         console.error("Get visit error:", error);

@@ -5,51 +5,51 @@ const visitSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: true
     },
     storeId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",
-      required: true,
+      required: true
     },
     method: {
       type: String,
       enum: ["qr", "manual"],
-      required: true,
+      required: true
     },
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
-      default: "pending",
+      default: "pending"
     },
     points: {
       type: Number,
       default: 0,
-      min: 0,
+      min: 0
     },
     spend: {
       type: Number,
       default: 0,
-      min: 0,
+      min: 0
     },
     approvedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "User"
     },
     approvedAt: {
-      type: Date,
+      type: Date
     },
     metadata: {
       ipAddress: String,
       userAgent: String,
       location: {
         latitude: Number,
-        longitude: Number,
-      },
-    },
+        longitude: Number
+      }
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 

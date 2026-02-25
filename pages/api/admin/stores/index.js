@@ -17,14 +17,14 @@ export default async function handler(req, res) {
       } else {
         return res.status(405).json({
           success: false,
-          error: "Method not allowed",
+          error: "Method not allowed"
         });
       }
     } catch (error) {
       console.error("Stores API error:", error);
       return res.status(500).json({
         success: false,
-        error: "Internal server error",
+        error: "Internal server error"
       });
     }
   });
@@ -35,7 +35,7 @@ async function getStoresList(req, res) {
     const filters = adminStoreFiltersSchema.parse(req.query);
     const { page, limit, tier, status, search, dateFrom, dateTo } = filters;
 
-    // Build query
+
     const query = {};
 
     if (tier) {
@@ -61,34 +61,34 @@ async function getStoresList(req, res) {
     const skip = (page - 1) * limit;
 
     const [stores, total] = await Promise.all([
-      Store.find(query)
-        .populate("ownerId", "name email")
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      Store.countDocuments(query),
-    ]);
+    Store.find(query).
+    populate("ownerId", "name email").
+    sort({ createdAt: -1 }).
+    skip(skip).
+    limit(limit).
+    lean(),
+    Store.countDocuments(query)]
+    );
 
-    // Add metadata for each store
+
     const storesWithMetadata = await Promise.all(
       stores.map(async (store) => {
         const [userCount, visitStats, totalPoints] = await Promise.all([
-          User.countDocuments({ connectedStores: store._id }),
-          Visit.aggregate([
-            { $match: { storeId: store._id } },
-            {
-              $group: {
-                _id: "$status",
-                count: { $sum: 1 },
-              },
-            },
-          ]),
-          Visit.aggregate([
-            { $match: { storeId: store._id, status: "approved" } },
-            { $group: { _id: null, total: { $sum: "$points" } } },
-          ]),
-        ]);
+        User.countDocuments({ connectedStores: store._id }),
+        Visit.aggregate([
+        { $match: { storeId: store._id } },
+        {
+          $group: {
+            _id: "$status",
+            count: { $sum: 1 }
+          }
+        }]
+        ),
+        Visit.aggregate([
+        { $match: { storeId: store._id, status: "approved" } },
+        { $group: { _id: null, total: { $sum: "$points" } } }]
+        )]
+        );
 
         const visitStatsObj = visitStats.reduce(
           (acc, stat) => {
@@ -103,7 +103,7 @@ async function getStoresList(req, res) {
           userCount,
           visitStats: visitStatsObj,
           totalPointsDistributed: totalPoints[0]?.total || 0,
-          totalVisits: Object.values(visitStatsObj).reduce((a, b) => a + b, 0),
+          totalVisits: Object.values(visitStatsObj).reduce((a, b) => a + b, 0)
         };
       })
     );
@@ -116,8 +116,8 @@ async function getStoresList(req, res) {
         page,
         limit,
         totalPages: Math.ceil(total / limit),
-        hasMore: total > skip + limit,
-      },
+        hasMore: total > skip + limit
+      }
     });
   } catch (error) {
     throw error;
@@ -128,34 +128,34 @@ async function createStore(req, res) {
   try {
     const { name, ownerId, tier = "silver", rewardConfig } = req.body;
 
-    // Validate owner exists and is StoreAdmin or can be made one
+
     const owner = await User.findById(ownerId);
     if (!owner) {
       return res.status(400).json({
         success: false,
-        error: "Owner not found",
+        error: "Owner not found"
       });
     }
 
-    // Generate slug from name
-    const slug = name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
 
-    // Check slug uniqueness
+    const slug = name.
+    toLowerCase().
+    replace(/[^a-z0-9]+/g, "-").
+    replace(/(^-|-$)/g, "");
+
+
     const existingStore = await Store.findOne({ slug });
     if (existingStore) {
       return res.status(400).json({
         success: false,
-        error: "Store name already in use",
+        error: "Store name already in use"
       });
     }
 
-    // Generate QR code (in production, this would be a proper QR code)
-    const qrCode = `QR_${Date.now()}_${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
+
+    const qrCode = `QR_${Date.now()}_${Math.random().
+    toString(36).
+    substr(2, 9)}`;
 
     const store = new Store({
       name,
@@ -166,26 +166,26 @@ async function createStore(req, res) {
         type: "visit",
         pointsPerVisit: 10,
         pointsPerPound: 0,
-        conversionRate: 100,
+        conversionRate: 100
       },
-      qrCode,
+      qrCode
     });
 
     await store.save();
 
-    // Update owner role if needed
+
     if (owner.role === "User") {
       owner.role = "StoreAdmin";
       await owner.save();
     }
 
-    const populatedStore = await Store.findById(store._id)
-      .populate("ownerId", "name email")
-      .lean();
+    const populatedStore = await Store.findById(store._id).
+    populate("ownerId", "name email").
+    lean();
 
     return res.status(201).json({
       success: true,
-      data: populatedStore,
+      data: populatedStore
     });
   } catch (error) {
     throw error;

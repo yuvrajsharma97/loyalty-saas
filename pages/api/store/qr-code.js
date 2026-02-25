@@ -20,7 +20,7 @@ export default async function handler(req, res) {
       try {
         const storeId = new mongoose.Types.ObjectId(req.storeId);
 
-        // Generate new QR code
+
         const newQrCode = uuidv4();
 
         const store = await Store.findByIdAndUpdate(
@@ -36,7 +36,7 @@ export default async function handler(req, res) {
         res.json({
           message: "QR code generated successfully",
           qrCode: newQrCode,
-          qrUrl: `${process.env.NEXTAUTH_URL}/visit/${store.slug}?qr=${newQrCode}`,
+          qrUrl: `${process.env.NEXTAUTH_URL}/visit/${store.slug}?qr=${newQrCode}`
         });
       } catch (error) {
         console.error("Generate QR code error:", error);

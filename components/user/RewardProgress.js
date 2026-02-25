@@ -1,10 +1,10 @@
 export default function RewardProgress({
   currentPoints,
   conversionRate = 100,
-  className = "",
+  className = ""
 }) {
-  const pointsToNext = conversionRate - (currentPoints % conversionRate);
-  const progress = ((currentPoints % conversionRate) / conversionRate) * 100;
+  const pointsToNext = conversionRate - currentPoints % conversionRate;
+  const progress = currentPoints % conversionRate / conversionRate * 100;
 
   return (
     <div
@@ -30,6 +30,6 @@ export default function RewardProgress({
           <span>{conversionRate} points</span>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }

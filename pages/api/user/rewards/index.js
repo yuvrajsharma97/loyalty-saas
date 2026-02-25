@@ -14,15 +14,15 @@ export default async function handler(req, res) {
         const validatedQuery = rewardsFilterSchema.parse(req.query);
         const { page, limit, storeId, type, dateFrom, dateTo } = validatedQuery;
 
-        const user = await User.findById(req.user.id)
-          .populate("connectedStores")
-          .lean();
+        const user = await User.findById(req.user.id).
+        populate("connectedStores").
+        lean();
 
         if (!user) {
           return res.status(404).json({ error: "User not found" });
         }
 
-        // Calculate summary
+
         let totalPoints = 0;
         let avgConversionRate = 0;
 
@@ -42,12 +42,12 @@ export default async function handler(req, res) {
             0
           );
           avgConversionRate =
-            user.connectedStores.length > 0
-              ? user.connectedStores.reduce(
-                  (sum, store) => sum + store.rewardConfig.conversionRate,
-                  0
-                ) / user.connectedStores.length
-              : 100;
+          user.connectedStores.length > 0 ?
+          user.connectedStores.reduce(
+            (sum, store) => sum + store.rewardConfig.conversionRate,
+            0
+          ) / user.connectedStores.length :
+          100;
         }
 
         const totalValue = totalPoints / avgConversionRate;
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
           totalPoints / avgConversionRate
         );
 
-        // Get redemption history
+
         const filter = { userId: req.user.id };
         if (storeId) filter.storeId = storeId;
 
@@ -68,14 +68,14 @@ export default async function handler(req, res) {
         const skip = (page - 1) * limit;
 
         const [redemptions, total] = await Promise.all([
-          Redemption.find(filter)
-            .populate("storeId", "name")
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit)
-            .lean(),
-          Redemption.countDocuments(filter),
-        ]);
+        Redemption.find(filter).
+        populate("storeId", "name").
+        sort({ createdAt: -1 }).
+        skip(skip).
+        limit(limit).
+        lean(),
+        Redemption.countDocuments(filter)]
+        );
 
         const formattedRedemptions = redemptions.map((redemption) => ({
           id: redemption._id,
@@ -84,28 +84,28 @@ export default async function handler(req, res) {
           date: redemption.createdAt.toISOString().split("T")[0],
           pointsUsed: redemption.pointsUsed,
           value: redemption.value,
-          autoTriggered: redemption.autoTriggered,
+          autoTriggered: redemption.autoTriggered
         }));
 
         res.json({
           summary: {
             totalPoints,
             totalValue,
-            availableRedemptions,
+            availableRedemptions
           },
           redemptions: formattedRedemptions,
           pagination: {
             page,
             limit,
             total,
-            pages: Math.ceil(total / limit),
-          },
+            pages: Math.ceil(total / limit)
+          }
         });
       } catch (error) {
         if (error.name === "ZodError") {
           return res.status(400).json({
             error: "Invalid query parameters",
-            details: error.errors,
+            details: error.errors
           });
         }
         console.error("Get rewards error:", error);

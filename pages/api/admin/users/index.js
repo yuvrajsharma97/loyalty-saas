@@ -16,14 +16,14 @@ export default async function handler(req, res) {
       } else {
         return res.status(405).json({
           success: false,
-          error: "Method not allowed",
+          error: "Method not allowed"
         });
       }
     } catch (error) {
       console.error("Users API error:", error);
       return res.status(500).json({
         success: false,
-        error: "Internal server error",
+        error: "Internal server error"
       });
     }
   });
@@ -34,81 +34,85 @@ async function getUsersList(req, res) {
     const filters = adminUserFiltersSchema.parse(req.query);
     const { page, limit, role, status, search, dateFrom, dateTo } = filters;
 
-    // Build query
-    const query = {};
+
+    const andConditions = [];
 
     if (role) {
-      query.role = role;
+      andConditions.push({ role });
     }
 
     if (search) {
-      query.$or = [
+      andConditions.push({
+        $or: [
         { name: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
-      ];
+        { email: { $regex: search, $options: "i" } }]
+
+      });
+    }
+
+    if (status === "active") {
+      andConditions.push({
+        $or: [{ isActive: true }, { isActive: { $exists: false } }]
+      });
+    } else if (status === "suspended") {
+      andConditions.push({ isActive: false });
     }
 
     if (dateFrom || dateTo) {
-      query.createdAt = {};
-      if (dateFrom) query.createdAt.$gte = new Date(dateFrom);
-      if (dateTo) query.createdAt.$lte = new Date(dateTo);
+      const createdAt = {};
+      if (dateFrom) createdAt.$gte = new Date(dateFrom);
+      if (dateTo) createdAt.$lte = new Date(dateTo);
+      andConditions.push({ createdAt });
     }
 
-    // Status filter (we'll determine active/suspended from the data)
+    const query = andConditions.length > 0 ? { $and: andConditions } : {};
+
     const skip = (page - 1) * limit;
 
     const [users, total] = await Promise.all([
-      User.find(query, "-passwordHash")
-        .populate("connectedStores", "name tier")
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      User.countDocuments(query),
-    ]);
+    User.find(query, "-passwordHash").
+    populate("connectedStores", "name tier").
+    sort({ createdAt: -1 }).
+    skip(skip).
+    limit(limit).
+    lean(),
+    User.countDocuments(query)]
+    );
 
-    // Add computed fields
+
     const usersWithMetadata = await Promise.all(
       users.map(async (user) => {
-        // Get stores owned by this user
+
         const ownedStores = await Store.find(
           { ownerId: user._id },
           "name tier"
         ).lean();
 
-        // Calculate total points across all stores
+
         const totalPoints =
-          user.pointsByStore?.reduce((sum, ps) => sum + ps.points, 0) || 0;
+        user.pointsByStore?.reduce((sum, ps) => sum + ps.points, 0) || 0;
 
         return {
           ...user,
           ownedStores,
           totalPoints,
-          isActive: user.isActive !== false, // Default to active if not set
+          isActive: user.isActive === false ? false : true,
           storeCount: user.connectedStores?.length || 0,
-          ownedStoreCount: ownedStores.length,
+          ownedStoreCount: ownedStores.length
         };
       })
     );
 
-    // Apply status filter after computation if needed
-    let filteredUsers = usersWithMetadata;
-    if (status) {
-      filteredUsers = usersWithMetadata.filter((user) =>
-        status === "active" ? user.isActive : !user.isActive
-      );
-    }
-
     return res.status(200).json({
       success: true,
-      data: filteredUsers,
+      data: usersWithMetadata,
       meta: {
         total,
         page,
         limit,
         totalPages: Math.ceil(total / limit),
-        hasMore: total > skip + limit,
-      },
+        hasMore: total > skip + limit
+      }
     });
   } catch (error) {
     throw error;
@@ -116,20 +120,20 @@ async function getUsersList(req, res) {
 }
 
 async function createUser(req, res) {
-  // Implementation for creating users (invite functionality)
+
   try {
     const { name, email, role = "User" } = req.body;
 
-    // Check if user already exists
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        error: "User with this email already exists",
+        error: "User with this email already exists"
       });
     }
 
-    // Create user with temporary password
+
     const bcrypt = require("bcryptjs");
     const tempPassword = Math.random().toString(36).slice(-8);
     const passwordHash = await bcrypt.hash(tempPassword, 12);
@@ -138,12 +142,12 @@ async function createUser(req, res) {
       name,
       email,
       passwordHash,
-      role,
+      role
     });
 
     await user.save();
 
-    // TODO: Send invitation email with temporary password
+
     console.log(`User created: ${email} with temp password: ${tempPassword}`);
 
     return res.status(201).json({
@@ -153,9 +157,9 @@ async function createUser(req, res) {
           id: user._id,
           name: user.name,
           email: user.email,
-          role: user.role,
-        },
-      },
+          role: user.role
+        }
+      }
     });
   } catch (error) {
     throw error;

@@ -5,62 +5,62 @@ const redemptionSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: true
     },
     storeId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",
-      required: true,
+      required: true
     },
     pointsUsed: {
       type: Number,
       required: true,
-      min: 1,
+      min: 1
     },
     rewardValueGBP: {
       type: Number,
       required: true,
-      min: 0,
+      min: 0
     },
     code: {
       type: String,
       required: true,
       unique: true,
-      match: /^\d{8}$/,
+      match: /^\d{8}$/
     },
     redemptionDate: {
       type: Date,
-      default: Date.now,
+      default: Date.now
     },
     autoTriggered: {
       type: Boolean,
-      default: false,
+      default: false
     },
     used: {
       type: Boolean,
-      default: false,
+      default: false
     },
     usedAt: {
       type: Date,
-      default: null,
+      default: null
     },
     appliedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "User"
     },
-    // Legacy field for backward compatibility
+
     value: {
       type: Number,
-      min: 0,
-    },
+      min: 0
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 
-// Virtual for backward compatibility
-redemptionSchema.virtual('value_computed').get(function() {
+
+redemptionSchema.virtual('value_computed').get(function () {
   return this.rewardValueGBP || this.value || 0;
 });
 

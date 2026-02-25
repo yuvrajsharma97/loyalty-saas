@@ -27,12 +27,12 @@ export default function RedemptionVerifier({ storeId }) {
       const response = await fetch('/api/store/verify-redemption', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           storeId,
-          code: code.trim(),
-        }),
+          code: code.trim()
+        })
       });
 
       const data = await response.json();
@@ -60,12 +60,12 @@ export default function RedemptionVerifier({ storeId }) {
       const response = await fetch('/api/store/use-redemption', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           storeId,
-          code: verification.code,
-        }),
+          code: verification.code
+        })
       });
 
       const data = await response.json();
@@ -75,7 +75,7 @@ export default function RedemptionVerifier({ storeId }) {
       }
 
       setSuccess(`Redemption code ${verification.code} has been successfully used!`);
-      setVerification(prev => ({ ...prev, used: true, usedAt: new Date() }));
+      setVerification((prev) => ({ ...prev, used: true, usedAt: new Date() }));
       setCode("");
     } catch (err) {
       setError(err.message);
@@ -100,27 +100,27 @@ export default function RedemptionVerifier({ storeId }) {
         </h3>
       </div>
 
-      {/* Success Message */}
-      {success && (
-        <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+      {}
+      {success &&
+      <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
           <div className="flex items-center gap-2">
             <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
             <p className="text-sm text-green-800 dark:text-green-200">{success}</p>
           </div>
         </div>
-      )}
+      }
 
-      {/* Error Message */}
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+      {}
+      {error &&
+      <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
           <div className="flex items-center gap-2">
             <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
             <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
           </div>
         </div>
-      )}
+      }
 
-      {/* Code Input Section */}
+      {}
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -132,14 +132,14 @@ export default function RedemptionVerifier({ storeId }) {
               onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 8))}
               placeholder="12345678"
               className="font-mono text-center text-lg tracking-widest"
-              maxLength={8}
-            />
+              maxLength={8} />
+            
             <Button
               onClick={handleVerifyCode}
               disabled={loading || code.length !== 8}
               variant="secondary"
-              className="px-4"
-            >
+              className="px-4">
+              
               <Search className="w-4 h-4" />
             </Button>
           </div>
@@ -148,9 +148,9 @@ export default function RedemptionVerifier({ storeId }) {
           </p>
         </div>
 
-        {/* Verification Results */}
-        {verification && (
-          <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
+        {}
+        {verification &&
+        <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-medium text-gray-900 dark:text-white">
                 Code Verification Results
@@ -190,45 +190,45 @@ export default function RedemptionVerifier({ storeId }) {
               </div>
             </div>
 
-            {verification.used && verification.usedAt && (
-              <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+            {verification.used && verification.usedAt &&
+          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                 <span className="text-gray-600 dark:text-gray-400 text-sm">Used on:</span>
                 <p className="font-medium text-gray-900 dark:text-white text-sm">
                   {formatDate(verification.usedAt)}
                 </p>
               </div>
-            )}
+          }
 
-            {/* Action Buttons */}
+            {}
             <div className="flex gap-3 mt-6">
-              {!verification.used ? (
-                <Button
-                  onClick={handleUseCode}
-                  disabled={loading}
-                  className="flex-1"
-                  isLoading={loading}
-                >
+              {!verification.used ?
+            <Button
+              onClick={handleUseCode}
+              disabled={loading}
+              className="flex-1"
+              isLoading={loading}>
+              
                   <CheckCircle className="w-4 h-4 mr-2" />
                   Mark as Used & Complete Redemption
-                </Button>
-              ) : (
-                <div className="flex-1 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-center">
+                </Button> :
+
+            <div className="flex-1 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-center">
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     This redemption has already been completed
                   </p>
                 </div>
-              )}
+            }
               <Button
-                onClick={handleReset}
-                variant="secondary"
-                disabled={loading}
-              >
+              onClick={handleReset}
+              variant="secondary"
+              disabled={loading}>
+              
                 Reset
               </Button>
             </div>
           </div>
-        )}
+        }
       </div>
-    </div>
-  );
+    </div>);
+
 }

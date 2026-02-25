@@ -24,43 +24,43 @@ export default async function handler(req, res) {
 
         const storeId = new mongoose.Types.ObjectId(req.storeId);
 
-        // Find user and verify they're connected to this store
+
         const user = await User.findOne({
           _id: userId,
-          connectedStores: storeId,
+          connectedStores: storeId
         });
 
         if (!user) {
           return res.status(404).json({
-            error: "User not found or not connected to this store",
+            error: "User not found or not connected to this store"
           });
         }
 
-        // Update points
+
         const result = await User.findOneAndUpdate(
           {
             _id: userId,
-            "pointsByStore.storeId": storeId,
+            "pointsByStore.storeId": storeId
           },
           {
-            $inc: { "pointsByStore.$.points": points },
+            $inc: { "pointsByStore.$.points": points }
           },
           { new: true }
         );
 
-        // If user doesn't have points entry for this store, create it
+
         if (!result) {
           await User.findByIdAndUpdate(userId, {
             $push: {
               pointsByStore: {
                 storeId: storeId,
-                points: Math.max(0, points), // Ensure non-negative
-              },
-            },
+                points: Math.max(0, points)
+              }
+            }
           });
         }
 
-        // Get updated user points
+
         const updatedUser = await User.findById(userId);
         const userStorePoints = updatedUser.pointsByStore.find(
           (p) => p.storeId.toString() === storeId.toString()
@@ -71,14 +71,14 @@ export default async function handler(req, res) {
           adjustment: {
             points,
             reason,
-            newBalance: userStorePoints?.points || 0,
-          },
+            newBalance: userStorePoints?.points || 0
+          }
         });
       } catch (error) {
         if (error.name === "ZodError") {
           return res.status(400).json({
             error: "Invalid request data",
-            details: error.errors,
+            details: error.errors
           });
         }
         console.error("Adjust points error:", error);

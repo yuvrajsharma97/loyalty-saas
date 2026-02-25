@@ -1,6 +1,6 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
-import { Download, UserCheck, AlertTriangle } from "lucide-react";
+import { Download, AlertTriangle } from "lucide-react";
 import DataTable from "@/components/admin/DataTable";
 import TableToolbar from "@/components/admin/TableToolbar";
 import Pagination from "@/components/admin/Pagination";
@@ -24,7 +24,7 @@ export default function AdminUsers() {
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     type: "",
-    userId: "",
+    userId: ""
   });
   const [successBanner, setSuccessBanner] = useState("");
 
@@ -39,7 +39,7 @@ export default function AdminUsers() {
       setLoading(true);
       const params = new URLSearchParams({
         page: currentPage.toString(),
-        limit: itemsPerPage.toString(),
+        limit: itemsPerPage.toString()
       });
 
       if (roleFilter) params.append('role', roleFilter);
@@ -53,7 +53,12 @@ export default function AdminUsers() {
 
       const data = await response.json();
 
-      setUsers(data.data || []);
+      const normalizedUsers = (data.data || []).map((user) => ({
+        ...user,
+        id: String(user._id || user.id)
+      }));
+
+      setUsers(normalizedUsers);
       setPaginationMeta(data.meta || {});
       setError(null);
     } catch (err) {
@@ -64,9 +69,9 @@ export default function AdminUsers() {
     }
   };
 
-  // Use server-side pagination with real metadata from backend
+
   const totalPages = paginationMeta.totalPages || 1;
-  const paginatedUsers = users; // Already paginated from server
+  const paginatedUsers = users;
 
   const handleSort = (column, direction) => {
     setSortBy(column);
@@ -75,34 +80,33 @@ export default function AdminUsers() {
 
   const handleConfirmAction = async () => {
     const { type, userId } = confirmDialog;
-    const user = users.find((u) => u._id === userId);
+    const user = users.find((u) => u.id === userId);
 
     try {
       if (type === "suspend") {
-        const newStatus = user?.isActive ? "suspended" : "active";
+        const newStatus = user?.isActive !== false ? "suspended" : "active";
 
         const response = await fetch(`/api/admin/users/${userId}/status`, {
           method: 'PUT',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             status: newStatus,
-            reason: `Admin action: ${newStatus} user`,
-          }),
+            reason: `Admin action: ${newStatus} user`
+          })
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to update user status');
+        const result = await response.json();
+        if (!response.ok || !result?.success) {
+          throw new Error(result?.error || 'Failed to update user status');
         }
 
-        // Refresh users data
+
         await fetchUsers();
         setSuccessBanner(
           `User ${user?.name} has been ${newStatus}.`
         );
-      } else if (type === "impersonate") {
-        setSuccessBanner(`Now impersonating ${user?.name} (UI-only simulation).`);
       }
     } catch (err) {
       console.error('Error performing user action:', err);
@@ -114,9 +118,9 @@ export default function AdminUsers() {
 
   const exportCSV = () => {
     const headers = ["Name,Email,Role,Connected Stores,Created,Status"];
-    const rows = filteredUsers.map(
+    const rows = paginatedUsers.map(
       (user) =>
-        `${user.name},${user.email},${user.role},${user.storesCount},${user.createdAt},${user.status}`
+      `${user.name},${user.email},${user.role},${user.storesCount},${user.createdAt},${user.status}`
     );
     const csvContent = [headers, ...rows].join("\n");
 
@@ -130,12 +134,12 @@ export default function AdminUsers() {
   };
 
   const userColumns = [
-    {
-      key: "name",
-      label: "Name",
-      sortable: true,
-      render: (name, user) => (
-        <div>
+  {
+    key: "name",
+    label: "Name",
+    sortable: true,
+    render: (name, user) =>
+    <div>
           <div className="font-medium text-gray-900 dark:text-white">
             {name}
           </div>
@@ -143,118 +147,106 @@ export default function AdminUsers() {
             {user.email}
           </div>
         </div>
-      ),
-    },
-    {
-      key: "role",
-      label: "Role",
-      sortable: true,
-      render: (role) => (
-        <Badge
-          variant={
-            role === "SuperAdmin"
-              ? "primary"
-              : role === "StoreAdmin"
-              ? "warning"
-              : "default"
-          }>
+
+  },
+  {
+    key: "role",
+    label: "Role",
+    sortable: true,
+    render: (role) =>
+    <Badge
+      variant={
+      role === "SuperAdmin" ?
+      "primary" :
+      role === "StoreAdmin" ?
+      "warning" :
+      "default"
+      }>
           {role === "SuperAdmin" ? "Super Admin" : role === "StoreAdmin" ? "Store Admin" : "User"}
         </Badge>
-      ),
-    },
-    {
-      key: "storeCount",
-      label: "Connected Stores",
-      sortable: true,
-      render: (storeCount) => storeCount || 0
-    },
-    {
-      key: "createdAt",
-      label: "Created",
-      sortable: true,
-      render: (createdAt) => new Date(createdAt).toLocaleDateString()
-    },
-    {
-      key: "isActive",
-      label: "Status",
-      sortable: true,
-      render: (isActive) => (
-        <Badge variant={isActive !== false ? "success" : "danger"}>
+
+  },
+  {
+    key: "storeCount",
+    label: "Connected Stores",
+    sortable: true,
+    render: (storeCount) => storeCount || 0
+  },
+  {
+    key: "createdAt",
+    label: "Created",
+    sortable: true,
+    render: (createdAt) => new Date(createdAt).toLocaleDateString()
+  },
+  {
+    key: "isActive",
+    label: "Status",
+    sortable: true,
+    render: (isActive) =>
+    <Badge variant={isActive !== false ? "success" : "danger"}>
           {isActive !== false ? "Active" : "Suspended"}
         </Badge>
-      ),
-    },
-    {
-      key: "actions",
-      label: "Actions",
-      render: (_, user) => (
-        <div className="flex items-center gap-2">
+
+  },
+  {
+    key: "actions",
+    label: "Actions",
+    render: (_, user) =>
+    <div className="flex items-center gap-2">
           <Button
-            variant="ghost"
-            size="sm"
-            onClick={() =>
-              setConfirmDialog({
-                isOpen: true,
-                type: "impersonate",
-                userId: user._id,
-              })
-            }>
-            <UserCheck className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() =>
-              setConfirmDialog({
-                isOpen: true,
-                type: "suspend",
-                userId: user._id,
-              })
-            }>
+        variant="ghost"
+        size="sm"
+        onClick={() =>
+        setConfirmDialog({
+          isOpen: true,
+          type: "suspend",
+          userId: user.id
+        })
+        }>
             <AlertTriangle className="w-4 h-4" />
           </Button>
         </div>
-      ),
-    },
-  ];
+
+  }];
+
 
   const filters = [
-    <Select
-      key="role"
-      placeholder="All Roles"
-      value={roleFilter}
-      onChange={(e) => setRoleFilter(e.target.value)}>
+  <Select
+    key="role"
+    placeholder="All Roles"
+    value={roleFilter}
+    onChange={(e) => setRoleFilter(e.target.value)}>
       <option value="">Select your role</option>
       <option value="SuperAdmin">Super Admin</option>
       <option value="StoreAdmin">Store Admin</option>
       <option value="User">User</option>
-    </Select>,
-  ];
+    </Select>];
+
 
   const actions = [
-    <Button key="export" variant="secondary" onClick={exportCSV}>
+  <Button key="export" variant="secondary" onClick={exportCSV}>
       <Download className="w-4 h-4 mr-2" />
       Export CSV
-    </Button>,
-  ];
+    </Button>];
+
 
   return (
     <div className="space-y-6">
-      {successBanner && (
-        <Banner
-          type="success"
-          message={successBanner}
-          onDismiss={() => setSuccessBanner("")}
-        />
-      )}
+      {successBanner &&
+      <Banner
+        type="success"
+        message={successBanner}
+        onDismiss={() => setSuccessBanner("")} />
 
-      {error && (
-        <Banner
-          type="error"
-          message={error}
-          onDismiss={() => setError(null)}
-        />
-      )}
+      }
+
+      {error &&
+      <Banner
+        type="error"
+        message={error}
+        onDismiss={() => setError(null)} />
+
+      }
 
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
@@ -265,69 +257,59 @@ export default function AdminUsers() {
           searchValue={searchQuery}
           onSearchChange={(e) => setSearchQuery(e.target.value)}
           filters={filters}
-          actions={actions}
-        />
+          actions={actions} />
+        
 
-        {loading ? (
-          <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md animate-pulse">
+        {loading ?
+        <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md animate-pulse">
             <div className="space-y-3">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex space-x-4">
+              {[...Array(5)].map((_, i) =>
+            <div key={i} className="flex space-x-4">
                   <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded flex-1"></div>
                   <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
                   <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/6"></div>
                 </div>
-              ))}
+            )}
             </div>
-          </div>
-        ) : (
-          <>
+          </div> :
+
+        <>
             <DataTable
-              columns={userColumns}
-              data={paginatedUsers}
-              sortBy={sortBy}
-              sortDirection={sortDirection}
-              onSort={handleSort}
-            />
+            columns={userColumns}
+            data={paginatedUsers}
+            sortBy={sortBy}
+            sortDirection={sortDirection}
+            onSort={handleSort} />
+          
 
             <div className="mt-6">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, paginationMeta.total || 0)} of {paginationMeta.total || 0} users
+                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, paginationMeta.total || 0)} of {paginationMeta.total || 0} users
                 </div>
                 <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                />
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage} />
+              
               </div>
             </div>
           </>
-        )}
+        }
       </div>
 
-      {/* Confirm Dialog */}
+      {}
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
         onClose={() =>
-          setConfirmDialog({ isOpen: false, type: "", userId: "" })
+        setConfirmDialog({ isOpen: false, type: "", userId: "" })
         }
         onConfirm={handleConfirmAction}
-        title={
-          confirmDialog.type === "suspend"
-            ? "Confirm Action"
-            : "Impersonate User"
-        }
-        message={
-          confirmDialog.type === "suspend"
-            ? "Are you sure you want to change this user's status?"
-            : "Are you sure you want to impersonate this user? This is a UI-only simulation."
-        }
-        confirmLabel={
-          confirmDialog.type === "suspend" ? "Change Status" : "Impersonate"
-        }
-        variant={confirmDialog.type === "suspend" ? "danger" : "primary"}
-      />
-    </div>
-  );
+        title="Confirm Action"
+        message="Are you sure you want to change this user's status?"
+        confirmLabel="Change Status"
+        variant="danger" />
+
+    </div>);
+
 }
